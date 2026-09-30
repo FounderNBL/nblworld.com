@@ -14,6 +14,9 @@ test("University campus loads with a protected enrollment gate",async({page})=>{
   await expect(page.locator("[data-campus-gate]")).toBeVisible();
   await expect(page.locator("body")).toContainText("LOCKE opens the classroom only when that account has University enrollment");
   await expect(page.locator("[data-campus]")).toBeHidden();
+  await expect(page.locator("[data-frontier]")).toBeHidden();
+  await expect(page.locator("body")).toContainText("The Frontier Check");
+  await expect(page.locator("body")).toContainText("Some are trying to get you to confidently say some bullshit");
   await expect(page.locator("body")).toContainText("Professor Grey");
   await expect(page.locator("body")).toContainText("Your digital materials");
   await expect(page.locator("body")).toContainText("Course assessment");

@@ -80,10 +80,51 @@ function renderLibrary(u){
     host.appendChild(card);
   }
 }
+function renderFrontier(frontier){
+  const section=$("[data-frontier]"),stage=$("[data-frontier-stage]");
+  section.hidden=false;
+  $("[data-campus]").hidden=true;
+  const next=frontier?.nextQuestion;
+  if(frontier?.completed){
+    stage.innerHTML='<div class="frontier-finish"><strong>Baseline complete.</strong><p>Interesting. I know where to start with you now. Welcome to New Beansland University.</p><button class="btn primary" type="button" data-frontier-enter>Enter class</button></div>';
+    stage.querySelector("[data-frontier-enter]")?.addEventListener("click",refreshUniversity);
+    return;
+  }
+  if(!next){
+    stage.innerHTML='<p class="small-note">This is a baseline, not a grade. Nothing here is one of your official assessment questions.</p><button class="btn primary" type="button" data-frontier-start>Alright, try me.</button>';
+    stage.querySelector("[data-frontier-start]")?.addEventListener("click",startFrontier);
+    return;
+  }
+  stage.innerHTML='<p class="frontier-progress">Question '+next.sequence+' of '+next.total+'</p><p class="frontier-question"></p><textarea data-frontier-response maxlength="8000" placeholder="Tell us what you actually think."></textarea><div class="actions"><button class="btn primary" type="button" data-frontier-submit>Lock it in</button></div><p class="small-note">No score. No trick answer sheet. We are watching how you handle the problem.</p>';
+  stage.querySelector(".frontier-question").textContent=next.prompt;
+  stage.querySelector("[data-frontier-submit]")?.addEventListener("click",submitFrontier);
+}
+async function startFrontier(){
+  const button=$("[data-frontier-start]");if(button)button.disabled=true;
+  try{const payload=await api({action:"frontier_start"});renderFrontier(payload.frontier);}
+  catch(error){setStatus(error.message||"The Frontier Check could not start.");if(button)button.disabled=false;}
+}
+async function submitFrontier(){
+  const value=$("[data-frontier-response]")?.value.trim();if(!value)return;
+  const button=$("[data-frontier-submit]");if(button)button.disabled=true;
+  const key=state.university?.frontier?.nextQuestion?.questionKey;
+  try{
+    const payload=await api({action:"frontier_submit",questionKey:key,response:value});
+    if(payload?.frontier)state.university.frontier=payload.frontier;
+    renderFrontier(payload.frontier);
+  }catch(error){setStatus(error.message||"That Frontier answer could not be saved.");if(button)button.disabled=false;}
+}
+
 function renderUniversity(u){
   state.university=u;
-  if(!u?.allowed){$("[data-campus-gate]").hidden=false;$("[data-campus]").hidden=true;setStatus("This NBL account does not currently have University enrollment.");return;}
-  $("[data-campus-gate]").hidden=true;$("[data-campus]").hidden=false;
+  if(!u?.allowed){$("[data-campus-gate]").hidden=false;$("[data-frontier]").hidden=true;$("[data-campus]").hidden=true;setStatus("This NBL account does not currently have University enrollment.");return;}
+  $("[data-campus-gate]").hidden=true;
+  if(u.frontier?.required&&!u.frontier?.completed){
+    renderFrontier(u.frontier);
+    setStatus("University access confirmed. Finish the Frontier Check before class opens.");
+    return;
+  }
+  $("[data-frontier]").hidden=true;$("[data-campus]").hidden=false;
   $("[data-student-role]").textContent=u.role==="founder"?"Founder University access":"Enrolled NBL University student";
   $("[data-enrollment-status]").textContent="Enrollment: "+String(u.enrollment?.status||u.role||"active").replaceAll("_"," ");
   $("[data-program-name]").textContent=u.program?.title||"New Beansland University Foundation Program";
@@ -98,7 +139,7 @@ function renderUniversity(u){
 async function refreshUniversity(){
   setStatus("Checking NBL University enrollment…");
   try{const payload=await api({action:"university_status"});renderUniversity(payload.university);}
-  catch(error){if(error.status===401){$("[data-campus-gate]").hidden=false;$("[data-campus]").hidden=true;setStatus("Sign in with your NBL account to enter the campus.");}else setStatus(error.message||"University status could not be loaded.");}
+  catch(error){if(error.status===401){$("[data-campus-gate]").hidden=false;$("[data-frontier]").hidden=true;$("[data-campus]").hidden=true;setStatus("Sign in with your NBL account to enter the campus.");}else setStatus(error.message||"University status could not be loaded.");}
 }
 
 function appendGrey(role,text){
