@@ -7,8 +7,8 @@
   <meta name="description" content="The enrolled-student campus for New Beansland University: courses, secure student materials, Professor Grey, progress, and protected assessments.">
   <meta name="theme-color" content="#02060b">
   <link rel="canonical" href="https://nblworld.com/university.html">
-  <link rel="stylesheet" href="/university.css?v=20260930-frontier1">
-  <script defer src="/university.js?v=20260930-frontier1"></script>
+  <link rel="stylesheet" href="/university.css?v=20260930-registrar1">
+  <script defer src="/university.js?v=20260930-registrar1"></script>
 </head>
 <body>
 <header class="site-head">
@@ -54,7 +54,7 @@
         <p class="eyebrow">Academic record</p>
         <h2 data-program-name>New Beansland University Foundation Program</h2>
         <p data-student-role>Enrolled NBL University student</p>
-        <div class="badges"><span class="badge" data-enrollment-status>Enrollment: active</span><span class="badge">Professor Grey · Faculty</span><span class="badge">LOCKE · Access control</span></div>
+        <div class="badges"><span class="badge" data-enrollment-status>Enrollment: active</span><span class="badge" data-student-number>Student record: loading</span><span class="badge">Professor Grey · Faculty</span><span class="badge">LOCKE · Access control</span></div>
         <p class="status" data-campus-status>University access confirmed.</p>
       </div>
       <div class="progress-card">
@@ -72,6 +72,23 @@
     <section class="card section" id="library">
       <div class="section-head"><div><p class="eyebrow">Student library</p><h2>Your digital materials</h2></div><p>The course book, workbook, and delivery guide are served through the authenticated University reader. Instructor keys and grading material never enter this page.</p></div>
       <div class="library" data-library></div>
+    </section>
+
+    <section class="card section" id="coursework">
+      <div class="section-head"><div><p class="eyebrow">Registrar rail</p><h2>Your course work</h2></div><p>Save workbook responses, practice, reflections, or projects to your student record. Official assessments remain in the protected assessment room below.</p></div>
+      <div class="coursework-grid">
+        <form class="coursework-form" data-coursework-form>
+          <label>Course<select data-course-select aria-label="Course work course"><option>APSK 101</option><option>ANSY 110</option><option>EBPR 120</option></select></label>
+          <label>Work type<select data-coursework-type><option value="workbook">Workbook</option><option value="practice">Practice</option><option value="reflection">Reflection</option><option value="project">Project</option></select></label>
+          <label>Title<input data-coursework-title maxlength="180" placeholder="Optional title"></label>
+          <label class="wide">Your work<textarea data-coursework-content maxlength="20000" placeholder="Write or paste your course work here." required></textarea></label>
+          <div class="wide actions coursework-actions"><button class="btn primary" type="submit">Submit to my record</button><span class="small-note" data-coursework-status>Nothing is submitted until you press the button.</span></div>
+        </form>
+        <div>
+          <div class="coursework-head"><h3>Recent submissions</h3><button class="btn ghost" type="button" data-coursework-refresh>Refresh</button></div>
+          <div class="submission-list" data-submission-list><p class="small-note">Your submitted course work will appear here.</p></div>
+        </div>
+      </div>
     </section>
 
     <section class="two-col" id="grey">

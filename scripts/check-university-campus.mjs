@@ -15,6 +15,14 @@ need(html,"LOCKE opens the classroom only when that account has University enrol
 need(html,"Your digital materials","Student library is missing.");
 need(html,"Professor Grey","Professor Grey faculty panel is missing.");
 need(html,"Course assessment","Protected assessment panel is missing.");
+need(html,"Your course work","Registrar coursework room is missing.");
+need(html,"data-student-number","Student-number display is missing.");
+need(js,'action:"university_submissions"',"Student submission listing is missing.");
+need(js,'action:"university_submit_work"',"Student coursework submission action is missing.");
+need(js,"renderSubmissions","Safe submission rendering is missing.");
+need(js,'a.status==="review_pending"',"Pending academic-review UI is missing.");
+need(js,"Pending final academic review","Pending academic-review message is missing.");
+
 need(html,"The Frontier Check","Frontier Baseline panel is missing.");
 need(html,"Some are trying to get you to confidently say some bullshit","Frontier Check lost the intended NBL baseline tone.");
 need(html,"Welcome%20to%20the%20Frontier.pdf","Frontier entrance statement link is missing.");
@@ -40,4 +48,4 @@ for(const bad of ["answer_key","grading_payload","rubricText","PROTECTED RUBRIC"
 }
 
 if(errors.length){console.error("[nbl-world-campus] FAIL");errors.forEach(e=>console.error("- "+e));process.exit(1);}
-console.log("[nbl-world-campus] PASS: NBL World campus has enrollment gating, the Frontier Baseline, student library, learner-adaptive Grey path, protected assessments, shared identity, and public-secret guards.");
+console.log("[nbl-world-campus] PASS: NBL World campus has enrollment gating, Frontier Baseline, Registrar student/coursework UI, student library, learner-adaptive Grey, protected assessments, shared identity, and public-secret guards.");

@@ -127,10 +127,12 @@ function renderUniversity(u){
   $("[data-frontier]").hidden=true;$("[data-campus]").hidden=false;
   $("[data-student-role]").textContent=u.role==="founder"?"Founder University access":"Enrolled NBL University student";
   $("[data-enrollment-status]").textContent="Enrollment: "+String(u.enrollment?.status||u.role||"active").replaceAll("_"," ");
+  $("[data-student-number]").textContent=u.student?.student_number?("Student: "+u.student.student_number):(u.role==="founder"?"Founder University access":"Student record pending");
   $("[data-program-name]").textContent=u.program?.title||"New Beansland University Foundation Program";
   const pct=progressPercent(u);$("[data-progress-label]").textContent=pct+"%";$("[data-progress-fill]").style.width=pct+"%";
   const current=(u.courses||[]).find(x=>x.current)||(u.courses||[]).find(x=>!x.completed)||(u.courses||[])[0];if(current)state.course=current.code;
   renderCourses(u);renderLibrary(u);syncCourse();
+  void loadSubmissions();
   const p=u.progress||{};
   $("[data-last-result]").textContent=p.assessment_result?(`${p.assessment_result}${p.assessment_score!==null&&p.assessment_score!==undefined?" · "+p.assessment_score+"%":""}`):"No completed course assessment yet.";
   $("[data-last-feedback]").textContent=p.safe_feedback||"Course grades and safe feedback will appear here after an official assessment is graded.";
@@ -140,6 +142,60 @@ async function refreshUniversity(){
   setStatus("Checking NBL University enrollment…");
   try{const payload=await api({action:"university_status"});renderUniversity(payload.university);}
   catch(error){if(error.status===401){$("[data-campus-gate]").hidden=false;$("[data-frontier]").hidden=true;$("[data-campus]").hidden=true;setStatus("Sign in with your NBL account to enter the campus.");}else setStatus(error.message||"University status could not be loaded.");}
+}
+
+function renderSubmissions(rows){
+  const host=$("[data-submission-list]");host.replaceChildren();
+  if(!rows.length){
+    const p=document.createElement("p");p.className="small-note";p.textContent="No submitted course work for "+state.course+" yet.";host.appendChild(p);return;
+  }
+  for(const row of rows){
+    const card=document.createElement("article");card.className="submission";
+    const head=document.createElement("div");head.className="submission-title";
+    const title=document.createElement("strong");title.textContent=row.title||row.submission_type||"Course work";
+    const status=document.createElement("span");status.textContent=String(row.status||"submitted").replaceAll("_"," ");
+    head.append(title,status);
+    const meta=document.createElement("p");meta.className="small-note";
+    const when=row.submitted_at?new Date(row.submitted_at).toLocaleString():"Saved";
+    meta.textContent=(row.course_code||state.course)+" · "+String(row.submission_type||"work").replaceAll("_"," ")+" · "+when;
+    card.append(head,meta);
+    if(row.safe_feedback){
+      const feedback=document.createElement("p");feedback.textContent=row.safe_feedback;card.appendChild(feedback);
+    }
+    host.appendChild(card);
+  }
+}
+async function loadSubmissions(){
+  const host=$("[data-submission-list]");if(!host)return;
+  host.innerHTML='<p class="small-note">Loading your course work…</p>';
+  try{
+    const payload=await api({action:"university_submissions",courseCode:state.course});
+    renderSubmissions(Array.isArray(payload?.submissions)?payload.submissions:[]);
+  }catch(error){
+    host.replaceChildren();const p=document.createElement("p");p.className="small-note";p.textContent=error.message||"Course work could not be loaded.";host.appendChild(p);
+  }
+}
+async function submitCourseWork(event){
+  event.preventDefault();
+  const form=event.currentTarget,button=form.querySelector('button[type="submit"]'),status=$("[data-coursework-status]");
+  const content=$("[data-coursework-content]").value.trim();
+  if(!content)return;
+  button.disabled=true;status.textContent="Submitting to your student record…";
+  try{
+    const payload=await api({
+      action:"university_submit_work",
+      courseCode:state.course,
+      submissionType:$("[data-coursework-type]").value,
+      title:$("[data-coursework-title]").value.trim(),
+      content,
+      clientSubmissionKey:globalThis.crypto?.randomUUID?.()||("work-"+Date.now())
+    });
+    status.textContent="Submitted. Elara's Registrar rail has it.";
+    $("[data-coursework-content]").value="";
+    $("[data-coursework-title]").value="";
+    await loadSubmissions();
+  }catch(error){status.textContent=error.message||"Course work could not be submitted.";}
+  finally{button.disabled=false;}
 }
 
 function appendGrey(role,text){
@@ -176,6 +232,10 @@ function renderAssessment(a){
     box.innerHTML=`<div class="assessment-result"><h3>${a.result||"Assessment complete"}</h3><p><strong>Score: ${Number(a.score||0)}%</strong></p><p>${a.safeFeedback||"Your result is recorded."}</p></div>`;
     refreshUniversity();return;
   }
+  if(a.status==="review_pending"){
+    box.innerHTML=`<div class="assessment-result"><h3>${a.result||"Pending final academic review"}</h3><p>${a.safeFeedback||"Your assessment is submitted. A final result will appear after the unresolved academic review is completed."}</p></div>`;
+    return;
+  }
   const q=a.question;if(!q){box.innerHTML="<p>The next assessment question is not available.</p>";return;}
   box.innerHTML=`<h3>${q.title||("Question "+q.questionNumber)}</h3><p class="assessment-meta">Question ${q.position||q.questionNumber} of ${q.total||"?"} · ${q.points||0} points</p><p>${q.prompt}</p>${q.instructions?`<p class="small-note">${q.instructions}</p>`:""}<textarea data-assessment-response placeholder="Write your reasoning here."></textarea><div class="actions" style="justify-content:flex-start"><button class="btn primary" type="button" data-submit-assessment>Submit response</button></div>`;
   box.querySelector("[data-submit-assessment]").addEventListener("click",submitAssessment);
@@ -199,7 +259,9 @@ async function boot(){
   $$("[data-signin]").forEach(b=>b.addEventListener("click",openSignIn));
   $("[data-signout]").addEventListener("click",async()=>{try{const clerk=await getClerk();await clerk.signOut();location.reload();}catch{location.href=ACCOUNT_PORTAL;}});
   $("[data-grey-form]").addEventListener("submit",async e=>{e.preventDefault();const input=$("[data-grey-input]"),value=input.value.trim();if(!value)return;input.value="";await askGrey(value);});
-  $$("[data-course-select]").forEach(el=>el.addEventListener("change",e=>{state.course=e.target.value;syncCourse();renderAssessment(null);}));
+  $("[data-coursework-form]").addEventListener("submit",submitCourseWork);
+  $("[data-coursework-refresh]").addEventListener("click",loadSubmissions);
+  $("[data-course-select]").forEach(el=>el.addEventListener("change",e=>{state.course=e.target.value;syncCourse();renderAssessment(null);void loadSubmissions();}));
   $("[data-start-assessment]").addEventListener("click",startAssessment);
   $("[data-reader-close]").addEventListener("click",closeReader);$("[data-reader]").addEventListener("click",e=>{if(e.target===e.currentTarget)closeReader();});
   $("[data-reader-prev]").addEventListener("click",()=>state.reader&&openMaterial(state.reader.sourceKey,state.reader.chunkIndex-1));
