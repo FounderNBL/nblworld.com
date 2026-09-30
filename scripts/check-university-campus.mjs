@@ -20,6 +20,8 @@ need(html,"data-student-number","Student-number display is missing.");
 need(js,'action:"university_submissions"',"Student submission listing is missing.");
 need(js,'action:"university_submit_work"',"Student coursework submission action is missing.");
 need(js,"renderSubmissions","Safe submission rendering is missing.");
+need(js,'a.status==="review_pending"',"Pending academic-review UI is missing.");
+need(js,"Pending final academic review","Pending academic-review message is missing.");
 
 need(html,"The Frontier Check","Frontier Baseline panel is missing.");
 need(html,"Some are trying to get you to confidently say some bullshit","Frontier Check lost the intended NBL baseline tone.");
