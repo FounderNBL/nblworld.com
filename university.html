@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <title>NBL University Campus | NBL World</title>
+  <meta name="description" content="The enrolled-student campus for New Beansland University: courses, secure student materials, Professor Grey, progress, and protected assessments.">
+  <meta name="theme-color" content="#02060b">
+  <link rel="canonical" href="https://nblworld.com/university.html">
+  <link rel="stylesheet" href="/university.css?v=20260930-campus1">
+  <script defer src="/university.js?v=20260930-campus1"></script>
+</head>
+<body>
+<header class="site-head">
+  <a class="brand" href="/"><span class="brand-mark">NBL U</span><span><strong>New Beansland University</strong><small>NBL World Student Campus</small></span></a>
+  <nav class="nav" aria-label="Campus navigation">
+    <a href="/">NBL World</a><a href="https://newbeansland.org/">New Beansland</a>
+    <button type="button" data-signin>Sign in</button><button type="button" data-signout hidden>Sign out</button>
+  </nav>
+</header>
+
+<section class="hero">
+  <p class="eyebrow">Institute of Applied Discernment</p>
+  <h1>Student Campus</h1>
+  <p>This is the University side of New Beansland: your course path, secure student materials, Professor Grey, assessments, progress, and completion record.</p>
+</section>
+
+<main class="campus-shell">
+  <section class="card gate" data-campus-gate>
+    <p class="eyebrow">LOCKE protected</p>
+    <h2>Your NBL account is the key.</h2>
+    <p>NBL Chat membership and NBL University enrollment are separate. Sign in with the same NBL account you already use. LOCKE opens the classroom only when that account has University enrollment.</p>
+    <div class="actions"><button class="btn primary" type="button" data-signin>Sign in / Create account</button><a class="btn" href="https://newbeansland.org/university.html">University enrollment</a></div>
+    <p class="status" data-campus-status>Checking account connection…</p>
+  </section>
+
+  <div class="campus" data-campus hidden>
+    <section class="card identity">
+      <div>
+        <p class="eyebrow">Academic record</p>
+        <h2 data-program-name>New Beansland University Foundation Program</h2>
+        <p data-student-role>Enrolled NBL University student</p>
+        <div class="badges"><span class="badge" data-enrollment-status>Enrollment: active</span><span class="badge">Professor Grey · Faculty</span><span class="badge">LOCKE · Access control</span></div>
+        <p class="status" data-campus-status>University access confirmed.</p>
+      </div>
+      <div class="progress-card">
+        <div class="progress-row"><span>Foundation progress</span><span data-progress-label>0%</span></div>
+        <div class="progress-track" aria-label="Foundation progress"><div class="progress-fill" data-progress-fill></div></div>
+        <p class="small-note">Current three-course Foundation sequence. New courses are added only when they are actually finished and approved.</p>
+      </div>
+    </section>
+
+    <section class="card section" id="courses">
+      <div class="section-head"><div><p class="eyebrow">Your program</p><h2>Course path</h2></div><p>Move through the current Foundation sequence. Grey teaches the enrolled course; official assessments stay protected from the teaching layer.</p></div>
+      <div class="grid" data-course-grid></div>
+    </section>
+
+    <section class="card section" id="library">
+      <div class="section-head"><div><p class="eyebrow">Student library</p><h2>Your digital materials</h2></div><p>The course book, workbook, and delivery guide are served through the authenticated University reader. Instructor keys and grading material never enter this page.</p></div>
+      <div class="library" data-library></div>
+    </section>
+
+    <section class="two-col" id="grey">
+      <article class="card panel">
+        <div class="grey-head"><div><p class="eyebrow">Faculty</p><h2>Professor Grey</h2></div><select data-course-select aria-label="Professor Grey course"><option>APSK 101</option><option>ANSY 110</option><option>EBPR 120</option></select></div>
+        <p class="small-note">Grey teaches and practices from student-safe University material. He will not reveal or coach protected test answers, keys, rubrics, or future assessment content.</p>
+        <div class="chat-log" data-grey-log aria-live="polite"><div class="msg grey"><strong>Professor Grey</strong><div>Choose your course. Tell me what you are working on, and we will work the reasoning instead of memorizing an answer.</div></div></div>
+        <form class="chat-form" data-grey-form><textarea data-grey-input maxlength="3500" placeholder="Ask Professor Grey about this course…" required></textarea><button class="btn primary" type="submit">Ask Grey</button></form>
+      </article>
+
+      <article class="card panel" id="assessment">
+        <div class="grey-head"><div><p class="eyebrow">Protected assessment</p><h2>Course assessment</h2></div><select class="assessment-select" data-course-select aria-label="Assessment course"><option>APSK 101</option><option>ANSY 110</option><option>EBPR 120</option></select></div>
+        <p class="small-note">Questions are delivered one at a time. Your response is graded server-side against private scoring material. The browser never receives the answer key or rubric.</p>
+        <div class="actions" style="justify-content:flex-start"><button class="btn" type="button" data-start-assessment>Start / Resume assessment</button></div>
+        <div class="assessment-box" data-assessment-box><p>Select a course and start its official assessment when you are ready.</p></div>
+        <hr style="border:0;border-top:1px solid rgba(214,161,75,.18);margin:18px 0">
+        <p class="eyebrow">Latest recorded result</p><p data-last-result>No completed course assessment yet.</p>
+        <p class="small-note" data-last-feedback>Course grades and safe feedback will appear here after an official assessment is graded.</p>
+      </article>
+    </section>
+  </div>
+</main>
+
+<div class="reader" data-reader hidden role="dialog" aria-modal="true" aria-labelledby="reader-title">
+  <section class="reader-card">
+    <header class="reader-head"><h2 id="reader-title" data-reader-title>Student material</h2><button type="button" data-reader-close aria-label="Close reader">×</button></header>
+    <div class="reader-body" data-reader-body></div>
+    <footer class="reader-foot"><button class="btn ghost" type="button" data-reader-prev>Previous</button><span data-reader-position></span><button class="btn ghost" type="button" data-reader-next>Next</button></footer>
+  </section>
+</div>
+
+<footer class="footer">© 2026 Jamel Hawkins · New Beansland™ · NBL World · NBL University is an independent educational/creative program; its completion credential is not an accredited college degree or professional license.</footer>
+</body>
+</html>
