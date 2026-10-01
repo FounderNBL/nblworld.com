@@ -7,8 +7,8 @@
   <meta name="description" content="The enrolled-student campus for New Beansland University: courses, secure student materials, Professor Grey, progress, and protected assessments.">
   <meta name="theme-color" content="#02060b">
   <link rel="canonical" href="https://nblworld.com/university.html">
-  <link rel="stylesheet" href="/university.css?v=20260930-registrar1">
-  <script defer src="/university.js?v=20260930-registrar1"></script>
+  <link rel="stylesheet" href="/university.css?v=20260930-academic2">
+  <script defer src="/university.js?v=20260930-academic2"></script>
 </head>
 <body>
 <header class="site-head">
@@ -64,6 +64,37 @@
       </div>
     </section>
 
+    <section class="card section academic-overview" id="academic-overview">
+      <div class="section-head"><div><p class="eyebrow">How NBLU works</p><h2>Your learning path</h2></div><p>Self-paced does not mean structure-free. You move through the material in sequence, practice before the protected assessment, and keep a persistent academic record.</p></div>
+      <div class="learning-rail" aria-label="Foundation learning sequence">
+        <div><strong>1 · Frontier</strong><span>Establish your starting point.</span></div>
+        <div><strong>2 · Learn</strong><span>Read the approved course material.</span></div>
+        <div><strong>3 · Practice</strong><span>Work problems with Grey and the workbook.</span></div>
+        <div><strong>4 · Submit</strong><span>Save coursework to your student record.</span></div>
+        <div><strong>5 · Readiness</strong><span>Check what is solid and what needs work.</span></div>
+        <div><strong>6 · Assess</strong><span>Complete the protected course assessment.</span></div>
+      </div>
+      <div class="academic-grid">
+        <article class="academic-panel" data-starting-point hidden>
+          <p class="eyebrow">Frontier result</p>
+          <h3>Your starting point</h3>
+          <p data-starting-summary>Professor Grey is building your learner starting point.</p>
+          <div class="dimension-list" data-starting-dimensions></div>
+          <p class="small-note">This is not a grade. It helps Grey choose examples, pacing, and questions without lowering the standard.</p>
+        </article>
+        <article class="academic-panel">
+          <p class="eyebrow">Student record</p>
+          <h3>Where you stand</h3>
+          <dl class="record-list">
+            <div><dt>Current course</dt><dd data-record-course>APSK 101</dd></div>
+            <div><dt>Course progress</dt><dd data-record-progress>0 of 3 complete</dd></div>
+            <div><dt>Assessment</dt><dd data-record-assessment>Not started</dd></div>
+            <div><dt>Passing standard</dt><dd>90%</dd></div>
+          </dl>
+        </article>
+      </div>
+    </section>
+
     <section class="card section" id="courses">
       <div class="section-head"><div><p class="eyebrow">Your program</p><h2>Course path</h2></div><p>Move through the current Foundation sequence. Grey teaches the enrolled course; official assessments stay protected from the teaching layer.</p></div>
       <div class="grid" data-course-grid></div>
@@ -94,20 +125,33 @@
     <section class="two-col" id="grey">
       <article class="card panel">
         <div class="grey-head"><div><p class="eyebrow">Faculty</p><h2>Professor Grey</h2></div><select data-course-select aria-label="Professor Grey course"><option>APSK 101</option><option>ANSY 110</option><option>EBPR 120</option></select></div>
-        <p class="small-note">Grey teaches and practices from student-safe University material. He will not reveal or coach protected test answers, keys, rubrics, or future assessment content.</p>
+        <p class="small-note">Grey teaches and practices from student-safe University material. He can also read context pragmatically — literal wording, implication, sarcasm, framing, and ambiguity — while Doctor/Rocketship checks whether the reasoning actually earns its conclusion. He will not reveal or coach protected test answers, keys, rubrics, or future assessment content.</p>
+        <div class="grey-tools"><button class="btn ghost" type="button" data-grey-practice>Give me a practice problem</button><button class="btn ghost" type="button" data-grey-readiness>Check my readiness</button></div>
         <div class="chat-log" data-grey-log aria-live="polite"><div class="msg grey"><strong>Professor Grey</strong><div>Choose your course. Tell me what you are working on, and we will work the reasoning instead of memorizing an answer.</div></div></div>
         <form class="chat-form" data-grey-form><textarea data-grey-input maxlength="3500" placeholder="Ask Professor Grey about this course…" required></textarea><button class="btn primary" type="submit">Ask Grey</button></form>
       </article>
 
       <article class="card panel" id="assessment">
         <div class="grey-head"><div><p class="eyebrow">Protected assessment</p><h2>Course assessment</h2></div><select class="assessment-select" data-course-select aria-label="Assessment course"><option>APSK 101</option><option>ANSY 110</option><option>EBPR 120</option></select></div>
-        <p class="small-note">Questions are delivered one at a time. Your response is graded server-side against private scoring material. The browser never receives the answer key or rubric.</p>
+        <p class="small-note">Questions are delivered one at a time. Your response is graded server-side against private scoring material. The browser never receives the answer key or rubric. The Foundation passing standard is 90%.</p>
         <div class="actions" style="justify-content:flex-start"><button class="btn" type="button" data-start-assessment>Start / Resume assessment</button></div>
         <div class="assessment-box" data-assessment-box><p>Select a course and start its official assessment when you are ready.</p></div>
         <hr style="border:0;border-top:1px solid rgba(214,161,75,.18);margin:18px 0">
         <p class="eyebrow">Latest recorded result</p><p data-last-result>No completed course assessment yet.</p>
         <p class="small-note" data-last-feedback>Course grades and safe feedback will appear here after an official assessment is graded.</p>
       </article>
+    </section>
+
+    <section class="card section" id="academic-rules">
+      <div class="section-head"><div><p class="eyebrow">Academic rules</p><h2>What counts here</h2></div><p>NBL University evaluates reasoning, not confidence, status, polished wording, or guessing what the instructor wants to hear.</p></div>
+      <div class="rules-grid">
+        <article><strong>90% standard</strong><p>Completion is earned under the published Foundation passing standard.</p></article>
+        <article><strong>Practice is for learning</strong><p>Use Grey, the workbook, reflections, and practice work before entering protected assessment.</p></article>
+        <article><strong>Protected means protected</strong><p>Grey may teach the concept but will not reveal, reconstruct, hint toward, or coach official answers, rubrics, keys, or future questions.</p></article>
+        <article><strong>Review can stay unresolved</strong><p>An unusual answer may be held for academic review instead of being forced into a fake score.</p></article>
+        <article><strong>Your record persists</strong><p>LOCKE and the Registrar rail preserve enrollment, submissions, progress, attempts, results, and completion state.</p></article>
+        <article><strong>No counterfeit weight</strong><p>NBLU is an independent educational/creative program. Its credential is not an accredited college degree or professional license.</p></article>
+      </div>
     </section>
   </div>
 </main>
