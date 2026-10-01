@@ -3,62 +3,82 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-  <title>NBL World | Inside New Beansland</title>
-  <meta name="description" content="NBL World is the inner world of New Beansland: NBL University, games, member experiences, and the future NBL store.">
+  <title>NBL World | New Beansland University</title>
+  <meta name="description" content="NBL World is the home of New Beansland University, Professor Grey, the student campus, and future interactive NBL experiences.">
   <meta name="robots" content="index,follow">
   <meta name="theme-color" content="#02060b">
   <link rel="canonical" href="https://nblworld.com/">
   <meta property="og:type" content="website">
-  <meta property="og:title" content="NBL World | Inside New Beansland">
-  <meta property="og:description" content="Welcome inside New Beansland.">
+  <meta property="og:title" content="NBL World | New Beansland University">
+  <meta property="og:description" content="Enter NBL World. New Beansland University is open.">
   <meta property="og:url" content="https://nblworld.com/">
   <meta property="og:image" content="https://nblworld.com/NBL_WORLD.png">
   <meta name="twitter:card" content="summary_large_image">
   <style>
-    :root{--night:#02060b;--navy:#071421;--gold:#d6a14b;--gold2:#f0c56f;--cream:#f5ead8;--soft:#cfc3ad;--line:rgba(214,161,75,.36)}
+    :root{--night:#02060b;--navy:#071421;--gold:#d6a14b;--gold2:#f0c56f;--cream:#f5ead8;--soft:#cfc3ad;--line:rgba(214,161,75,.36);--green:#84c59a}
     *{box-sizing:border-box}html,body{margin:0;min-height:100%;background:var(--night);color:var(--cream)}body{font-family:Arial,Helvetica,sans-serif;background:radial-gradient(circle at 50% 0,rgba(42,78,111,.26),transparent 42%),linear-gradient(180deg,#03101d,#02060b 62%)}
-    .hero{width:100%;background:#02060b;border-bottom:1px solid rgba(214,161,75,.32)}.hero img{display:block;width:100%;height:auto}
-    main{width:min(1220px,calc(100% - 24px));margin:0 auto;padding:clamp(22px,5vw,58px) 0 70px}.intro{text-align:center}.eyebrow{margin:0;color:var(--gold2);font-size:.72rem;font-weight:900;letter-spacing:.22em;text-transform:uppercase}h1{margin:10px 0 8px;color:var(--gold2);font:700 clamp(2.4rem,7vw,5rem)/.96 Georgia,"Times New Roman",serif}.sub{margin:0 auto;max-width:790px;color:#eee3d2;font:700 clamp(1rem,2.2vw,1.3rem)/1.55 Georgia,"Times New Roman",serif}
-    .world-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;margin-top:34px}.door{display:flex;flex-direction:column;min-height:290px;padding:22px;border:1px solid var(--line);border-radius:20px;background:linear-gradient(180deg,rgba(9,28,43,.94),rgba(4,15,25,.97));box-shadow:0 24px 66px rgba(0,0,0,.32)}.door.active{border-color:var(--gold2);box-shadow:0 24px 66px rgba(0,0,0,.38),inset 0 0 0 1px rgba(240,197,111,.14)}.tag{width:max-content;padding:6px 9px;border:1px solid rgba(214,161,75,.28);border-radius:999px;color:var(--gold2);font-size:.68rem;font-weight:900;letter-spacing:.12em;text-transform:uppercase}.door h2{margin:18px 0 8px;color:var(--gold2);font:700 1.65rem/1.05 Georgia,"Times New Roman",serif}.door p{margin:0;color:var(--soft);line-height:1.55}.door .action{margin-top:auto;padding-top:22px}.btn{display:inline-flex;min-height:46px;align-items:center;justify-content:center;padding:11px 17px;border:1px solid var(--gold2);border-radius:999px;color:var(--gold2);font-weight:900;text-decoration:none}.btn.primary{color:#101010;background:linear-gradient(180deg,#f3d994,#cf9630)}.btn.muted{border-color:rgba(255,255,255,.12);color:#8f8577;pointer-events:none}
-    .public-door{margin-top:18px;padding:20px;border:1px solid rgba(255,255,255,.09);border-radius:16px;background:rgba(0,0,0,.18);display:flex;align-items:center;justify-content:space-between;gap:16px}.public-door strong{display:block;color:var(--gold2);font-family:Georgia,serif}.public-door p{margin:5px 0 0;color:var(--soft);font-size:.86rem}.owner{margin:34px auto 0;text-align:center;color:#8f8577;font-size:.78rem;line-height:1.6}
-    @media(max-width:850px){.world-grid{grid-template-columns:1fr}.door{min-height:230px}}@media(max-width:620px){main{width:min(100% - 14px,1220px)}.public-door{align-items:flex-start;flex-direction:column}.public-door .btn{width:100%}}
+    .world-hero{width:100%;background:#02060b;border-bottom:1px solid rgba(214,161,75,.32)}.world-hero img{display:block;width:100%;height:auto}
+    main{width:min(1220px,calc(100% - 24px));margin:0 auto;padding:clamp(22px,5vw,58px) 0 54px}.eyebrow{margin:0;color:var(--gold2);font-size:.72rem;font-weight:900;letter-spacing:.22em;text-transform:uppercase}
+    .university-feature{padding:clamp(24px,5vw,52px);border:1px solid var(--gold2);border-radius:26px;background:radial-gradient(circle at 80% 0,rgba(214,161,75,.16),transparent 34%),linear-gradient(180deg,rgba(9,28,43,.97),rgba(4,15,25,.99));box-shadow:0 30px 90px rgba(0,0,0,.44),inset 0 0 0 1px rgba(240,197,111,.10)}
+    .university-feature h1{margin:10px 0 12px;color:var(--gold2);font:700 clamp(2.5rem,7vw,5.2rem)/.95 Georgia,"Times New Roman",serif}.university-feature .lead{max-width:890px;margin:0;color:#eee3d2;font:700 clamp(1rem,2.2vw,1.3rem)/1.55 Georgia,"Times New Roman",serif}
+    .proof{display:flex;flex-wrap:wrap;gap:8px;margin:20px 0}.proof span{padding:7px 10px;border:1px solid rgba(214,161,75,.28);border-radius:999px;color:var(--gold2);font-size:.72rem;font-weight:900}
+    .plans{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;margin-top:24px}.plan{display:flex;flex-direction:column;padding:19px;border:1px solid rgba(214,161,75,.24);border-radius:17px;background:rgba(0,0,0,.20)}.plan.featured{border-color:var(--gold2);background:linear-gradient(180deg,rgba(214,161,75,.12),rgba(0,0,0,.24));transform:translateY(-3px)}
+    .plan .tag{width:max-content;padding:5px 8px;border:1px solid rgba(214,161,75,.3);border-radius:999px;color:var(--gold2);font-size:.65rem;font-weight:900;letter-spacing:.1em;text-transform:uppercase}.plan h2{margin:12px 0 4px;color:var(--cream);font:700 1.45rem/1.08 Georgia,serif}.price{color:var(--gold2);font:800 2.15rem/1 Georgia,serif}.price small{font:700 .78rem/1 Arial,sans-serif;color:var(--soft)}.plan p{color:var(--soft);line-height:1.5;font-size:.84rem}.plan .action{margin-top:auto;padding-top:12px}
+    .btn{display:inline-flex;min-height:46px;align-items:center;justify-content:center;padding:11px 17px;border:1px solid var(--gold2);border-radius:999px;color:var(--gold2);font-weight:900;text-decoration:none}.btn.primary{color:#101010;background:linear-gradient(180deg,#f3d994,#cf9630)}
+    .full-note{margin:16px 0 0;color:var(--soft);font-size:.8rem;line-height:1.5}.full-note strong{color:var(--cream)}
+    .future{margin-top:26px}.future h2{margin:0 0 12px;color:var(--gold2);font:700 1.65rem Georgia,serif}.world-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}.door{padding:18px;border:1px solid rgba(255,255,255,.10);border-radius:16px;background:rgba(0,0,0,.18)}.door strong{color:var(--cream)}.door p{margin:6px 0 0;color:#8f8577;font-size:.82rem;line-height:1.5}
+    .quiet-link{margin:38px auto 0;text-align:center;font-size:.78rem;color:#7f776d}.quiet-link a{color:#a99c8b;text-underline-offset:3px}.owner{margin:16px auto 0;text-align:center;color:#625d55;font-size:.72rem;line-height:1.6}
+    @media(max-width:850px){.plans{grid-template-columns:1fr}.plan.featured{transform:none}.world-grid{grid-template-columns:1fr}}@media(max-width:620px){main{width:min(100% - 14px,1220px)}.university-feature{padding:22px 16px}.btn{width:100%}}
   </style>
 </head>
 <body>
-<header class="hero" aria-label="NBL World"><img src="/NBL_WORLD.png" alt="NBL World — the official world of New Beansland"></header>
+<header class="world-hero" aria-label="NBL World"><img src="/NBL_WORLD.png" alt="NBL World — the official world of New Beansland"></header>
+
 <main>
-  <section class="intro">
-    <p class="eyebrow">New Beansland presents</p>
-    <h1>Welcome inside.</h1>
-    <p class="sub">NewBeansland.org is the public front door. NBL World is where the deeper experiences live — beginning with the University, with games, commerce, and more opening as they are actually built.</p>
+  <section class="university-feature" aria-labelledby="nblu-title">
+    <p class="eyebrow">The main door inside NBL World</p>
+    <h1 id="nblu-title">New Beansland University</h1>
+    <p class="lead">The school is here. Professor Grey teaches here. LOCKE protects the doors, student records, assessments, and progression. Begin with the finished Foundation now, or commit to the full NBLU path as each later stage is completed and released in sequence.</p>
+    <div class="proof"><span>Professor Grey</span><span>LOCKE Registrar</span><span>Protected assessments</span><span>90% Foundation standard</span><span>Persistent academic record</span></div>
+
+    <div class="plans" aria-label="NBL University enrollment options">
+      <article class="plan">
+        <span class="tag">Start here</span>
+        <h2>Foundation</h2>
+        <div class="price">$29.99 <small>one time</small></div>
+        <p>The finished three-course Foundation in Applied Discernment with its current course materials and completion path.</p>
+        <div class="action"><a class="btn" href="/university.html#enroll">See Foundation</a></div>
+      </article>
+
+      <article class="plan">
+        <span class="tag">Guided Foundation</span>
+        <h2>Foundation + Grey</h2>
+        <div class="price">$49.99 <small>one time</small></div>
+        <p>The current Foundation plus 31 days of Professor Grey / Virgo Guided Learning. The existing first-month NBL Chat Plus benefit remains on the separate NewBeansland.org Chat side.</p>
+        <div class="action"><a class="btn" href="/university.html#enroll">See Guided Foundation</a></div>
+      </article>
+
+      <article class="plan featured">
+        <span class="tag">Full NBLU</span>
+        <h2>Full NBLU Experience</h2>
+        <div class="price">$149.99 <small>one time</small></div>
+        <p>The complete planned 12-course / 8-book NBLU journey, released stage by stage as it is finished, plus six months of Professor Grey / Guided Learning.</p>
+        <div class="action"><a class="btn primary" href="/university.html#enroll">Enter Full NBLU</a></div>
+      </article>
+    </div>
+
+    <p class="full-note"><strong>Full NBLU does not unlock unfinished work early.</strong> The current Foundation opens now. Later courses, eBooks, and two-book physical stage packs release only when those stages are completed and approved. Physical-book shipping is charged separately. After the included six months of guided access, verified Full NBLU owners can continue Professor Grey for $14.99/month.</p>
   </section>
 
-  <section class="world-grid" aria-label="NBL World doors">
-    <article class="door active">
-      <span class="tag">Open for enrolled students</span>
-      <h2>NBL University</h2>
-      <p>Your actual student campus: course path, secure digital materials, Professor Grey, protected assessments, progress, and academic record. University enrollment is separate from NBL Chat Plus.</p>
-      <div class="action"><a class="btn primary" href="/university.html">Enter the campus</a></div>
-    </article>
-    <article class="door">
-      <span class="tag">In development</span>
-      <h2>NBL Games</h2>
-      <p>The games and interactive parts of New Beansland will live here as they become ready for the world.</p>
-      <div class="action"><span class="btn muted">Coming later</span></div>
-    </article>
-    <article class="door">
-      <span class="tag">Planned</span>
-      <h2>NBL Store</h2>
-      <p>The larger NBL World shopping experience is reserved for the future store/Shopify phase. Nothing here pretends checkout is live before it is.</p>
-      <div class="action"><span class="btn muted">Store coming later</span></div>
-    </article>
+  <section class="future" aria-labelledby="future-title">
+    <h2 id="future-title">More of NBL World</h2>
+    <div class="world-grid">
+      <article class="door"><strong>NBL Games</strong><p>Interactive NBL experiences will open here when they are actually ready.</p></article>
+      <article class="door"><strong>NBL Store</strong><p>The larger NBL World commerce room stays reserved for the future store phase.</p></article>
+    </div>
   </section>
 
-  <section class="public-door">
-    <div><strong>Looking for the public New Beansland site?</strong><p>Books, stories, Founder’s Office, NBL Chat, NBL Kids, clothing, and the public world remain at NewBeansland.org.</p></div>
-    <a class="btn" href="https://newbeansland.org/">Go to New Beansland</a>
-  </section>
-
+  <p class="quiet-link">Looking for regular Beans, books, stories, clothing, NBL Kids, or the public world? <a href="https://newbeansland.org/">Visit New Beansland</a>.</p>
   <p class="owner">Created and owned by Jamel Hawkins · Founder, New Beansland<br>© 2026 Jamel Hawkins · New Beansland™ · NBL World</p>
 </main>
 </body>
