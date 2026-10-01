@@ -7,8 +7,8 @@
   <meta name="description" content="The enrolled-student campus for New Beansland University: courses, secure student materials, Professor Grey, progress, and protected assessments.">
   <meta name="theme-color" content="#02060b">
   <link rel="canonical" href="https://nblworld.com/university.html">
-  <link rel="stylesheet" href="/university.css?v=20260930-academic2">
-  <script defer src="/university.js?v=20260930-academic2"></script>
+  <link rel="stylesheet" href="/university.css?v=20261001-academic3">
+  <script defer src="/university.js?v=20261001-academic3"></script>
 </head>
 <body>
 <header class="site-head">
@@ -60,7 +60,7 @@
       <div class="progress-card">
         <div class="progress-row"><span>Foundation progress</span><span data-progress-label>0%</span></div>
         <div class="progress-track" aria-label="Foundation progress"><div class="progress-fill" data-progress-fill></div></div>
-        <p class="small-note">Current three-course Foundation sequence. New courses are added only when they are actually finished and approved.</p>
+        <p class="small-note">Current three-course Foundation sequence · approximately 9 hours of engaged learning total · self-paced. The time estimate is a planning guide, not seat time or academic credit. New courses are added only when they are actually finished and approved.</p>
       </div>
     </section>
 
@@ -95,9 +95,31 @@
       </div>
     </section>
 
+    <section class="card section" id="course-expectations">
+      <div class="section-head"><div><p class="eyebrow">Syllabus at a glance</p><h2>What each course expects</h2></div><p>The Foundation is designed around roughly three hours of engaged learning per course. You are not graded for sitting in a chair; you advance by doing the work and meeting the academic standard.</p></div>
+      <div class="rules-grid">
+        <article><strong>Learn</strong><p>Read the approved course material and use the workbook as the working surface for the ideas.</p></article>
+        <article><strong>Practice</strong><p>Use low-stakes workbook work and Professor Grey before the protected assessment. Practice is for learning, not for padding a grade.</p></article>
+        <article><strong>Submit</strong><p>When course work calls for a workbook response, practice, reflection, or project, save it to your Registrar record.</p></article>
+        <article><strong>Check readiness</strong><p>Grey can tell you what looks solid, what needs another pass, and give you a fresh practice problem without exposing a test question.</p></article>
+        <article><strong>Assess</strong><p>Official assessment is separate from teaching. A course is not complete until its protected assessment clears the published 90% standard.</p></article>
+        <article><strong>Take the time you need</strong><p>About three engaged hours per course is the planning target. Faster or slower is fine; mastery and completion, not a stopwatch, control advancement.</p></article>
+      </div>
+    </section>
+
     <section class="card section" id="courses">
       <div class="section-head"><div><p class="eyebrow">Your program</p><h2>Course path</h2></div><p>Move through the current Foundation sequence. Grey teaches the enrolled course; official assessments stay protected from the teaching layer.</p></div>
       <div class="grid" data-course-grid></div>
+    </section>
+
+    <section class="card section" id="gradebook">
+      <div class="section-head"><div><p class="eyebrow">Registrar</p><h2>Gradebook</h2></div><p>Your student-safe record shows only your own course status, attempt number, score, and recorded date. Keys, rubrics, grader notes, and protected review logic stay private.</p></div>
+      <div class="gradebook-wrap">
+        <table class="gradebook">
+          <thead><tr><th>Course</th><th>Status</th><th>Attempt</th><th>Score</th><th>Recorded</th></tr></thead>
+          <tbody data-gradebook-body><tr><td colspan="5">No course results recorded yet.</td></tr></tbody>
+        </table>
+      </div>
     </section>
 
     <section class="card section" id="library">
@@ -140,6 +162,45 @@
         <p class="eyebrow">Latest recorded result</p><p data-last-result>No completed course assessment yet.</p>
         <p class="small-note" data-last-feedback>Course grades and safe feedback will appear here after an official assessment is graded.</p>
       </article>
+    </section>
+
+    <section class="card section" id="community">
+      <div class="section-head"><div><p class="eyebrow">Class community</p><h2>Opt-in scoreboard</h2></div><p>No one appears here by default. You choose whether to join and which progress details classmates can see.</p></div>
+      <div class="community-grid">
+        <form class="academic-panel community-settings" data-community-form>
+          <h3>Your community settings</h3>
+          <label>Display name<input data-community-name maxlength="80" placeholder="Optional public class name"></label>
+          <label class="check-row"><input type="checkbox" data-community-optin> Join the class scoreboard</label>
+          <label class="check-row"><input type="checkbox" data-community-rank checked> Show my weekly rank</label>
+          <label class="check-row"><input type="checkbox" data-community-progress checked> Show my Foundation progress</label>
+          <label class="check-row"><input type="checkbox" data-community-badges checked> Show completed-course count</label>
+          <div class="actions" style="justify-content:flex-start"><button class="btn" type="submit">Save community settings</button></div>
+          <p class="small-note" data-community-status>Your Clerk ID and private student record are never shown to classmates.</p>
+        </form>
+        <div class="academic-panel">
+          <h3>This week's class board</h3>
+          <div class="community-list" data-community-list><p class="small-note">Loading opted-in classmates…</p></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="card section" id="student-support">
+      <div class="section-head"><div><p class="eyebrow">Student support</p><h2>Access and academic review</h2></div><p>Real structure also means telling students what happens when the format gets in the way or when a recorded result needs another look.</p></div>
+      <div class="support-grid">
+        <article class="academic-panel">
+          <h3>Access / accommodation</h3>
+          <p>If a course format, device limitation, reading presentation, timing issue, or other access barrier is stopping you from doing the work, contact New Beansland at <a href="mailto:founder@newbeansland.org?subject=NBLU%20Access%20Support">founder@newbeansland.org</a>. NBLU can review format, timing, or workflow adjustments case by case where technically feasible without lowering the academic standard or exposing protected assessment material.</p>
+          <p class="small-note">Do not send passwords, payment-card data, or unnecessary medical details in an access request.</p>
+        </article>
+        <form class="academic-panel review-form" data-review-form>
+          <h3>Request academic review</h3>
+          <p>If you believe a recorded course result misunderstood your reasoning, you can put a review request directly into your Registrar record.</p>
+          <label>Course<select data-review-course><option>APSK 101</option><option>ANSY 110</option><option>EBPR 120</option></select></label>
+          <label>What should be reviewed?<textarea data-review-reason maxlength="6000" placeholder="Explain what you believe should be looked at again." required></textarea></label>
+          <button class="btn" type="submit">Submit review request</button>
+          <p class="small-note" data-review-status>Academic review is not an automatic retake and does not guarantee a changed result. If an unusual answer is already pending final review, you do not need to submit another request.</p>
+        </form>
+      </div>
     </section>
 
     <section class="card section" id="academic-rules">
