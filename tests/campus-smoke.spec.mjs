@@ -22,4 +22,10 @@ test("University campus loads with a protected enrollment gate",async({page})=>{
   await expect(page.locator("body")).toContainText("Course assessment");
   await expect(page.locator("body")).toContainText("Your course work");
   await expect(page.locator("body")).toContainText("Registrar rail");
+  await expect(page.locator("body")).toContainText("Gradebook");
+  await expect(page.locator("body")).toContainText("approximately 9 hours of engaged learning total");
+  await expect(page.locator("body")).toContainText("What each course expects");
+  await expect(page.locator("body")).toContainText("Opt-in scoreboard");
+  await expect(page.locator("body")).toContainText("Access / accommodation");
+  await expect(page.locator("body")).toContainText("Request academic review");
 });
