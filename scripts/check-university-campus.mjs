@@ -15,8 +15,8 @@ need(home,"Full NBLU Experience","NBL World does not feature Full NBLU.");
 need(home,'$149.99',"NBL World does not show the Full NBLU price.");
 need(home,"regular Beans","NBL World does not preserve the Chat / University surface boundary.");
 need(home,"Visit New Beansland","The quiet public New Beansland handoff is missing.");
-if(!(home.indexOf('src="/NBL_WORLD.png"') < home.indexOf("New Beansland University") &&
-     home.indexOf("New Beansland University") < home.lastIndexOf("Visit New Beansland"))){
+if(!(home.indexOf('src="/NBL_WORLD.png"') < home.indexOf('<h1 id="nblu-title">New Beansland University</h1>') &&
+     home.indexOf('<h1 id="nblu-title">New Beansland University</h1>') < home.lastIndexOf("Visit New Beansland"))){
   errors.push("NBL World hierarchy must be hero image -> University -> quiet New Beansland handoff.");
 }
 need(html,"LOCKE opens the classroom only when that account has University enrollment.","Campus enrollment gate is missing.");
