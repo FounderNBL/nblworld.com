@@ -9,9 +9,26 @@ const errors=[];
 const need=(source,text,msg)=>{if(!source.includes(text))errors.push(msg);};
 const forbid=(source,text,msg)=>{if(source.includes(text))errors.push(msg);};
 
-need(home,'href="/university.html"',"NBL World home does not open the University campus.");
-need(home,"University enrollment is separate from NBL Chat Plus.","Home does not state the Chat / University separation.");
+need(home,'src="/NBL_WORLD.png"',"NBL World hero image is missing.");
+need(home,'href="/university.html#enroll"',"NBL World home does not route enrollment into its University.");
+need(home,"Full NBLU Experience","NBL World does not feature Full NBLU.");
+need(home,'$149.99',"NBL World does not show the Full NBLU price.");
+need(home,"regular Beans","NBL World does not preserve the Chat / University surface boundary.");
+need(home,"Visit New Beansland","The quiet public New Beansland handoff is missing.");
+if(!(home.indexOf('src="/NBL_WORLD.png"') < home.indexOf("New Beansland University") &&
+     home.indexOf("New Beansland University") < home.lastIndexOf("Visit New Beansland"))){
+  errors.push("NBL World hierarchy must be hero image -> University -> quiet New Beansland handoff.");
+}
 need(html,"LOCKE opens the classroom only when that account has University enrollment.","Campus enrollment gate is missing.");
+need(html,'id="enroll"',"NBL World enrollment section is missing.");
+need(html,'data-nblu-checkout="foundation"',"Foundation checkout is missing from NBL World.");
+need(html,'data-nblu-checkout="full_foundation"',"Guided Foundation checkout is missing from NBL World.");
+need(html,'data-nblu-checkout="full_nblu"',"Full NBLU checkout is missing from NBL World.");
+need(html,'data-nblu-checkout="nblu_continuation"',"Full NBLU owner continuation control is missing.");
+need(html,"$149.99","Full NBLU price is missing from the campus.");
+need(html,"$14.99/month","Owner continuation price is missing from the campus.");
+need(html,"shipping charged separately","Staged physical-book shipping disclosure is missing.");
+forbid(html,'href="https://newbeansland.org/university.html"',"Campus still sends enrollment back to the public New Beansland site.");
 need(html,"Your digital materials","Student library is missing.");
 need(html,"Professor Grey","Professor Grey faculty panel is missing.");
 need(html,"Course assessment","Protected assessment panel is missing.");
@@ -36,6 +53,11 @@ need(js,'action:"frontier_start"',"Frontier start API call is missing.");
 need(js,'action:"frontier_submit"',"Frontier submit API call is missing.");
 need(js,"renderFrontier","Frontier campus gate rendering is missing.");
 
+need(js,'BILLING_API="https://tvypdakofcrlvnwporhh.supabase.co/functions/v1/nbl-billing-link"',"Authenticated University billing endpoint is missing.");
+need(js,'["foundation","full_foundation","full_nblu","nblu_continuation"]',"Expected University checkout plans are not whitelisted.");
+need(js,"trustedBillingDestination","Stripe destination allowlist is missing.");
+need(js,'location.href=destination',"University checkout does not hand off to validated Stripe.");
+forbid(js,"https://buy.stripe.com/","Raw Stripe links must not be embedded in campus JavaScript.");
 need(js,'action:"university_status"',"Campus status API call is missing.");
 need(js,'action:"university_material"',"Secure material reader API call is missing.");
 need(js,'action:"grey"',"Professor Grey API call is missing.");
@@ -61,4 +83,4 @@ for(const bad of ["answer_key","grading_payload","rubricText","PROTECTED RUBRIC"
 }
 
 if(errors.length){console.error("[nbl-world-campus] FAIL");errors.forEach(e=>console.error("- "+e));process.exit(1);}
-console.log("[nbl-world-campus] PASS: NBL World campus has enrollment gating, Frontier Baseline, course expectations, student-safe gradebook, Registrar coursework/review, opt-in community, access support, learner-adaptive Grey, protected assessments, shared identity, and public-secret guards.");
+console.log("[nbl-world-campus] PASS: NBL World leads with its world image and University, authenticated Full NBLU pricing is wired here, the New Beansland handoff is quiet/last, and the campus academic/security rails remain intact.");
