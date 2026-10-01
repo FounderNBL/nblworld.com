@@ -42,6 +42,15 @@ need(html,"Request academic review","Student academic-review surface is missing.
 need(html,"data-student-number","Student-number display is missing.");
 need(js,'action:"university_submissions"',"Student submission listing is missing.");
 need(js,'action:"university_submit_work"',"Student coursework submission action is missing.");
+need(html,"PDF for TEST","TEST PDF intake surface is missing.");
+need(html,'data-coursework-pdf',"TEST PDF picker is missing.");
+need(js,'action:"university_submit_pdf"',"TEST PDF backend action is missing from campus.");
+need(js,"universityPdfPayload","Secure TEST PDF client validation is missing.");
+need(js,"renderAfterGrey","After Grey rendering is missing.");
+need(js,'action:"after_grey"',"After Grey backend action is missing from campus.");
+need(html,"After Grey","After Grey campus seat is missing.");
+need(css,".after-grey-card","After Grey styling is missing.");
+need(css,".submission-attachment","TEST PDF submission styling is missing.");
 need(js,"renderSubmissions","Safe submission rendering is missing.");
 need(js,'a.status==="review_pending"',"Pending academic-review UI is missing.");
 need(js,"Pending final academic review","Pending academic-review message is missing.");
