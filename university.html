@@ -7,8 +7,8 @@
   <meta name="description" content="The enrolled-student campus for New Beansland University: courses, secure student materials, Professor Grey, progress, and protected assessments.">
   <meta name="theme-color" content="#02060b">
   <link rel="canonical" href="https://nblworld.com/university.html">
-  <link rel="stylesheet" href="/university.css?v=20261001-fullnblu1">
-  <script defer src="/university.js?v=20261001-fullnblu1"></script>
+  <link rel="stylesheet" href="/university.css?v=20261001-testpdfag1">
+  <script defer src="/university.js?v=20261001-testpdfag1"></script>
 </head>
 <body>
 <header class="site-head">
@@ -169,13 +169,14 @@
     </section>
 
     <section class="card section" id="coursework">
-      <div class="section-head"><div><p class="eyebrow">Registrar rail</p><h2>Your course work</h2></div><p>Save workbook responses, practice, reflections, or projects to your student record. Official assessments remain in the protected assessment room below.</p></div>
+      <div class="section-head"><div><p class="eyebrow">Registrar rail · TEST intake</p><h2>Your course work</h2></div><p>Write or paste your work, or hand TEST a PDF to read and check before the Registrar records it. Official assessments remain in the protected assessment room below.</p></div>
       <div class="coursework-grid">
         <form class="coursework-form" data-coursework-form>
           <label>Course<select data-course-select aria-label="Course work course"><option>APSK 101</option><option>ANSY 110</option><option>EBPR 120</option></select></label>
           <label>Work type<select data-coursework-type><option value="workbook">Workbook</option><option value="practice">Practice</option><option value="reflection">Reflection</option><option value="project">Project</option></select></label>
           <label>Title<input data-coursework-title maxlength="180" placeholder="Optional title"></label>
-          <label class="wide">Your work<textarea data-coursework-content maxlength="20000" placeholder="Write or paste your course work here." required></textarea></label>
+          <label class="wide">Your work or note<textarea data-coursework-content maxlength="20000" placeholder="Write or paste your course work here, or add an optional note if you are attaching a PDF."></textarea></label>
+          <label class="wide file-field">PDF for TEST · optional<input type="file" data-coursework-pdf accept="application/pdf,.pdf"><span>PDF only · up to 4 MB. TEST reads/checks the document and the Registrar records the extracted student work. The temporary OpenAI file copy is deleted after intake; the original PDF itself is not retained by this rail.</span></label>
           <div class="wide actions coursework-actions"><button class="btn primary" type="submit">Submit to my record</button><span class="small-note" data-coursework-status>Nothing is submitted until you press the button.</span></div>
         </form>
         <div>
@@ -203,6 +204,14 @@
         <p class="eyebrow">Latest recorded result</p><p data-last-result>No completed course assessment yet.</p>
         <p class="small-note" data-last-feedback>Course grades and safe feedback will appear here after an official assessment is graded.</p>
       </article>
+    </section>
+
+    <section class="card section" id="after-grey">
+      <div class="section-head"><div><p class="eyebrow">Post-class handoff</p><h2>After Grey</h2></div><p>This seat opens after a course is passed. It does not re-grade Grey or change the Registrar record; it tells you what to carry forward and where you go next.</p></div>
+      <div class="after-grey-card" data-after-grey>
+        <p class="small-note">Choose a course. After Grey will open when that course clears the official assessment.</p>
+      </div>
+      <div class="actions" style="justify-content:flex-start"><button class="btn ghost" type="button" data-after-grey-refresh>Check After Grey</button></div>
     </section>
 
     <section class="card section" id="community">
