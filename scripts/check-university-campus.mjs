@@ -16,6 +16,12 @@ need(html,"Your digital materials","Student library is missing.");
 need(html,"Professor Grey","Professor Grey faculty panel is missing.");
 need(html,"Course assessment","Protected assessment panel is missing.");
 need(html,"Your course work","Registrar coursework room is missing.");
+need(html,"Gradebook","Gradebook is missing.");
+need(html,"approximately 9 hours of engaged learning total","Foundation learning-time guidance is missing.");
+need(html,"What each course expects","Student-facing course expectations are missing.");
+need(html,"Opt-in scoreboard","Opt-in class community is missing.");
+need(html,"Access / accommodation","Student access-support policy is missing.");
+need(html,"Request academic review","Student academic-review surface is missing.");
 need(html,"data-student-number","Student-number display is missing.");
 need(js,'action:"university_submissions"',"Student submission listing is missing.");
 need(js,'action:"university_submit_work"',"Student coursework submission action is missing.");
@@ -35,9 +41,16 @@ need(js,'action:"university_material"',"Secure material reader API call is missi
 need(js,'action:"grey"',"Professor Grey API call is missing.");
 need(js,'action:"assessment_start"',"Assessment start API call is missing.");
 need(js,'action:"assessment_submit"',"Assessment submit API call is missing.");
+need(js,'action:"academic_review_request"',"Academic review request API call is missing.");
+need(js,'action:"university_community"',"University community API call is missing.");
+need(js,'action:"university_community_update"',"University community settings API call is missing.");
+need(js,"renderGradebook","Student-safe gradebook rendering is missing.");
+need(js,"renderCommunity","Class community rendering is missing.");
 need(js,"clerk.session.getToken()","Clerk bearer identity is missing.");
 need(css,".reader{","Secure reader styling is missing.");
 need(css,".frontier{","Frontier Check styling is missing.");
+need(css,".gradebook{","Gradebook styling is missing.");
+need(css,".community-grid","Community styling is missing.");
 
 for(const secret of ["SUPABASE_SERVICE_ROLE_KEY","OPENAI_API_KEY","STRIPE_SECRET_KEY","sk-proj-","sk_live_"]){
   forbid(html,secret,`Private secret marker in university.html: ${secret}`);
@@ -48,4 +61,4 @@ for(const bad of ["answer_key","grading_payload","rubricText","PROTECTED RUBRIC"
 }
 
 if(errors.length){console.error("[nbl-world-campus] FAIL");errors.forEach(e=>console.error("- "+e));process.exit(1);}
-console.log("[nbl-world-campus] PASS: NBL World campus has enrollment gating, Frontier Baseline, Registrar student/coursework UI, student library, learner-adaptive Grey, protected assessments, shared identity, and public-secret guards.");
+console.log("[nbl-world-campus] PASS: NBL World campus has enrollment gating, Frontier Baseline, course expectations, student-safe gradebook, Registrar coursework/review, opt-in community, access support, learner-adaptive Grey, protected assessments, shared identity, and public-secret guards.");
