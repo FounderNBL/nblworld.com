@@ -49,6 +49,20 @@ async function api(body){
   if(!response.ok){const e=new Error(payload?.message||"NBL University is temporarily unavailable.");e.status=response.status;e.code=payload?.code;e.payload=payload;throw e;}
   return payload;
 }
+
+async function universityPdfPayload(file){
+  if(!file)return null;
+  if(file.type&&file.type!=="application/pdf")throw new Error("TEST only accepts PDF files here.");
+  if(file.size<1)throw new Error("That PDF is empty.");
+  if(file.size>4*1024*1024)throw new Error("University PDF submissions are limited to 4 MB.");
+  const bytes=new Uint8Array(await file.arrayBuffer());
+  const magic=new TextDecoder().decode(bytes.subarray(0,5));
+  if(magic!=="%PDF-")throw new Error("That file does not appear to be a real PDF.");
+  let binary="";
+  const step=0x8000;
+  for(let i=0;i<bytes.length;i+=step)binary+=String.fromCharCode(...bytes.subarray(i,Math.min(bytes.length,i+step)));
+  return {name:file.name||"student-work.pdf",mime:"application/pdf",data:btoa(binary)};
+}
 async function billingApi(body){
   const token=await authToken();
   if(!token){const e=new Error("Sign in with your NBL account before enrollment.");e.status=401;throw e;}
@@ -308,7 +322,7 @@ function renderUniversity(u){
   const pct=progressPercent(u);$("[data-progress-label]").textContent=pct+"%";$("[data-progress-fill]").style.width=pct+"%";
   const current=(u.courses||[]).find(x=>x.current)||(u.courses||[]).find(x=>!x.completed)||(u.courses||[])[0];if(current)state.course=current.code;
   renderCourses(u);renderLibrary(u);syncCourse();renderStartingPoint(u);renderStudentRecord(u);renderGradebook(u);
-  void loadSubmissions();void loadCommunity();
+  void loadSubmissions();void loadCommunity();void loadAfterGrey();
   const p=u.progress||{};
   $("[data-last-result]").textContent=p.assessment_result?(`${p.assessment_result}${p.assessment_score!==null&&p.assessment_score!==undefined?" · "+p.assessment_score+"%":""}`):"No completed course assessment yet.";
   $("[data-last-feedback]").textContent=p.safe_feedback||"Course grades and safe feedback will appear here after an official assessment is graded.";
@@ -335,6 +349,23 @@ function renderSubmissions(rows){
     const when=row.submitted_at?new Date(row.submitted_at).toLocaleString():"Saved";
     meta.textContent=(row.course_code||state.course)+" · "+String(row.submission_type||"work").replaceAll("_"," ")+" · "+when;
     card.append(head,meta);
+    if(row.attachment?.filename){
+      const attachment=document.createElement("div");attachment.className="submission-attachment";
+      const line=document.createElement("strong");line.textContent="PDF · "+row.attachment.filename;
+      const detail=document.createElement("span");
+      const size=Number(row.attachment.sizeBytes||0);
+      detail.textContent="TEST: "+String(row.attachment.status||"readable").replaceAll("_"," ")+(size?" · "+Math.max(1,Math.round(size/1024))+" KB":"");
+      attachment.append(line,detail);
+      if(row.attachment.note){
+        const note=document.createElement("p");note.textContent=row.attachment.note;attachment.appendChild(note);
+      }
+      if(Array.isArray(row.attachment.warnings)&&row.attachment.warnings.length){
+        const warnings=document.createElement("ul");
+        for(const warning of row.attachment.warnings){const li=document.createElement("li");li.textContent=warning;warnings.appendChild(li);}
+        attachment.appendChild(warnings);
+      }
+      card.appendChild(attachment);
+    }
     if(row.safe_feedback){
       const feedback=document.createElement("p");feedback.textContent=row.safe_feedback;card.appendChild(feedback);
     }
@@ -355,23 +386,66 @@ async function submitCourseWork(event){
   event.preventDefault();
   const form=event.currentTarget,button=form.querySelector('button[type="submit"]'),status=$("[data-coursework-status]");
   const content=$("[data-coursework-content]").value.trim();
-  if(!content)return;
-  button.disabled=true;status.textContent="Submitting to your student record…";
+  const file=$("[data-coursework-pdf]")?.files?.[0]||null;
+  if(!content&&!file){status.textContent="Write some course work or attach a PDF for TEST.";return;}
+  button.disabled=true;
   try{
-    const payload=await api({
-      action:"university_submit_work",
+    let payload;
+    const common={
       courseCode:state.course,
       submissionType:$("[data-coursework-type]").value,
       title:$("[data-coursework-title]").value.trim(),
-      content,
       clientSubmissionKey:globalThis.crypto?.randomUUID?.()||("work-"+Date.now())
-    });
-    status.textContent="Submitted. Elara's Registrar rail has it.";
+    };
+    if(file){
+      status.textContent="TEST is reading and checking your PDF…";
+      const pdf=await universityPdfPayload(file);
+      payload=await api({...common,action:"university_submit_pdf",note:content,file:pdf});
+    }else{
+      status.textContent="Submitting to your student record…";
+      payload=await api({...common,action:"university_submit_work",content});
+    }
+    status.textContent=payload?.submission?.attachment
+      ?"Submitted. TEST checked the PDF and Elara's Registrar rail has the extracted work."
+      :"Submitted. Elara's Registrar rail has it.";
     $("[data-coursework-content]").value="";
     $("[data-coursework-title]").value="";
+    if($("[data-coursework-pdf]"))$("[data-coursework-pdf]").value="";
     await loadSubmissions();
   }catch(error){status.textContent=error.message||"Course work could not be submitted.";}
   finally{button.disabled=false;}
+}
+
+function renderAfterGrey(payload){
+  const host=$("[data-after-grey]");if(!host)return;
+  host.replaceChildren();
+  const heading=document.createElement("h3");
+  const text=document.createElement("p");
+  if(!payload?.ready){
+    heading.textContent="Not open yet";
+    text.textContent=payload?.message||"After Grey opens when this course is passed.";
+    host.append(heading,text);return;
+  }
+  heading.textContent=payload?.course?.code+" complete";
+  text.textContent=payload?.message||"Grey's part in this course is complete.";
+  host.append(heading,text);
+  if(Array.isArray(payload?.carryForward)&&payload.carryForward.length){
+    const label=document.createElement("strong");label.textContent="Carry forward";
+    const list=document.createElement("ul");
+    for(const item of payload.carryForward){const li=document.createElement("li");li.textContent=item;list.appendChild(li);}
+    host.append(label,list);
+  }
+  if(payload?.nextCourse){
+    const next=document.createElement("p");next.className="after-grey-next";next.textContent="Next door: "+payload.nextCourse.code+" · "+payload.nextCourse.title;host.appendChild(next);
+  }else if(payload?.programComplete){
+    const done=document.createElement("p");done.className="after-grey-next";done.textContent="Current Foundation sequence complete. The Registrar keeps the official completion state.";host.appendChild(done);
+  }
+}
+async function loadAfterGrey(){
+  const host=$("[data-after-grey]");if(!host)return;
+  host.innerHTML='<p class="small-note">Checking the post-class handoff…</p>';
+  try{const payload=await api({action:"after_grey",courseCode:state.course});renderAfterGrey(payload);}
+  catch(error){host.innerHTML="";const p=document.createElement("p");p.className="small-note";p.textContent=error.message||"After Grey could not load.";host.appendChild(p);}
 }
 
 function appendGrey(role,text){
@@ -453,7 +527,8 @@ async function boot(){
   $("[data-community-form]")?.addEventListener("submit",saveCommunity);
   $("[data-review-form]")?.addEventListener("submit",submitReviewRequest);
   $("[data-coursework-refresh]").addEventListener("click",loadSubmissions);
-  $("[data-course-select]").forEach(el=>el.addEventListener("change",e=>{state.course=e.target.value;syncCourse();renderAssessment(null);void loadSubmissions();}));
+  $("[data-after-grey-refresh]")?.addEventListener("click",loadAfterGrey);
+  $("[data-course-select]").forEach(el=>el.addEventListener("change",e=>{state.course=e.target.value;syncCourse();renderAssessment(null);void loadSubmissions();void loadAfterGrey();}));
   $("[data-start-assessment]").addEventListener("click",startAssessment);
   $("[data-grey-practice]")?.addEventListener("click",startPractice);
   $("[data-grey-readiness]")?.addEventListener("click",checkReadiness);
