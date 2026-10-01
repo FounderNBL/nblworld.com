@@ -7,14 +7,14 @@
   <meta name="description" content="The enrolled-student campus for New Beansland University: courses, secure student materials, Professor Grey, progress, and protected assessments.">
   <meta name="theme-color" content="#02060b">
   <link rel="canonical" href="https://nblworld.com/university.html">
-  <link rel="stylesheet" href="/university.css?v=20261001-academic3">
-  <script defer src="/university.js?v=20261001-academic3"></script>
+  <link rel="stylesheet" href="/university.css?v=20261001-fullnblu1">
+  <script defer src="/university.js?v=20261001-fullnblu1"></script>
 </head>
 <body>
 <header class="site-head">
   <a class="brand" href="/"><span class="brand-mark">NBL U</span><span><strong>New Beansland University</strong><small>NBL World Student Campus</small></span></a>
   <nav class="nav" aria-label="Campus navigation">
-    <a href="/">NBL World</a><a href="https://newbeansland.org/">New Beansland</a>
+    <a href="/">NBL World</a>
     <button type="button" data-signin>Sign in</button><button type="button" data-signout hidden>Sign out</button>
   </nav>
 </header>
@@ -26,11 +26,52 @@
 </section>
 
 <main class="campus-shell">
+  <section class="card section enrollment" id="enroll">
+    <div class="section-head"><div><p class="eyebrow">NBL University enrollment</p><h2>Choose how far you want to go.</h2></div><p>The current Foundation is ready now. Full NBLU is a commitment to the larger 12-course / 8-book school as later stages are actually completed and released — never an early unlock of unfinished material.</p></div>
+    <div class="enrollment-grid">
+      <article class="enrollment-plan">
+        <span class="enrollment-tag">Foundation</span>
+        <h3>Foundation Program</h3>
+        <div class="enrollment-price">$29.99 <small>one time</small></div>
+        <p>The finished three-course Foundation in Applied Discernment. Approximately nine engaged learning hours, current digital materials, physical Foundation books, coursework, protected assessments, records, and completion path.</p>
+        <button class="btn" type="button" data-nblu-checkout="foundation">Enroll in Foundation</button>
+      </article>
+
+      <article class="enrollment-plan">
+        <span class="enrollment-tag">Guided</span>
+        <h3>Guided Foundation</h3>
+        <div class="enrollment-price">$49.99 <small>one time</small></div>
+        <p>The current Foundation plus 31 days of Professor Grey / Virgo Guided Learning. It also preserves the existing first-month NBL Chat Plus benefit, used separately on NewBeansland.org.</p>
+        <button class="btn" type="button" data-nblu-checkout="full_foundation">Choose Guided Foundation</button>
+      </article>
+
+      <article class="enrollment-plan featured">
+        <span class="enrollment-tag">Full NBLU</span>
+        <h3>Full NBLU Experience</h3>
+        <div class="enrollment-price">$149.99 <small>one time</small></div>
+        <p><strong>Begin with Foundation now.</strong> Own the full planned 12-course / 8-book NBLU path as each later stage is finished and released in sequence, with six months of Professor Grey / Guided Learning.</p>
+        <ul>
+          <li>4 planned stages · 3 courses each</li>
+          <li>8-book curriculum released by stage</li>
+          <li>Physical books fulfilled two at a time</li>
+          <li>Physical-book shipping charged separately</li>
+          <li>Records, completed work, owned materials, and earned credentials persist</li>
+        </ul>
+        <button class="btn primary" type="button" data-nblu-checkout="full_nblu">Choose Full NBLU · $149.99</button>
+      </article>
+    </div>
+    <div class="continuation-card">
+      <div><strong>Full NBLU owner continuation · $14.99/month</strong><p>After the included six-month guided period ends, verified Full NBLU owners can keep Professor Grey / Guided Learning active month to month. This does not rebuy the books or your academic record.</p></div>
+      <button class="btn ghost" type="button" data-nblu-checkout="nblu_continuation">Owner continuation</button>
+    </div>
+    <p class="status" data-enrollment-checkout-status>Checkout is attached to your signed-in NBL account so LOCKE can open the correct University doors.</p>
+  </section>
+
   <section class="card gate" data-campus-gate>
     <p class="eyebrow">LOCKE protected</p>
     <h2>Your NBL account is the key.</h2>
     <p>NBL Chat membership and NBL University enrollment are separate. Sign in with the same NBL account you already use. LOCKE opens the classroom only when that account has University enrollment.</p>
-    <div class="actions"><button class="btn primary" type="button" data-signin>Sign in / Create account</button><a class="btn" href="https://newbeansland.org/university.html">University enrollment</a></div>
+    <div class="actions"><button class="btn primary" type="button" data-signin>Sign in / Create account</button><a class="btn" href="#enroll">University enrollment</a></div>
     <p class="status" data-campus-status>Checking account connection…</p>
   </section>
 
@@ -225,6 +266,6 @@
   </section>
 </div>
 
-<footer class="footer">© 2026 Jamel Hawkins · New Beansland™ · NBL World · NBL University is an independent educational/creative program; its completion credential is not an accredited college degree or professional license.</footer>
+<footer class="footer">© 2026 Jamel Hawkins · New Beansland™ · NBL World · NBL University is an independent educational/creative program; its completion credential is not an accredited college degree or professional license.<br><span class="footer-secondary">Regular Beans / NBL Chat and the public creative world remain at <a href="https://newbeansland.org/">NewBeansland.org</a>.</span></footer>
 </body>
 </html>
