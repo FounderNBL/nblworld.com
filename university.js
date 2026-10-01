@@ -50,9 +50,22 @@ async function api(body){
 }
 function setStatus(text){$$("[data-campus-status]").forEach(el=>el.textContent=text);}
 function openSignIn(){location.href=signInUrl();}
-function summary(code){
-  return {"APSK 101":"Slow a claim down, identify the burden, and decide what would actually count as evidence.","ANSY 110":"Test whether a comparison really carries weight, where it maps, and where it breaks.","EBPR 120":"Use evidence to make a decision without claiming more than the evidence earns."}[code]||"NBL University course.";
-}
+const COURSE_DETAILS={
+  "APSK 101":{
+    summary:"Slow a claim down, identify the burden, and decide what would actually count as evidence.",
+    objectives:["Identify the claim and burden of proof.","Separate evidence from assertion and authority.","Calibrate confidence and say what could change your mind."]
+  },
+  "ANSY 110":{
+    summary:"Test whether a comparison really carries weight, where it maps, and where it breaks.",
+    objectives:["Map relevant similarities instead of surface resemblance.","Name important differences and the analogy breakpoint.","Reject unearned transfer while preserving useful comparison."]
+  },
+  "EBPR 120":{
+    summary:"Use evidence to make a decision without claiming more than the evidence earns.",
+    objectives:["Match evidence to the question or decision.","Weigh source quality, conflict, and missing evidence.","State a judgment, confidence, limits, and alternatives."]
+  }
+};
+function summary(code){return COURSE_DETAILS[code]?.summary||"NBL University course.";}
+
 function syncCourse(){
   $$("[data-course-select]").forEach(el=>el.value=state.course);
 }
@@ -65,7 +78,8 @@ function renderCourses(u){
   for(const course of u.courses||[]){
     const card=document.createElement("article");
     card.className="course"+(course.current?" is-current":"")+(course.completed?" is-complete":"");
-    card.innerHTML=`<span class="course-code">${course.code} · ${course.creditHours||3} credit hours</span><h3>${course.title}</h3><p>${summary(course.code)}</p><div class="course-foot"><span class="course-state">${course.completed?"Completed":course.current?"Current course":"In sequence"}</span><button class="btn ghost" type="button">Enter course</button></div>`;
+    const detail=COURSE_DETAILS[course.code]||{summary:summary(course.code),objectives:[]};
+    card.innerHTML=`<span class="course-code">${course.code} · Foundation course · self-paced</span><h3>${course.title}</h3><p>${detail.summary}</p><ul class="course-objectives">${detail.objectives.map(item=>`<li>${item}</li>`).join("")}</ul><div class="course-foot"><span class="course-state">${course.completed?"Completed":course.current?"Current course":"In sequence"}</span><button class="btn ghost" type="button">Enter course</button></div>`;
     card.querySelector("button").addEventListener("click",()=>{state.course=course.code;syncCourse();$("#grey")?.scrollIntoView({behavior:"smooth"});});
     host.appendChild(card);
   }
@@ -115,6 +129,38 @@ async function submitFrontier(){
   }catch(error){setStatus(error.message||"That Frontier answer could not be saved.");if(button)button.disabled=false;}
 }
 
+function prettyKey(value){
+  return String(value||"").replaceAll("_"," ").replace(/\b\w/g,m=>m.toUpperCase());
+}
+function renderStartingPoint(u){
+  const panel=$("[data-starting-point]"),summaryEl=$("[data-starting-summary]"),host=$("[data-starting-dimensions]");
+  if(!panel||!summaryEl||!host)return;
+  const start=u?.startingPoint;
+  if(!start){panel.hidden=true;return;}
+  panel.hidden=false;
+  summaryEl.textContent=start.summary||"Your Frontier Check is complete. Professor Grey will use the pattern of your reasoning to choose examples and pacing.";
+  host.replaceChildren();
+  for(const item of Array.isArray(start.dimensions)?start.dimensions:[]){
+    const row=document.createElement("div");row.className="dimension";
+    const name=document.createElement("strong");name.textContent=prettyKey(item.key);
+    const level=document.createElement("span");level.textContent=prettyKey(item.level||"observed");
+    const note=document.createElement("p");note.textContent=item.note||"";
+    row.append(name,level,note);host.appendChild(row);
+  }
+}
+function renderStudentRecord(u){
+  const courses=Array.isArray(u?.courses)?u.courses:[];
+  const p=u?.progress||{};
+  const current=courses.find(x=>x.current)||courses.find(x=>!x.completed)||courses[0];
+  const completed=courses.filter(x=>x.completed).length;
+  if($("[data-record-course]"))$("[data-record-course]").textContent=current?.code||"Not set";
+  if($("[data-record-progress]"))$("[data-record-progress]").textContent=`${completed} of ${courses.length||3} complete`;
+  if($("[data-record-assessment]")){
+    const status=String(p.assessment_status||"not_started").replaceAll("_"," ");
+    const score=p.assessment_score!==null&&p.assessment_score!==undefined?` · ${p.assessment_score}%`:"";
+    $("[data-record-assessment]").textContent=prettyKey(status)+score;
+  }
+}
 function renderUniversity(u){
   state.university=u;
   if(!u?.allowed){$("[data-campus-gate]").hidden=false;$("[data-frontier]").hidden=true;$("[data-campus]").hidden=true;setStatus("This NBL account does not currently have University enrollment.");return;}
@@ -131,7 +177,7 @@ function renderUniversity(u){
   $("[data-program-name]").textContent=u.program?.title||"New Beansland University Foundation Program";
   const pct=progressPercent(u);$("[data-progress-label]").textContent=pct+"%";$("[data-progress-fill]").style.width=pct+"%";
   const current=(u.courses||[]).find(x=>x.current)||(u.courses||[]).find(x=>!x.completed)||(u.courses||[])[0];if(current)state.course=current.code;
-  renderCourses(u);renderLibrary(u);syncCourse();
+  renderCourses(u);renderLibrary(u);syncCourse();renderStartingPoint(u);renderStudentRecord(u);
   void loadSubmissions();
   const p=u.progress||{};
   $("[data-last-result]").textContent=p.assessment_result?(`${p.assessment_result}${p.assessment_score!==null&&p.assessment_score!==undefined?" · "+p.assessment_score+"%":""}`):"No completed course assessment yet.";
@@ -214,6 +260,19 @@ async function askGrey(message){
   finally{button.disabled=false;}
 }
 
+async function checkReadiness(){
+  const button=$("[data-grey-readiness]");if(button)button.disabled=true;
+  appendGrey("user","Check my readiness for "+state.course+".");
+  try{
+    const payload=await api({action:"readiness",courseCode:state.course});
+    appendGrey("assistant",String(payload?.message||"Professor Grey could not complete the readiness check."));
+  }catch(error){appendGrey("assistant",error.message||"Professor Grey could not complete the readiness check.");}
+  finally{if(button)button.disabled=false;}
+}
+function startPractice(){
+  void askGrey("Give me one low-stakes practice problem for "+state.course+" based on what I am learning. Do not use or paraphrase an official assessment question. Ask me to reason through it before you explain the answer.");
+}
+
 async function openMaterial(sourceKey,index){
   const shell=$("[data-reader]");shell.hidden=false;document.body.style.overflow="hidden";$("[data-reader-body]").textContent="Opening secure course material…";
   try{
@@ -263,6 +322,8 @@ async function boot(){
   $("[data-coursework-refresh]").addEventListener("click",loadSubmissions);
   $("[data-course-select]").forEach(el=>el.addEventListener("change",e=>{state.course=e.target.value;syncCourse();renderAssessment(null);void loadSubmissions();}));
   $("[data-start-assessment]").addEventListener("click",startAssessment);
+  $("[data-grey-practice]")?.addEventListener("click",startPractice);
+  $("[data-grey-readiness]")?.addEventListener("click",checkReadiness);
   $("[data-reader-close]").addEventListener("click",closeReader);$("[data-reader]").addEventListener("click",e=>{if(e.target===e.currentTarget)closeReader();});
   $("[data-reader-prev]").addEventListener("click",()=>state.reader&&openMaterial(state.reader.sourceKey,state.reader.chunkIndex-1));
   $("[data-reader-next]").addEventListener("click",()=>state.reader&&openMaterial(state.reader.sourceKey,state.reader.chunkIndex+1));
