@@ -3,14 +3,22 @@ import {test,expect} from "@playwright/test";
 test("NBL World exposes the University as a real inner-world door",async({page})=>{
   await page.goto("/");
   await expect(page).toHaveTitle(/NBL World/i);
-  await expect(page.getByRole("link",{name:"Enter the campus"})).toBeVisible();
-  await expect(page.locator("body")).toContainText("University enrollment is separate from NBL Chat Plus");
+  await expect(page.locator(".world-hero img")).toBeVisible();
+  await expect(page.getByRole("heading",{name:"New Beansland University"})).toBeVisible();
+  await expect(page.locator("body")).toContainText("Full NBLU Experience");
+  await expect(page.locator("body")).toContainText("$149.99");
+  await expect(page.getByRole("link",{name:/Enter Full NBLU/i})).toBeVisible();
+  await expect(page.getByRole("link",{name:"Visit New Beansland"})).toBeVisible();
 });
 
 test("University campus loads with a protected enrollment gate",async({page})=>{
   await page.goto("/university.html");
   await expect(page).toHaveTitle(/NBL University Campus/i);
   await expect(page.getByRole("heading",{name:"Student Campus"})).toBeVisible();
+  await expect(page.locator("#enroll")).toBeVisible();
+  await expect(page.locator("[data-nblu-checkout=\"full_nblu\"]")).toBeVisible();
+  await expect(page.locator("body")).toContainText("$149.99");
+  await expect(page.locator("body")).toContainText("$14.99/month");
   await expect(page.locator("[data-campus-gate]")).toBeVisible();
   await expect(page.locator("body")).toContainText("LOCKE opens the classroom only when that account has University enrollment");
   await expect(page.locator("[data-campus]")).toBeHidden();
