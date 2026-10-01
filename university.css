@@ -48,3 +48,19 @@
 .rules-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}.rules-grid article{padding:15px;border:1px solid rgba(214,161,75,.18);border-radius:14px;background:rgba(2,8,13,.75)}.rules-grid strong{color:var(--gold2)}.rules-grid p{margin:7px 0 0;color:var(--soft);font-size:.8rem;line-height:1.5}
 @media(max-width:1000px){.learning-rail{grid-template-columns:repeat(3,1fr)}.rules-grid{grid-template-columns:repeat(2,1fr)}}
 @media(max-width:700px){.learning-rail,.academic-grid,.rules-grid{grid-template-columns:1fr}.learning-rail>div{min-height:0}}
+
+.course-time{margin-top:9px!important;color:var(--gold2)!important;font-size:.75rem!important;font-weight:900}
+.gradebook-wrap{overflow-x:auto;border:1px solid rgba(214,161,75,.16);border-radius:14px}
+.gradebook{width:100%;border-collapse:collapse;min-width:720px;background:#02080d}
+.gradebook th,.gradebook td{padding:12px 13px;border-bottom:1px solid rgba(255,255,255,.08);text-align:left;vertical-align:top}
+.gradebook th{color:var(--gold2);font-size:.72rem;letter-spacing:.08em;text-transform:uppercase}
+.gradebook td{color:var(--soft);font-size:.8rem}.gradebook td strong{display:block;color:var(--cream)}.gradebook td span{display:block;margin-top:3px;font-size:.72rem}
+.community-grid,.support-grid{display:grid;grid-template-columns:minmax(0,.8fr) minmax(0,1.2fr);gap:14px}
+.community-settings,.review-form{display:grid;gap:10px}.community-settings label,.review-form label{display:grid;gap:6px;color:var(--soft);font-size:.78rem;font-weight:900}
+.community-settings input[type="text"],.community-settings input:not([type]),.review-form select,.review-form textarea{width:100%;border:1px solid var(--line);border-radius:10px;background:#020a12;color:var(--cream);padding:10px}
+.community-settings .check-row{display:flex;grid-template-columns:none;align-items:center;gap:9px;font-weight:700}.community-settings .check-row input{width:auto}
+.review-form textarea{min-height:130px;resize:vertical}
+.community-list{display:grid;gap:8px;margin-top:10px}.community-row{display:flex;justify-content:space-between;gap:14px;padding:11px;border:1px solid rgba(214,161,75,.16);border-radius:11px;background:rgba(214,161,75,.04)}
+.community-row.is-you{border-color:var(--gold2)}.community-row strong{color:var(--cream);font-size:.82rem}.community-row>span{color:var(--soft);font-size:.75rem;text-align:right}.community-rank{display:inline-block;min-width:38px;color:var(--gold2)}
+.support-grid .academic-panel a{color:var(--gold2)}
+@media(max-width:800px){.community-grid,.support-grid{grid-template-columns:1fr}.community-row{align-items:flex-start;flex-direction:column}.community-row>span{text-align:left}}

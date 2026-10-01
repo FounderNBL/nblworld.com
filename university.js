@@ -67,7 +67,8 @@ const COURSE_DETAILS={
 function summary(code){return COURSE_DETAILS[code]?.summary||"NBL University course.";}
 
 function syncCourse(){
-  $$("[data-course-select]").forEach(el=>el.value=state.course);
+  $("[data-course-select]").forEach(el=>el.value=state.course);
+  if($("[data-review-course]"))$("[data-review-course]").value=state.course;
 }
 function progressPercent(u){
   const rows=Array.isArray(u?.courses)?u.courses:[];
@@ -79,7 +80,8 @@ function renderCourses(u){
     const card=document.createElement("article");
     card.className="course"+(course.current?" is-current":"")+(course.completed?" is-complete":"");
     const detail=COURSE_DETAILS[course.code]||{summary:summary(course.code),objectives:[]};
-    card.innerHTML=`<span class="course-code">${course.code} · Foundation course · self-paced</span><h3>${course.title}</h3><p>${detail.summary}</p><ul class="course-objectives">${detail.objectives.map(item=>`<li>${item}</li>`).join("")}</ul><div class="course-foot"><span class="course-state">${course.completed?"Completed":course.current?"Current course":"In sequence"}</span><button class="btn ghost" type="button">Enter course</button></div>`;
+    const hours=Number(course.estimatedLearningHours||3);
+    card.innerHTML=`<span class="course-code">${course.code} · Foundation course · self-paced</span><h3>${course.title}</h3><p>${detail.summary}</p><p class="course-time">Estimated engaged learning · ~${hours} hours</p><ul class="course-objectives">${detail.objectives.map(item=>`<li>${item}</li>`).join("")}</ul><div class="course-foot"><span class="course-state">${course.completed?"Completed":course.current?"Current course":"In sequence"}</span><button class="btn ghost" type="button">Enter course</button></div>`;
     card.querySelector("button").addEventListener("click",()=>{state.course=course.code;syncCourse();$("#grey")?.scrollIntoView({behavior:"smooth"});});
     host.appendChild(card);
   }
@@ -161,6 +163,84 @@ function renderStudentRecord(u){
     $("[data-record-assessment]").textContent=prettyKey(status)+score;
   }
 }
+
+function renderGradebook(u){
+  const host=$("[data-gradebook-body]");if(!host)return;
+  host.replaceChildren();
+  const rows=Array.isArray(u?.gradebook)?u.gradebook:[];
+  const p=u?.progress||{};
+  for(const course of u?.courses||[]){
+    const row=rows.find(x=>x.courseCode===course.code)||{courseCode:course.code,status:"not_started",attemptNo:null,score:null};
+    let status=String(row.status||"not_started");
+    if(p.current_course_code===course.code&&p.assessment_status==="submitted")status="review_pending";
+    if(course.completed&&status==="not_started")status="completed";
+    const tr=document.createElement("tr");
+    const recorded=row.gradedAt||row.submittedAt||row.startedAt;
+    tr.innerHTML=`<td><strong>${course.code}</strong><span>${course.title}</span></td><td>${status==="review_pending"?"Pending academic review":prettyKey(status)}</td><td>${row.attemptNo??"—"}</td><td>${row.score===null||row.score===undefined?"—":Number(row.score)+"%"}</td><td>${recorded?new Date(recorded).toLocaleDateString():"—"}</td>`;
+    host.appendChild(tr);
+  }
+}
+
+function renderCommunity(payload){
+  const profile=payload?.profile||{};
+  const name=$("[data-community-name]"),opt=$("[data-community-optin]"),rank=$("[data-community-rank]"),progress=$("[data-community-progress]"),badges=$("[data-community-badges]");
+  if(name)name.value=profile.public_display_name||"";
+  if(opt)opt.checked=profile.opt_in===true;
+  if(rank)rank.checked=profile.show_weekly_rank!==false;
+  if(progress)progress.checked=profile.show_progress_percent!==false;
+  if(badges)badges.checked=profile.show_course_badges!==false;
+  const host=$("[data-community-list]");if(!host)return;
+  host.replaceChildren();
+  const rows=Array.isArray(payload?.classmates)?payload.classmates:[];
+  if(!rows.length){const p=document.createElement("p");p.className="small-note";p.textContent="No students have opted into the class board yet.";host.appendChild(p);return;}
+  for(const row of rows){
+    const item=document.createElement("div");item.className="community-row"+(row.isYou?" is-you":"");
+    const rankText=row.weeklyRank?"#"+row.weeklyRank:"—";
+    const detail=[];
+    if(row.progressPercent!==null&&row.progressPercent!==undefined)detail.push(row.progressPercent+"% Foundation");
+    if(row.completedCourses!==null&&row.completedCourses!==undefined)detail.push(row.completedCourses+" course"+(row.completedCourses===1?"":"s")+" complete");
+    item.innerHTML=`<strong><span class="community-rank">${rankText}</span>${row.displayName}${row.isYou?" · You":""}</strong><span>${detail.length?detail.join(" · "):"Participating"}</span>`;
+    host.appendChild(item);
+  }
+}
+async function loadCommunity(){
+  const host=$("[data-community-list]");if(host)host.innerHTML='<p class="small-note">Loading opted-in classmates…</p>';
+  try{const payload=await api({action:"university_community"});renderCommunity(payload);}
+  catch(error){if(host){host.replaceChildren();const p=document.createElement("p");p.className="small-note";p.textContent=error.message||"Class community could not be loaded.";host.appendChild(p);}}
+}
+async function saveCommunity(event){
+  event.preventDefault();
+  const button=event.currentTarget.querySelector('button[type="submit"]'),status=$("[data-community-status]");
+  if(button)button.disabled=true;if(status)status.textContent="Saving your community settings…";
+  try{
+    await api({
+      action:"university_community_update",
+      displayName:$("[data-community-name]")?.value.trim()||"",
+      optIn:Boolean($("[data-community-optin]")?.checked),
+      showWeeklyRank:Boolean($("[data-community-rank]")?.checked),
+      showProgressPercent:Boolean($("[data-community-progress]")?.checked),
+      showCourseBadges:Boolean($("[data-community-badges]")?.checked)
+    });
+    if(status)status.textContent="Saved. Only the class details you chose are eligible to appear.";
+    await loadCommunity();
+  }catch(error){if(status)status.textContent=error.message||"Community settings could not be saved.";}
+  finally{if(button)button.disabled=false;}
+}
+async function submitReviewRequest(event){
+  event.preventDefault();
+  const button=event.currentTarget.querySelector('button[type="submit"]'),status=$("[data-review-status]");
+  const reason=$("[data-review-reason]")?.value.trim()||"";
+  if(reason.length<10){if(status)status.textContent="Tell the Registrar what you want reviewed.";return;}
+  if(button)button.disabled=true;if(status)status.textContent="Adding your request to the Registrar record…";
+  try{
+    const payload=await api({action:"academic_review_request",courseCode:$("[data-review-course]")?.value||state.course,reason});
+    if(status)status.textContent=payload?.message||"Academic review request recorded.";
+    if($("[data-review-reason]"))$("[data-review-reason]").value="";
+    await loadSubmissions();
+  }catch(error){if(status)status.textContent=error.message||"Academic review request could not be saved.";}
+  finally{if(button)button.disabled=false;}
+}
+
 function renderUniversity(u){
   state.university=u;
   if(!u?.allowed){$("[data-campus-gate]").hidden=false;$("[data-frontier]").hidden=true;$("[data-campus]").hidden=true;setStatus("This NBL account does not currently have University enrollment.");return;}
@@ -177,8 +257,8 @@ function renderUniversity(u){
   $("[data-program-name]").textContent=u.program?.title||"New Beansland University Foundation Program";
   const pct=progressPercent(u);$("[data-progress-label]").textContent=pct+"%";$("[data-progress-fill]").style.width=pct+"%";
   const current=(u.courses||[]).find(x=>x.current)||(u.courses||[]).find(x=>!x.completed)||(u.courses||[])[0];if(current)state.course=current.code;
-  renderCourses(u);renderLibrary(u);syncCourse();renderStartingPoint(u);renderStudentRecord(u);
-  void loadSubmissions();
+  renderCourses(u);renderLibrary(u);syncCourse();renderStartingPoint(u);renderStudentRecord(u);renderGradebook(u);
+  void loadSubmissions();void loadCommunity();
   const p=u.progress||{};
   $("[data-last-result]").textContent=p.assessment_result?(`${p.assessment_result}${p.assessment_score!==null&&p.assessment_score!==undefined?" · "+p.assessment_score+"%":""}`):"No completed course assessment yet.";
   $("[data-last-feedback]").textContent=p.safe_feedback||"Course grades and safe feedback will appear here after an official assessment is graded.";
@@ -319,6 +399,8 @@ async function boot(){
   $("[data-signout]").addEventListener("click",async()=>{try{const clerk=await getClerk();await clerk.signOut();location.reload();}catch{location.href=ACCOUNT_PORTAL;}});
   $("[data-grey-form]").addEventListener("submit",async e=>{e.preventDefault();const input=$("[data-grey-input]"),value=input.value.trim();if(!value)return;input.value="";await askGrey(value);});
   $("[data-coursework-form]").addEventListener("submit",submitCourseWork);
+  $("[data-community-form]")?.addEventListener("submit",saveCommunity);
+  $("[data-review-form]")?.addEventListener("submit",submitReviewRequest);
   $("[data-coursework-refresh]").addEventListener("click",loadSubmissions);
   $("[data-course-select]").forEach(el=>el.addEventListener("change",e=>{state.course=e.target.value;syncCourse();renderAssessment(null);void loadSubmissions();}));
   $("[data-start-assessment]").addEventListener("click",startAssessment);
