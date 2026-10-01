@@ -2,6 +2,7 @@
 "use strict";
 
 const API="https://tvypdakofcrlvnwporhh.supabase.co/functions/v1/nbl-foundation-runtime";
+const BILLING_API="https://tvypdakofcrlvnwporhh.supabase.co/functions/v1/nbl-billing-link";
 const CLERK_KEY="pk_live_Y2xlcmsubmV3YmVhbnNsYW5kLm9yZyQ";
 const ACCOUNT_PORTAL="https://accounts.newbeansland.org";
 const $=(s,r=document)=>r.querySelector(s);
@@ -47,6 +48,55 @@ async function api(body){
   const payload=await response.json().catch(()=>({}));
   if(!response.ok){const e=new Error(payload?.message||"NBL University is temporarily unavailable.");e.status=response.status;e.code=payload?.code;e.payload=payload;throw e;}
   return payload;
+}
+async function billingApi(body){
+  const token=await authToken();
+  if(!token){const e=new Error("Sign in with your NBL account before enrollment.");e.status=401;throw e;}
+  const response=await fetch(BILLING_API,{method:"POST",headers:{"Content-Type":"application/json",Authorization:"Bearer "+token},body:JSON.stringify(body),cache:"no-store"});
+  const payload=await response.json().catch(()=>({}));
+  if(!response.ok){const e=new Error(payload?.message||"University checkout is temporarily unavailable.");e.status=response.status;e.code=payload?.code;e.payload=payload;throw e;}
+  return payload;
+}
+function trustedBillingDestination(value){
+  try{
+    const url=new URL(String(value||""));
+    return url.protocol==="https:"&&["buy.stripe.com","billing.stripe.com"].includes(url.hostname)?url.href:"";
+  }catch{return "";}
+}
+async function openNbluCheckout(button){
+  const plan=String(button?.dataset?.nbluCheckout||"").trim();
+  if(!["foundation","full_foundation","full_nblu","nblu_continuation"].includes(plan))return;
+  const status=$("[data-enrollment-checkout-status]");
+  const buttons=$("[data-nblu-checkout]");
+  buttons.forEach(item=>item.disabled=true);
+  if(status)status.textContent="Preparing secure University checkout…";
+  try{
+    const token=await authToken();
+    if(!token){
+      if(status)status.textContent="Sign in first so LOCKE can attach enrollment to the correct NBL account.";
+      openSignIn();
+      return;
+    }
+    const result=await billingApi({action:"checkout",plan});
+    if(result?.route==="already_owned"){
+      if(status)status.textContent=result.message||"Full NBLU is already attached to this account.";
+      return;
+    }
+    if(result?.route==="manage_existing_subscription"){
+      const destination=trustedBillingDestination(result.portalUrl);
+      if(!destination)throw new Error("Billing management destination was rejected.");
+      location.href=destination;
+      return;
+    }
+    const destination=trustedBillingDestination(result?.checkoutUrl);
+    if(!destination)throw new Error("Secure Stripe checkout destination was rejected.");
+    if(status)status.textContent="Opening Stripe secure checkout…";
+    location.href=destination;
+  }catch(error){
+    if(status)status.textContent=error?.message||"University checkout is temporarily unavailable.";
+  }finally{
+    buttons.forEach(item=>item.disabled=false);
+  }
 }
 function setStatus(text){$$("[data-campus-status]").forEach(el=>el.textContent=text);}
 function openSignIn(){location.href=signInUrl();}
@@ -395,7 +445,8 @@ async function submitAssessment(){
 }
 
 async function boot(){
-  $$("[data-signin]").forEach(b=>b.addEventListener("click",openSignIn));
+  $("[data-signin]").forEach(b=>b.addEventListener("click",openSignIn));
+  $("[data-nblu-checkout]").forEach(button=>button.addEventListener("click",()=>openNbluCheckout(button)));
   $("[data-signout]").addEventListener("click",async()=>{try{const clerk=await getClerk();await clerk.signOut();location.reload();}catch{location.href=ACCOUNT_PORTAL;}});
   $("[data-grey-form]").addEventListener("submit",async e=>{e.preventDefault();const input=$("[data-grey-input]"),value=input.value.trim();if(!value)return;input.value="";await askGrey(value);});
   $("[data-coursework-form]").addEventListener("submit",submitCourseWork);
