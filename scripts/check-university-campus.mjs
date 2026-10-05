@@ -12,7 +12,7 @@ const forbid=(source,text,msg)=>{if(source.includes(text))errors.push(msg);};
 need(home,'src="/NBL_WORLD.png"',"NBL World hero image is missing.");
 need(home,'href="/university.html#enroll"',"NBL World home does not route enrollment into its University.");
 need(home,"Full NBLU Experience","NBL World does not feature Full NBLU.");
-need(home,'$149.99',"NBL World does not show the Full NBLU price.");
+need(home,'$184.99',"NBL World does not show the Full NBLU price.");
 need(home,"regular Beans","NBL World does not preserve the Chat / University surface boundary.");
 need(home,"Visit New Beansland","The quiet public New Beansland handoff is missing.");
 if(!(home.indexOf('src="/NBL_WORLD.png"') < home.indexOf('<h1 id="nblu-title">New Beansland University</h1>') &&
@@ -25,7 +25,7 @@ need(html,'data-nblu-checkout="foundation"',"Foundation checkout is missing from
 need(html,'data-nblu-checkout="full_foundation"',"Guided Foundation checkout is missing from NBL World.");
 need(html,'data-nblu-checkout="full_nblu"',"Full NBLU checkout is missing from NBL World.");
 need(html,'data-nblu-checkout="nblu_continuation"',"Full NBLU owner continuation control is missing.");
-need(html,"$149.99","Full NBLU price is missing from the campus.");
+need(html,"$184.99","Full NBLU price is missing from the campus.");
 need(html,"$14.99/month","Owner continuation price is missing from the campus.");
 need(html,"shipping charged separately","Staged physical-book shipping disclosure is missing.");
 forbid(html,'href="https://newbeansland.org/university.html"',"Campus still sends enrollment back to the public New Beansland site.");
