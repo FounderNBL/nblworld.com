@@ -3,6 +3,7 @@
 
 const API="https://tvypdakofcrlvnwporhh.supabase.co/functions/v1/nbl-foundation-runtime";
 const BILLING_API="https://tvypdakofcrlvnwporhh.supabase.co/functions/v1/nbl-billing-link";
+const UNIVERSITY_PUBLIC_CHECKOUT_ENABLED=false;
 const CLERK_KEY="pk_live_Y2xlcmsubmV3YmVhbnNsYW5kLm9yZyQ";
 const ACCOUNT_PORTAL="https://accounts.newbeansland.org";
 const $=(s,r=document)=>r.querySelector(s);
@@ -78,9 +79,13 @@ function trustedBillingDestination(value){
   }catch{return "";}
 }
 async function openNbluCheckout(button){
+  const status=$("[data-enrollment-checkout-status]");
+  if(!UNIVERSITY_PUBLIC_CHECKOUT_ENABLED){
+    if(status)status.textContent="University checkout is held pending one controlled real checkout and a second-account record-isolation test.";
+    return;
+  }
   const plan=String(button?.dataset?.nbluCheckout||"").trim();
   if(!["foundation","full_foundation","full_nblu","nblu_continuation"].includes(plan))return;
-  const status=$("[data-enrollment-checkout-status]");
   const buttons=$("[data-nblu-checkout]");
   buttons.forEach(item=>item.disabled=true);
   if(status)status.textContent="Preparing secure University checkout…";
