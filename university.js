@@ -8,7 +8,7 @@ const CLERK_KEY="pk_live_Y2xlcmsubmV3YmVhbnNsYW5kLm9yZyQ";
 const ACCOUNT_PORTAL="https://accounts.newbeansland.org";
 const $=(s,r=document)=>r.querySelector(s);
 const $$=(s,r=document)=>[...r.querySelectorAll(s)];
-const state={clerk:null,university:null,course:"APSK 101",greyHistory:[],conversationId:null,assessment:null,reader:null};
+const state={clerk:null,university:null,course:"APSK 101",greyHistory:[],conversationId:null,assessment:null,reader:null,pendingSubmission:null};
 
 function safeReturnUrl(){const u=new URL(location.href);u.hash="";return u.href;}
 function signInUrl(){return ACCOUNT_PORTAL+"/sign-in?redirect_url="+encodeURIComponent(safeReturnUrl());}
@@ -62,7 +62,12 @@ async function universityPdfPayload(file){
   let binary="";
   const step=0x8000;
   for(let i=0;i<bytes.length;i+=step)binary+=String.fromCharCode(...bytes.subarray(i,Math.min(bytes.length,i+step)));
-  return {name:file.name||"student-work.pdf",mime:"application/pdf",data:btoa(binary)};
+  let fingerprint=file.name+":"+file.size+":"+file.lastModified;
+  if(globalThis.crypto?.subtle){
+    const digest=await crypto.subtle.digest("SHA-256",bytes);
+    fingerprint=Array.from(new Uint8Array(digest),byte=>byte.toString(16).padStart(2,"0")).join("");
+  }
+  return {name:file.name||"student-work.pdf",mime:"application/pdf",data:btoa(binary),fingerprint};
 }
 async function billingApi(body){
   const token=await authToken();
@@ -136,7 +141,7 @@ const COURSE_DETAILS={
 function summary(code){return COURSE_DETAILS[code]?.summary||"NBL University course.";}
 
 function syncCourse(){
-  $("[data-course-select]").forEach(el=>el.value=state.course);
+  $$("[data-course-select]").forEach(el=>el.value=state.course);
   if($("[data-review-course]"))$("[data-review-course]").value=state.course;
 }
 function progressPercent(u){
@@ -339,6 +344,56 @@ async function refreshUniversity(){
   catch(error){if(error.status===401){$("[data-campus-gate]").hidden=false;$("[data-frontier]").hidden=true;$("[data-campus]").hidden=true;setStatus("Sign in with your NBL account to enter the campus.");}else setStatus(error.message||"University status could not be loaded.");}
 }
 
+function submissionAttachment(row){return row?.attachment||row?.file||{};}
+function submissionOriginalAvailable(row){
+  const attachment=submissionAttachment(row);
+  return row?.originalAvailable===true||attachment.originalAvailable===true;
+}
+function submissionReturnedAvailable(row){
+  const attachment=submissionAttachment(row);
+  return row?.returnedAvailable===true||attachment.returnedAvailable===true;
+}
+function submissionId(row){return row?.id||row?.submissionId||row?.submission_id||"";}
+function submissionValue(row,...keys){
+  for(const key of keys)if(row?.[key]!==undefined&&row?.[key]!==null)return row[key];
+  return undefined;
+}
+function displayDate(value){
+  if(!value)return "Not recorded";
+  const date=new Date(value);
+  return Number.isNaN(date.getTime())?"Not recorded":date.toLocaleString();
+}
+function displayFileSize(value){
+  const bytes=Number(value);
+  if(!Number.isFinite(bytes)||bytes<0)return "";
+  if(bytes<1024)return bytes+" B";
+  if(bytes<1024*1024)return (bytes/1024).toFixed(1)+" KB";
+  return (bytes/(1024*1024)).toFixed(2)+" MB";
+}
+function appendSubmissionDownload(card,row,kind,label){
+  const button=document.createElement("button");
+  button.type="button";button.className="btn ghost submission-download";
+  button.textContent=label;button.dataset.submissionId=submissionId(row);button.dataset.fileKind=kind;
+  const message=document.createElement("span");message.className="small-note submission-download-status";message.setAttribute("role","status");
+  button.addEventListener("click",()=>downloadSubmissionFile(button,message));
+  card.append(button,message);
+}
+async function downloadSubmissionFile(button,message){
+  const id=button.dataset.submissionId,kind=button.dataset.fileKind;
+  if(!id||(kind!=="original"&&kind!=="returned"))return;
+  button.disabled=true;message.textContent="Preparing secure download…";
+  try{
+    const payload=await api({action:"university_submission_download",submissionId:id,fileType:kind});
+    const value=payload?.downloadUrl||payload?.url;
+    const url=new URL(String(value||""));
+    if(url.protocol!=="https:"||url.username||url.password||url.hash)throw new Error("unavailable");
+    message.textContent="Opening secure download…";
+    location.assign(url.href);
+  }catch{
+    message.textContent="This file link has expired or is unavailable for this account. Refresh your submissions and try again.";
+    button.disabled=false;
+  }
+}
 function renderSubmissions(rows){
   const host=$("[data-submission-list]");host.replaceChildren();
   if(!rows.length){
@@ -348,32 +403,46 @@ function renderSubmissions(rows){
     const card=document.createElement("article");card.className="submission";
     const head=document.createElement("div");head.className="submission-title";
     const title=document.createElement("strong");title.textContent=row.title||row.submission_type||"Course work";
-    const status=document.createElement("span");status.textContent=String(row.status||"submitted").replaceAll("_"," ");
+    const rawStatus=String(row.reviewStatus||row.review_status||row.status||"submitted");
+    const status=document.createElement("span");status.textContent=prettyKey(rawStatus);
     head.append(title,status);
-    const meta=document.createElement("p");meta.className="small-note";
-    const when=row.submitted_at?new Date(row.submitted_at).toLocaleString():"Saved";
-    meta.textContent=(row.course_code||state.course)+" · "+String(row.submission_type||"work").replaceAll("_"," ")+" · "+when;
-    card.append(head,meta);
-    if(row.attachment?.filename){
-      const attachment=document.createElement("div");attachment.className="submission-attachment";
-      const line=document.createElement("strong");line.textContent="PDF · "+row.attachment.filename;
-      const detail=document.createElement("span");
-      const size=Number(row.attachment.sizeBytes||0);
-      detail.textContent="TEST: "+String(row.attachment.status||"readable").replaceAll("_"," ")+(size?" · "+Math.max(1,Math.round(size/1024))+" KB":"");
-      attachment.append(line,detail);
-      if(row.attachment.note){
-        const note=document.createElement("p");note.textContent=row.attachment.note;attachment.appendChild(note);
-      }
-      if(Array.isArray(row.attachment.warnings)&&row.attachment.warnings.length){
-        const warnings=document.createElement("ul");
-        for(const warning of row.attachment.warnings){const li=document.createElement("li");li.textContent=warning;warnings.appendChild(li);}
-        attachment.appendChild(warnings);
-      }
-      card.appendChild(attachment);
+    card.append(head);
+    const receipt=document.createElement("dl");receipt.className="submission-receipt";
+    const addReceiptItem=(label,value)=>{
+      const item=document.createElement("div"),term=document.createElement("dt"),detail=document.createElement("dd");
+      term.textContent=label;detail.textContent=value||"Not recorded";item.append(term,detail);receipt.appendChild(item);
+    };
+    const attachment=submissionAttachment(row);
+    const filename=submissionValue(attachment,"filename","fileName")||submissionValue(row,"filename","fileName");
+    const size=displayFileSize(submissionValue(attachment,"sizeBytes","size_bytes","size")??submissionValue(row,"sizeBytes","size_bytes","size"));
+    addReceiptItem("Course",row.course_code||row.courseCode||state.course);
+    addReceiptItem("Type",prettyKey(row.submission_type||row.submissionType||"work"));
+    addReceiptItem("Submitted",displayDate(submissionValue(row,"submitted_at","submittedAt")));
+    if(filename)addReceiptItem("File",filename+(size?" · "+size:""));
+    card.appendChild(receipt);
+    const warnings=submissionValue(attachment,"warnings","intakeWarnings","intake_warnings");
+    const warning=submissionValue(attachment,"warning","intakeWarning","intake_warning");
+    const intakeNote=submissionValue(attachment,"note","intakeNote","intake_note");
+    if(warning||intakeNote||(Array.isArray(warnings)&&warnings.length)){
+      const warningBox=document.createElement("p");warningBox.className="submission-warning";
+      warningBox.textContent="TEST intake note: "+[warning,intakeNote,...(Array.isArray(warnings)?warnings:[])].filter(Boolean).map(String).join(" · ");
+      card.appendChild(warningBox);
     }
-    if(row.safe_feedback){
-      const feedback=document.createElement("p");feedback.textContent=row.safe_feedback;card.appendChild(feedback);
+    const originalAvailable=submissionOriginalAvailable(row),returnedAvailable=submissionReturnedAvailable(row);
+    if(originalAvailable)appendSubmissionDownload(card,row,"original","Download original PDF");
+    const reviewedAt=submissionValue(row,"reviewedAt","reviewed_at");
+    const returnedAt=submissionValue(row,"returnedAt","returned_at");
+    if(reviewedAt||returnedAt){
+      const reviewDate=document.createElement("p");reviewDate.className="small-note";
+      reviewDate.textContent=(reviewedAt?"Reviewed "+displayDate(reviewedAt):"")+(reviewedAt&&returnedAt?" · ":"")+(returnedAt?"Returned "+displayDate(returnedAt):"");
+      card.appendChild(reviewDate);
     }
+    const feedback=submissionValue(row,"safe_feedback","safeFeedback");
+    if(feedback){
+      const safeFeedback=document.createElement("p");safeFeedback.className="submission-feedback";
+      safeFeedback.textContent=feedback;card.appendChild(safeFeedback);
+    }
+    if(returnedAvailable)appendSubmissionDownload(card,row,"returned","Download reviewed PDF");
     host.appendChild(card);
   }
 }
@@ -400,19 +469,25 @@ async function submitCourseWork(event){
       courseCode:state.course,
       submissionType:$("[data-coursework-type]").value,
       title:$("[data-coursework-title]").value.trim(),
-      clientSubmissionKey:globalThis.crypto?.randomUUID?.()||("work-"+Date.now())
     };
     if(file){
       status.textContent="TEST is reading and checking your PDF…";
       const pdf=await universityPdfPayload(file);
-      payload=await api({...common,action:"university_submit_pdf",note:content,file:pdf});
+      const signature=JSON.stringify({...common,note:content,fileFingerprint:pdf.fingerprint});
+      if(state.pendingSubmission?.signature!==signature)state.pendingSubmission={signature,key:globalThis.crypto?.randomUUID?.()||("work-"+Date.now())};
+      payload=await api({...common,clientSubmissionKey:state.pendingSubmission.key,action:"university_submit_pdf",note:content,file:pdf});
     }else{
       status.textContent="Submitting to your student record…";
-      payload=await api({...common,action:"university_submit_work",content});
+      const signature=JSON.stringify({...common,content});
+      if(state.pendingSubmission?.signature!==signature)state.pendingSubmission={signature,key:globalThis.crypto?.randomUUID?.()||("work-"+Date.now())};
+      payload=await api({...common,clientSubmissionKey:state.pendingSubmission.key,action:"university_submit_work",content});
     }
-    status.textContent=payload?.submission?.attachment
-      ?"Submitted. TEST checked the PDF and Elara's Registrar rail has the extracted work."
+    const submission=payload?.submission||{};
+    const stored=submissionOriginalAvailable(submission)||payload?.originalAvailable===true;
+    status.textContent=file
+      ?(stored?"Submission receipt confirmed. Your original PDF is stored in your student record.":"TEST finished intake, but a durable stored-original receipt was not confirmed. Refresh your submissions before relying on a saved original.")
       :"Submitted. Elara's Registrar rail has it.";
+    state.pendingSubmission=null;
     $("[data-coursework-content]").value="";
     $("[data-coursework-title]").value="";
     if($("[data-coursework-pdf]"))$("[data-coursework-pdf]").value="";
@@ -524,8 +599,8 @@ async function submitAssessment(){
 }
 
 async function boot(){
-  $("[data-signin]").forEach(b=>b.addEventListener("click",openSignIn));
-  $("[data-nblu-checkout]").forEach(button=>button.addEventListener("click",()=>openNbluCheckout(button)));
+  $$("[data-signin]").forEach(b=>b.addEventListener("click",openSignIn));
+  $$("[data-nblu-checkout]").forEach(button=>button.addEventListener("click",()=>openNbluCheckout(button)));
   $("[data-signout]").addEventListener("click",async()=>{try{const clerk=await getClerk();await clerk.signOut();location.reload();}catch{location.href=ACCOUNT_PORTAL;}});
   $("[data-grey-form]").addEventListener("submit",async e=>{e.preventDefault();const input=$("[data-grey-input]"),value=input.value.trim();if(!value)return;input.value="";await askGrey(value);});
   $("[data-coursework-form]").addEventListener("submit",submitCourseWork);
@@ -533,7 +608,7 @@ async function boot(){
   $("[data-review-form]")?.addEventListener("submit",submitReviewRequest);
   $("[data-coursework-refresh]").addEventListener("click",loadSubmissions);
   $("[data-after-grey-refresh]")?.addEventListener("click",loadAfterGrey);
-  $("[data-course-select]").forEach(el=>el.addEventListener("change",e=>{state.course=e.target.value;syncCourse();renderAssessment(null);void loadSubmissions();void loadAfterGrey();}));
+  $$("[data-course-select]").forEach(el=>el.addEventListener("change",e=>{state.course=e.target.value;syncCourse();renderAssessment(null);void loadSubmissions();void loadAfterGrey();}));
   $("[data-start-assessment]").addEventListener("click",startAssessment);
   $("[data-grey-practice]")?.addEventListener("click",startPractice);
   $("[data-grey-readiness]")?.addEventListener("click",checkReadiness);

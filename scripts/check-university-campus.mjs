@@ -56,6 +56,24 @@ need(css,".submission-attachment","TEST PDF submission styling is missing.");
 need(js,"renderSubmissions","Safe submission rendering is missing.");
 need(js,'a.status==="review_pending"',"Pending academic-review UI is missing.");
 need(js,"Pending final academic review","Pending academic-review message is missing.");
+need(js,"originalAvailable===true","Original PDF download is not gated on the backend receipt.");
+need(js,"returnedAvailable===true","Returned PDF download is not gated on the backend receipt.");
+need(js,'action:"university_submission_download"',"Authenticated learner download action is missing.");
+need(js,'fileType:kind',"Download action does not identify the original or returned file.");
+need(js,"This file link has expired or is unavailable for this account.","Safe expired/wrong-account download message is missing.");
+need(js,"Submission receipt confirmed. Your original PDF is stored","PDF preservation claim is not gated on the backend receipt.");
+need(js,"state.pendingSubmission.key","Retry idempotency key is not preserved.");
+need(html,"durably stored","Student-facing durable-storage receipt wording is missing.");
+for(const field of ["originalAvailable","returnedAvailable","safe_feedback","safeFeedback","reviewedAt","returnedAt","warnings","sizeBytes"]){
+  need(js,field,`Coursework UI does not handle ${field}.`);
+}
+for(const label of ["Download original PDF","Download reviewed PDF","Course","Type","Submitted","TEST intake note"]){
+  need(js,label,`Coursework receipt is missing ${label}.`);
+}
+for(const old of ["the original PDF itself is not retained by this rail","Registrar records the extracted student work"]){
+  forbid(html,old,`Outdated PDF retention wording remains: ${old}`);
+  forbid(js,old,`Outdated PDF retention wording remains: ${old}`);
+}
 
 need(html,"The Frontier Check","Frontier Baseline panel is missing.");
 need(html,"Some are trying to get you to confidently say some bullshit","Frontier Check lost the intended NBL baseline tone.");

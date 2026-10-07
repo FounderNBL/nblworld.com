@@ -76,6 +76,15 @@
 .submission-attachment strong{color:var(--gold2);font-size:.78rem}
 .submission-attachment span,.submission-attachment p,.submission-attachment li{color:var(--soft);font-size:.72rem;line-height:1.4}
 .submission-attachment p{margin:0}.submission-attachment ul{margin:2px 0 0;padding-left:18px}
+.submission-receipt{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin:10px 0}
+.submission-receipt>div{min-width:0;padding:8px;border-radius:9px;background:rgba(255,255,255,.035)}
+.submission-receipt dt{color:var(--soft);font-size:.68rem;font-weight:900;text-transform:uppercase;letter-spacing:.06em}
+.submission-receipt dd{margin:4px 0 0;color:var(--cream);font-size:.78rem;overflow-wrap:anywhere}
+.submission-warning{padding:9px;border-left:3px solid #e2ad50;background:rgba(226,173,80,.08);color:#f2d391;font-size:.78rem;line-height:1.45;overflow-wrap:anywhere}
+.submission-feedback{padding:10px;border-left:3px solid var(--green);background:rgba(132,197,154,.07);color:var(--cream);font-size:.85rem;line-height:1.5;white-space:pre-wrap}
+.submission-download{display:block;width:max-content;max-width:100%;margin-top:9px}
+.submission-download-status{display:block;overflow-wrap:anywhere}
+@media(max-width:620px){.submission-receipt{grid-template-columns:1fr}.submission-download{width:100%}}
 .after-grey-card{display:grid;gap:10px;padding:18px;border:1px solid rgba(214,161,75,.2);border-radius:14px;background:linear-gradient(145deg,rgba(214,161,75,.06),rgba(2,8,13,.82))}
 .after-grey-card h3{margin:0;color:var(--cream);font:700 1.25rem/1.2 Georgia,serif}
 .after-grey-card p{margin:0;color:var(--soft);line-height:1.5}
