@@ -39,4 +39,9 @@ test("University campus loads with a protected enrollment gate",async({page})=>{
   await expect(page.locator("body")).toContainText("Opt-in scoreboard");
   await expect(page.locator("body")).toContainText("Access / accommodation");
   await expect(page.locator("body")).toContainText("Request academic review");
+  await expect(page.locator("body")).toContainText("People talking to people");
+  await expect(page.locator("#nbl-chat")).toContainText("NBL Chat");
+  await expect(page.locator("#helper-board")).toContainText("Helper Board");
+  await expect(page.locator("#student-access-fund")).toContainText("NBL Student Access Fund");
+  await expect(page.locator("#student-access-fund")).toContainText("Optional $1+ contributions");
 });
