@@ -41,6 +41,19 @@ need(html,"What each course expects","Student-facing course expectations are mis
 need(html,"Opt-in scoreboard","Opt-in class community is missing.");
 need(html,"Access / accommodation","Student access-support policy is missing.");
 need(html,"Request academic review","Student academic-review surface is missing.");
+need(html,"Chat means people","NBL Social human-chat surface is missing.");
+need(html,"Ask classmates first","Study Hall peer-help surface is missing.");
+need(html,"Helper leaderboard","Helper leaderboard is missing.");
+need(html,'data-social-dm-handle',"NBL handle DM control is missing.");
+need(html,'data-social-messages',"Human message rail is missing.");
+need(js,'SOCIAL_API="https://tvypdakofcrlvnwporhh.supabase.co/functions/v1/nbl-social"',"NBL Social backend endpoint is missing.");
+for(const action of ["direct","room","list_threads","list_messages","list_help_cases","send","ask_help","solve_help","ask_grey","helper_board","report"]){
+  need(js,'action:"'+action+'"',"NBL Social action missing from campus: "+action);
+}
+need(js,"Solved / This helped","Study Hall solved/helpful reward action is missing.");
+need(js,"Helper Mode locked","Helper Mode milestone explanation is missing.");
+need(css,".social-shell","NBL Social layout styling is missing.");
+need(css,".helper-board","Helper leaderboard styling is missing.");
 need(html,"data-student-number","Student-number display is missing.");
 need(js,'action:"university_submissions"',"Student submission listing is missing.");
 need(js,'action:"university_submit_work"',"Student coursework submission action is missing.");
