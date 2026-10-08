@@ -85,6 +85,27 @@ need(css,".reader{","Secure reader styling is missing.");
 need(css,".frontier{","Frontier Check styling is missing.");
 need(css,".gradebook{","Gradebook styling is missing.");
 need(css,".community-grid","Community styling is missing.");
+need(html,'id="nbl-chat"',"Human NBL Chat room is missing.");
+need(html,"People talking to people","Chat is not defined as human communication.");
+need(html,'data-social-dm-form',"Direct-message surface is missing.");
+need(html,'data-social-message-list',"Human message list is missing.");
+need(html,'id="helper-board"',"Helper Board is missing.");
+need(html,"2 bonus Beans replies","Real helper reward copy is missing.");
+need(html,"500 NBL Usage credits","Monthly Helper winner reward copy is missing.");
+need(html,'id="student-access-fund"',"Student Access Fund is missing.");
+need(html,"Optional $1+ contributions","Student Access Fund minimum/purpose copy is missing.");
+need(js,'SOCIAL_API="https://tvypdakofcrlvnwporhh.supabase.co/functions/v1/nbl-social"',"NBL social backend is not wired.");
+need(js,'action:"start_dm"',"Direct messages are not wired.");
+need(js,'action:"send"',"Human Chat send is not wired.");
+need(js,'action:"mark_helpful"',"Helper reward action is not wired.");
+need(js,'action:"helper_board"',"Helper Board backend is not wired.");
+need(js,'action:"fund_board"',"Student Access Fund board is not wired.");
+need(js,'plan:"studios_support"',"Student Access Fund checkout rail is not wired.");
+need(js,'action:"founder_broadcast"',"Founder broadcast is not wired.");
+need(js,'action:"create_group"',"Founder group Chat creation is not wired.");
+need(css,".social-shell","Human Chat styling is missing.");
+need(css,".helper-grid","Helper Board styling is missing.");
+need(css,".fund-grid","Student Access Fund styling is missing.");
 
 for(const secret of ["SUPABASE_SERVICE_ROLE_KEY","OPENAI_API_KEY","STRIPE_SECRET_KEY","sk-proj-","sk_live_"]){
   forbid(html,secret,`Private secret marker in university.html: ${secret}`);
