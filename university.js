@@ -3,12 +3,13 @@
 
 const API="https://tvypdakofcrlvnwporhh.supabase.co/functions/v1/nbl-foundation-runtime";
 const BILLING_API="https://tvypdakofcrlvnwporhh.supabase.co/functions/v1/nbl-billing-link";
+const SOCIAL_API="https://tvypdakofcrlvnwporhh.supabase.co/functions/v1/nbl-social";
 const UNIVERSITY_PUBLIC_CHECKOUT_ENABLED=false;
 const CLERK_KEY="pk_live_Y2xlcmsubmV3YmVhbnNsYW5kLm9yZyQ";
 const ACCOUNT_PORTAL="https://accounts.newbeansland.org";
 const $=(s,r=document)=>r.querySelector(s);
 const $$=(s,r=document)=>[...r.querySelectorAll(s)];
-const state={clerk:null,university:null,course:"APSK 101",greyHistory:[],conversationId:null,assessment:null,reader:null};
+const state={clerk:null,university:null,course:"APSK 101",greyHistory:[],conversationId:null,assessment:null,reader:null,socialMe:null,socialRooms:[],socialRoomId:null,socialRoomType:null,socialTimer:null};
 
 function safeReturnUrl(){const u=new URL(location.href);u.hash="";return u.href;}
 function signInUrl(){return ACCOUNT_PORTAL+"/sign-in?redirect_url="+encodeURIComponent(safeReturnUrl());}
@@ -48,6 +49,15 @@ async function api(body){
   const response=await fetch(API,{method:"POST",headers:{"Content-Type":"application/json",Authorization:"Bearer "+token},body:JSON.stringify(body),cache:"no-store"});
   const payload=await response.json().catch(()=>({}));
   if(!response.ok){const e=new Error(payload?.message||"NBL University is temporarily unavailable.");e.status=response.status;e.code=payload?.code;e.payload=payload;throw e;}
+  return payload;
+}
+
+async function socialApi(body){
+  const token=await authToken();
+  if(!token){const e=new Error("Sign in with your NBL account first.");e.status=401;throw e;}
+  const response=await fetch(SOCIAL_API,{method:"POST",headers:{"Content-Type":"application/json",Authorization:"Bearer "+token},body:JSON.stringify(body),cache:"no-store"});
+  const payload=await response.json().catch(()=>({}));
+  if(!response.ok){const e=new Error(payload?.message||"NBL Chat is temporarily unavailable.");e.status=response.status;e.code=payload?.code;e.payload=payload;throw e;}
   return payload;
 }
 
@@ -295,6 +305,230 @@ async function saveCommunity(event){
   }catch(error){if(status)status.textContent=error.message||"Community settings could not be saved.";}
   finally{if(button)button.disabled=false;}
 }
+
+function money(cents){return "$"+(Number(cents||0)/100).toFixed(2);}
+function stopSocialTimer(){if(state.socialTimer){clearInterval(state.socialTimer);state.socialTimer=null;}}
+function socialStatus(text){const el=$("[data-social-status]");if(el)el.textContent=text;}
+function renderSocialMe(me){
+  state.socialMe=me||null;
+  if($("[data-social-handle]"))$("[data-social-handle]").textContent=me?.handle||"@NBL";
+  if($("[data-social-beans-bonus]"))$("[data-social-beans-bonus]").textContent=String(me?.beansBonusReplies??0);
+  if($("[data-social-usage]"))$("[data-social-usage]").textContent=String(me?.nblUsageCredits??0);
+  const helper=me?.helper||{};
+  const helperMode=helper.helperMode===true?"Unlocked":"Locked";
+  if($("[data-social-helper-mode]"))$("[data-social-helper-mode]").textContent=helperMode;
+  if($("[data-helper-count]"))$("[data-helper-count]").textContent=String(helper.helpCount??0);
+  if($("[data-helper-unique]"))$("[data-helper-unique]").textContent=String(helper.uniqueStudentsHelped??0);
+  if($("[data-helper-points]"))$("[data-helper-points]").textContent=String(helper.helperPoints??0);
+  if($("[data-helper-mode]"))$("[data-helper-mode]").textContent=helperMode;
+  if($("[data-fund-optin]"))$("[data-fund-optin]").checked=me?.studentAccessFund?.showOnBoard===true;
+  if($("[data-social-lock]"))$("[data-social-lock]").hidden=me?.assessmentLocked!==true;
+  const founderTools=$("[data-social-founder-tools]");
+  if(founderTools)founderTools.hidden=me?.founder!==true;
+}
+async function loadSocialMe(){
+  const payload=await socialApi({action:"me"});
+  renderSocialMe(payload?.me||null);
+  return payload?.me||null;
+}
+function roomLabel(room){
+  const type=String(room?.type||"").replaceAll("_"," ");
+  return type==="study hall"?(room.courseCode?room.courseCode+" Study Hall":"Study Hall"):type==="direct"?"Direct message":type==="broadcast"?"Official NBL":type==="group"?"Group Chat":type;
+}
+function renderSocialRooms(rooms){
+  state.socialRooms=Array.isArray(rooms)?rooms:[];
+  const host=$("[data-social-room-list]");if(!host)return;
+  host.replaceChildren();
+  if(!state.socialRooms.length){const p=document.createElement("p");p.className="small-note";p.textContent="No Chat rooms are available yet.";host.appendChild(p);return;}
+  for(const room of state.socialRooms){
+    const button=document.createElement("button");
+    button.type="button";
+    button.className="social-room"+(String(room.id)===String(state.socialRoomId)?" is-active":"");
+    const strong=document.createElement("strong");strong.textContent=room.title||"Chat";
+    const small=document.createElement("small");small.textContent=roomLabel(room)+(room.lastMessage?.body?" · "+String(room.lastMessage.body).slice(0,72):"");
+    button.append(strong,small);
+    button.addEventListener("click",()=>openSocialRoom(room));
+    host.appendChild(button);
+  }
+}
+async function loadSocialRooms({keepRoom=true}={}){
+  const payload=await socialApi({action:"rooms"});
+  renderSocialRooms(payload?.rooms||[]);
+  if(keepRoom&&state.socialRoomId){
+    const current=state.socialRooms.find(x=>String(x.id)===String(state.socialRoomId));
+    if(current)await openSocialRoom(current,{restartTimer:false});
+  }
+}
+function renderSocialMessages(payload){
+  const host=$("[data-social-message-list]");if(!host)return;
+  host.replaceChildren();
+  if(payload?.locked){
+    const p=document.createElement("p");p.className="social-lock";p.textContent="Chat is locked during your official assessment. Finish or exit the assessment before reading or sending human messages.";host.appendChild(p);
+    if($("[data-social-send-form]"))$("[data-social-send-form]").hidden=true;
+    return;
+  }
+  if($("[data-social-send-form]"))$("[data-social-send-form]").hidden=state.socialRoomType==="broadcast"&&state.socialMe?.founder!==true;
+  const rows=Array.isArray(payload?.messages)?payload.messages:[];
+  if(!rows.length){const p=document.createElement("p");p.className="small-note";p.textContent="No messages yet. Start the room.";host.appendChild(p);return;}
+  for(const row of rows){
+    const item=document.createElement("article");
+    item.className="social-message"+(row.isYou?" is-you":"")+(row.official?" is-official":"");
+    const head=document.createElement("div");
+    const who=document.createElement("strong");who.textContent=row.handle||"@nblmember";
+    const when=document.createElement("time");when.dateTime=row.createdAt||"";when.textContent=row.createdAt?new Date(row.createdAt).toLocaleString():"";
+    head.append(who,when);
+    const p=document.createElement("p");p.textContent=row.body||"";
+    item.append(head,p);
+    if(state.socialRoomType==="study_hall"&&!row.isYou){
+      const help=document.createElement("button");help.type="button";help.className="helpful-button";help.textContent="This helped me";
+      help.addEventListener("click",async()=>{
+        help.disabled=true;socialStatus("Recording verified peer help…");
+        try{
+          const result=await socialApi({action:"mark_helpful",messageId:row.id});
+          const reward=result?.reward||{};
+          help.textContent="Help recorded ✓";
+          socialStatus("Help recorded. "+String(reward.beansRepliesAwarded??2)+" bonus Beans replies went to "+(row.handle||"the helper")+".");
+          await Promise.all([loadSocialMe(),loadHelperBoard()]);
+        }catch(error){help.disabled=false;socialStatus(error.message||"That help mark could not be recorded.");}
+      });
+      item.appendChild(help);
+    }
+    host.appendChild(item);
+  }
+  host.scrollTop=host.scrollHeight;
+}
+async function refreshSocialMessages(){
+  if(!state.socialRoomId)return;
+  try{
+    const payload=await socialApi({action:"messages",roomId:state.socialRoomId,limit:120});
+    renderSocialMessages(payload);
+  }catch(error){socialStatus(error.message||"Messages could not be refreshed.");}
+}
+async function openSocialRoom(room,{restartTimer=true}={}){
+  if(!room?.id)return;
+  state.socialRoomId=room.id;state.socialRoomType=room.type||null;
+  renderSocialRooms(state.socialRooms);
+  if($("[data-social-room-title]"))$("[data-social-room-title]").textContent=room.title||"Chat";
+  if($("[data-social-room-type]"))$("[data-social-room-type]").textContent=roomLabel(room);
+  socialStatus("Loading messages…");
+  await refreshSocialMessages();
+  await socialApi({action:"mark_read",roomId:room.id}).catch(()=>{});
+  socialStatus(room.type==="study_hall"?"Study Hall is human peer help. Use Ask Grey when the room cannot solve it.":"Human Chat · no Beans call for ordinary messages.");
+  if(restartTimer){stopSocialTimer();state.socialTimer=setInterval(()=>{void refreshSocialMessages();},8000);}
+}
+async function startDirectMessage(event){
+  event.preventDefault();
+  const input=$("[data-social-dm-handle]"),handle=input?.value.trim()||"";
+  if(!handle){socialStatus("Enter an exact NBL handle.");return;}
+  socialStatus("Opening direct message…");
+  try{
+    const payload=await socialApi({action:"start_dm",handle});
+    if(input)input.value="";
+    await loadSocialRooms({keepRoom:false});
+    const room=state.socialRooms.find(x=>String(x.id)===String(payload?.room?.id))||payload?.room;
+    if(room)await openSocialRoom(room);
+  }catch(error){socialStatus(error.message||"Direct message could not be opened.");}
+}
+async function sendSocialMessage(event){
+  event.preventDefault();
+  if(!state.socialRoomId){socialStatus("Choose a Chat room first.");return;}
+  const input=$("[data-social-message]"),message=input?.value.trim()||"";
+  if(!message)return;
+  const button=event.currentTarget.querySelector('button[type="submit"]');
+  if(button)button.disabled=true;
+  try{
+    await socialApi({action:"send",roomId:state.socialRoomId,message});
+    if(input)input.value="";
+    await refreshSocialMessages();
+    await loadSocialRooms({keepRoom:false});
+  }catch(error){socialStatus(error.message||"Message could not be sent.");}
+  finally{if(button)button.disabled=false;}
+}
+function renderHelperBoard(board){
+  const host=$("[data-helper-list]");if(!host)return;
+  host.replaceChildren();
+  const rows=Array.isArray(board?.helpers)?board.helpers:[];
+  if(!rows.length){const p=document.createElement("p");p.className="small-note";p.textContent="No verified peer help has been recorded yet.";host.appendChild(p);return;}
+  for(const row of rows){
+    const item=document.createElement("div");item.className="helper-row";
+    const name=document.createElement("strong");name.textContent="#"+String(row.rank)+" "+String(row.handle||"@nblmember")+(row.helperMode?" · Helper Mode":"");
+    const detail=document.createElement("span");detail.textContent=String(row.uniqueStudentsHelped)+" students helped · "+String(row.helpCount)+" helpful answers · "+String(row.helperPoints)+" pts";
+    item.append(name,detail);host.appendChild(item);
+  }
+}
+async function loadHelperBoard(){
+  const host=$("[data-helper-list]");if(!host)return;
+  try{const payload=await socialApi({action:"helper_board",limit:25});renderHelperBoard(payload?.board||{});}
+  catch(error){host.replaceChildren();const p=document.createElement("p");p.className="small-note";p.textContent=error.message||"Helper Board could not be loaded.";host.appendChild(p);}
+}
+function renderFundBoard(board){
+  if($("[data-fund-total]"))$("[data-fund-total]").textContent=money(board?.fundContributionCents||0);
+  const host=$("[data-fund-list]");if(!host)return;host.replaceChildren();
+  const rows=Array.isArray(board?.contributors)?board.contributors:[];
+  if(!rows.length){const p=document.createElement("p");p.className="small-note";p.textContent="No supporters have chosen public recognition yet.";host.appendChild(p);return;}
+  for(const row of rows){
+    const item=document.createElement("div");item.className="fund-row";
+    const name=document.createElement("strong");name.textContent="#"+String(row.rank)+" "+String(row.handle||"@nblmember");
+    const detail=document.createElement("span");detail.textContent=money(row.contributionCents)+" total · "+String(row.contributionCount)+" contribution"+(row.contributionCount===1?"":"s");
+    item.append(name,detail);host.appendChild(item);
+  }
+}
+async function loadFundBoard(){
+  const host=$("[data-fund-list]");if(!host)return;
+  try{const payload=await socialApi({action:"fund_board",limit:10});renderFundBoard(payload?.board||{});}
+  catch(error){host.replaceChildren();const p=document.createElement("p");p.className="small-note";p.textContent=error.message||"Student Access Fund board could not be loaded.";host.appendChild(p);}
+}
+async function saveFundProfile(){
+  const status=$("[data-fund-status]"),show=Boolean($("[data-fund-optin]")?.checked);
+  if(status)status.textContent="Saving supporter-board preference…";
+  try{await socialApi({action:"fund_profile",showOnBoard:show});if(status)status.textContent=show?"Your NBL handle can appear on the supporter board.":"Public recognition is off.";await loadFundBoard();}
+  catch(error){if(status)status.textContent=error.message||"Supporter preference could not be saved.";}
+}
+async function openStudentFundCheckout(){
+  const status=$("[data-fund-status]");
+  try{
+    if(status)status.textContent="Opening secure $1+ Student Access Fund checkout…";
+    const result=await billingApi({action:"checkout",plan:"studios_support"});
+    const destination=trustedBillingDestination(result?.checkoutUrl);
+    if(!destination)throw new Error("Secure Stripe checkout destination was rejected.");
+    location.href=destination;
+  }catch(error){if(status)status.textContent=error.message||"Student Access Fund checkout is temporarily unavailable.";}
+}
+async function sendFounderBroadcast(event){
+  event.preventDefault();
+  const input=$("[data-founder-broadcast]"),status=$("[data-founder-broadcast-status]"),message=input?.value.trim()||"";
+  if(!message){if(status)status.textContent="Write the official message first.";return;}
+  try{await socialApi({action:"founder_broadcast",message});if(input)input.value="";if(status)status.textContent="Official NBL message sent from @foundernbl.";await loadSocialRooms({keepRoom:false});}
+  catch(error){if(status)status.textContent=error.message||"Official message could not be sent.";}
+}
+async function createFounderGroup(event){
+  event.preventDefault();
+  const title=$("[data-founder-group-title]")?.value.trim()||"",raw=$("[data-founder-group-handles]")?.value||"",status=$("[data-founder-group-status]");
+  const handles=raw.split(",").map(x=>x.trim()).filter(Boolean);
+  if(!title){if(status)status.textContent="Give the group Chat a name.";return;}
+  try{
+    const payload=await socialApi({action:"create_group",title,handles});
+    if($("[data-founder-group-title]"))$("[data-founder-group-title]").value="";
+    if($("[data-founder-group-handles]"))$("[data-founder-group-handles]").value="";
+    if(status)status.textContent="Group Chat created.";
+    await loadSocialRooms({keepRoom:false});
+    const room=state.socialRooms.find(x=>String(x.id)===String(payload?.room?.id))||payload?.room;
+    if(room)await openSocialRoom(room);
+  }catch(error){if(status)status.textContent=error.message||"Group Chat could not be created.";}
+}
+async function loadNblSocial(){
+  stopSocialTimer();
+  try{
+    const me=await loadSocialMe();
+    await Promise.all([loadSocialRooms({keepRoom:false}),loadHelperBoard(),loadFundBoard()]);
+    if(!state.socialRoomId){
+      const first=state.socialRooms.find(x=>x.title==="NBL Chat")||state.socialRooms[0];
+      if(first)await openSocialRoom(first);
+    }
+    if(me?.assessmentLocked)socialStatus("Human Chat is locked while your official assessment is active.");
+  }catch(error){socialStatus(error.message||"NBL Chat could not be loaded.");}
+}
+
 async function submitReviewRequest(event){
   event.preventDefault();
   const button=event.currentTarget.querySelector('button[type="submit"]'),status=$("[data-review-status]");
@@ -327,7 +561,7 @@ function renderUniversity(u){
   const pct=progressPercent(u);$("[data-progress-label]").textContent=pct+"%";$("[data-progress-fill]").style.width=pct+"%";
   const current=(u.courses||[]).find(x=>x.current)||(u.courses||[]).find(x=>!x.completed)||(u.courses||[])[0];if(current)state.course=current.code;
   renderCourses(u);renderLibrary(u);syncCourse();renderStartingPoint(u);renderStudentRecord(u);renderGradebook(u);
-  void loadSubmissions();void loadCommunity();void loadAfterGrey();
+  void loadSubmissions();void loadCommunity();void loadAfterGrey();void loadNblSocial();
   const p=u.progress||{};
   $("[data-last-result]").textContent=p.assessment_result?(`${p.assessment_result}${p.assessment_score!==null&&p.assessment_score!==undefined?" · "+p.assessment_score+"%":""}`):"No completed course assessment yet.";
   $("[data-last-feedback]").textContent=p.safe_feedback||"Course grades and safe feedback will appear here after an official assessment is graded.";
@@ -530,6 +764,13 @@ async function boot(){
   $("[data-grey-form]").addEventListener("submit",async e=>{e.preventDefault();const input=$("[data-grey-input]"),value=input.value.trim();if(!value)return;input.value="";await askGrey(value);});
   $("[data-coursework-form]").addEventListener("submit",submitCourseWork);
   $("[data-community-form]")?.addEventListener("submit",saveCommunity);
+  $("[data-social-dm-form]")?.addEventListener("submit",startDirectMessage);
+  $("[data-social-send-form]")?.addEventListener("submit",sendSocialMessage);
+  $("[data-social-refresh]")?.addEventListener("click",()=>{void loadSocialRooms();void refreshSocialMessages();});
+  $("[data-fund-optin]")?.addEventListener("change",()=>{void saveFundProfile();});
+  $("[data-student-fund-contribute]")?.addEventListener("click",()=>{void openStudentFundCheckout();});
+  $("[data-founder-broadcast-form]")?.addEventListener("submit",sendFounderBroadcast);
+  $("[data-founder-group-form]")?.addEventListener("submit",createFounderGroup);
   $("[data-review-form]")?.addEventListener("submit",submitReviewRequest);
   $("[data-coursework-refresh]").addEventListener("click",loadSubmissions);
   $("[data-after-grey-refresh]")?.addEventListener("click",loadAfterGrey);
