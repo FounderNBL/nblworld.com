@@ -7,14 +7,15 @@
   <meta name="description" content="The enrolled-student campus for New Beansland University: courses, secure student materials, Professor Grey, progress, and protected assessments.">
   <meta name="theme-color" content="#02060b">
   <link rel="canonical" href="https://nblworld.com/university.html">
-  <link rel="stylesheet" href="/university.css?v=20261001-testpdfag1">
-  <script defer src="/university.js?v=20261001-testpdfag1"></script>
+  <link rel="stylesheet" href="/university.css?v=20261007-social1">
+  <script defer src="/university.js?v=20261007-social1"></script>
 </head>
 <body>
 <header class="site-head">
   <a class="brand" href="/"><span class="brand-mark">NBL U</span><span><strong>New Beansland University</strong><small>NBL World Student Campus</small></span></a>
   <nav class="nav" aria-label="Campus navigation">
     <a href="/">NBL World</a>
+    <a href="#nbl-chat">Chat</a>
     <button type="button" data-signin>Sign in</button><button type="button" data-signout hidden>Sign out</button>
   </nav>
 </header>
@@ -231,6 +232,98 @@
           <h3>This week's class board</h3>
           <div class="community-list" data-community-list><p class="small-note">Loading opted-in classmates…</p></div>
         </div>
+      </div>
+    </section>
+
+
+    <section class="card section" id="nbl-chat">
+      <div class="section-head"><div><p class="eyebrow">People talking to people</p><h2>NBL Chat</h2></div><p>Beans is the AI assistant. Chat is where New Beansland people talk to each other: direct messages, class rooms, Study Hall, and official NBL announcements.</p></div>
+      <div class="social-summary">
+        <div><strong data-social-handle>@NBLU</strong><span>Your NBL handle</span></div>
+        <div><strong data-social-beans-bonus>0</strong><span>Bonus Beans replies</span></div>
+        <div><strong data-social-usage>0</strong><span>NBL Usage credits</span></div>
+        <div><strong data-social-helper-mode>Locked</strong><span>Helper Mode</span></div>
+      </div>
+      <p class="social-lock" data-social-lock hidden>Chat is locked while an official assessment is in progress. Finish or exit the assessment first.</p>
+      <div class="social-shell">
+        <aside class="social-sidebar">
+          <form class="social-dm-form" data-social-dm-form>
+            <label for="social-dm-handle">Direct message</label>
+            <div><input id="social-dm-handle" data-social-dm-handle maxlength="80" placeholder="@usernameNBLU" autocomplete="off"><button class="btn ghost" type="submit">Message</button></div>
+          </form>
+          <div class="social-room-head"><strong>Rooms</strong><button class="btn ghost" type="button" data-social-refresh>Refresh</button></div>
+          <div class="social-room-list" data-social-room-list><p class="small-note">Loading Chat rooms…</p></div>
+        </aside>
+        <section class="social-conversation" aria-live="polite">
+          <div class="social-conversation-head"><div><p class="eyebrow">NBL Chat</p><h3 data-social-room-title>Choose a room</h3></div><span data-social-room-type></span></div>
+          <div class="social-message-list" data-social-message-list><p class="small-note">Choose NBL Chat, a Study Hall, an announcement room, or a direct message.</p></div>
+          <form class="social-send-form" data-social-send-form>
+            <label class="sr-only" for="social-message-input">Message</label>
+            <textarea id="social-message-input" data-social-message maxlength="3000" placeholder="Message the room…" required></textarea>
+            <button class="btn primary" type="submit">Send</button>
+          </form>
+          <p class="small-note" data-social-status>Human messages do not call Beans or Professor Grey.</p>
+        </section>
+      </div>
+
+      <div class="social-founder-tools" data-social-founder-tools hidden>
+        <article class="academic-panel">
+          <p class="eyebrow">Founder channel</p>
+          <h3>Official NBL message</h3>
+          <form data-founder-broadcast-form>
+            <textarea data-founder-broadcast maxlength="3000" placeholder="Send an official message from @foundernbl"></textarea>
+            <button class="btn" type="submit">Broadcast</button>
+          </form>
+          <p class="small-note" data-founder-broadcast-status>Posts to NBL Announcements as a verified official message.</p>
+        </article>
+        <article class="academic-panel">
+          <p class="eyebrow">Founder channel</p>
+          <h3>Create a group Chat</h3>
+          <form data-founder-group-form>
+            <input data-founder-group-title maxlength="100" placeholder="Group name">
+            <textarea data-founder-group-handles maxlength="1200" placeholder="@student1NBLU, @student2NBLU"></textarea>
+            <button class="btn" type="submit">Create group</button>
+          </form>
+          <p class="small-note" data-founder-group-status>Add exact NBL handles separated by commas.</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="card section" id="helper-board">
+      <div class="section-head"><div><p class="eyebrow">Students helping students</p><h2>Helper Board</h2></div><p>Useful peer help earns real NBL rewards. A verified “This helped me” in Study Hall gives the helper 2 bonus Beans replies and 10 Helper Points. Help five different students to unlock Helper Mode. The previous month’s #1 helper earns 500 NBL Usage credits.</p></div>
+      <div class="helper-grid">
+        <article class="academic-panel">
+          <h3>Your helper record</h3>
+          <dl class="record-list">
+            <div><dt>Helpful answers</dt><dd data-helper-count>0</dd></div>
+            <div><dt>Different students helped</dt><dd data-helper-unique>0</dd></div>
+            <div><dt>Helper Points</dt><dd data-helper-points>0</dd></div>
+            <div><dt>Helper Mode</dt><dd data-helper-mode>Locked</dd></div>
+          </dl>
+          <p class="small-note">One student can reward the same helper only once per day, with at most three verified help marks per day. Official assessments lock Chat completely.</p>
+        </article>
+        <article class="academic-panel">
+          <h3>Top helpers</h3>
+          <div class="helper-list" data-helper-list><p class="small-note">Loading Helper Board…</p></div>
+        </article>
+      </div>
+    </section>
+
+    <section class="card section" id="student-access-fund">
+      <div class="section-head"><div><p class="eyebrow">Help another student get through the door</p><h2>NBL Student Access Fund</h2></div><p>Optional $1+ contributions help NBL cover student access, materials, and NBL Usage for students with fewer resources. This is an NBL support fund, not a claim of tax-deductible charitable giving.</p></div>
+      <div class="fund-grid">
+        <article class="academic-panel">
+          <h3>Fund total</h3>
+          <div class="fund-total" data-fund-total>$0.00</div>
+          <button class="btn primary" type="button" data-student-fund-contribute>Add $1+ to the fund</button>
+          <p class="small-note">Stripe handles payment. The minimum contribution is $1. Supporting the fund does not buy personal NBL Usage.</p>
+          <label class="fund-optin"><input type="checkbox" data-fund-optin> Show my NBL handle on the supporter board</label>
+          <p class="small-note" data-fund-status>Public recognition is optional and off by default.</p>
+        </article>
+        <article class="academic-panel">
+          <h3>Supporter board</h3>
+          <div class="fund-list" data-fund-list><p class="small-note">Loading supporter board…</p></div>
+        </article>
       </div>
     </section>
 
