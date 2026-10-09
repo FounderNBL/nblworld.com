@@ -7,6 +7,7 @@ const home=fs.readFileSync(new URL("../index.html",import.meta.url),"utf8");
 const memberChat=fs.readFileSync(new URL("../chat.html",import.meta.url),"utf8");
 const memberChatJs=fs.readFileSync(new URL("../chat.js",import.meta.url),"utf8");
 const memberChatCss=fs.readFileSync(new URL("../chat.css",import.meta.url),"utf8");
+const socialRealtime=fs.readFileSync(new URL("../social-realtime.js",import.meta.url),"utf8");
 
 const errors=[];
 const need=(source,text,msg)=>{if(!source.includes(text))errors.push(msg);};
@@ -28,6 +29,18 @@ for(const action of ["me","find_users","direct","list_threads","list_messages","
   need(memberChatJs,'action:"'+action+'"',"Member Chat action missing: "+action);
 }
 need(memberChatCss,".chat-app","Member Chat responsive layout missing.");
+need(memberChat,'src="/social-realtime.js?v=20261008"',"Member Chat must load private Realtime listener.");
+need(html,'src="/social-realtime.js?v=20261008"',"Campus must load the same private Realtime listener.");
+need(socialRealtime,'config:{private:true}',"Realtime channels must always be private.");
+need(socialRealtime,'watchThread',"Thread notifications must be available.");
+need(socialRealtime,'watchInbox',"Recipient inbox notifications must be available.");
+need(socialRealtime,'eventsPerSecond:5',"Realtime must use a rate-limited connection.");
+need(socialRealtime,'refreshPending',"Realtime refreshes must be coalesced.");
+need(memberChatJs,'watchInbox()',"Regular signed-in members must listen for incoming DMs.");
+need(memberChatJs,'watchOpenThread(id)',"Open member chats must subscribe to their own thread.");
+need(js,'watchCampusThread(threadId)',"Campus Social rooms must subscribe only when open.");
+forbid(socialRealtime,'service_role',"Service keys cannot appear in public Realtime client code.");
+forbid(socialRealtime,'realtime.send',"Clients must only listen, not broadcast unverified messages.");
 forbid(memberChatJs,"localStorage.setItem","Member Chat must not persist session or backend token to localStorage.");
 forbid(memberChatJs,"RUNWAY_API_KEY","Provider credentials must never be in the browser.");
 need(home,"End-to-end enrollment is not release-proven yet","NBL World release-status hold is missing.");
