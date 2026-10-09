@@ -23,7 +23,7 @@ need(memberChat,'data-chat-app hidden',"Member messages must be hidden until sig
 need(memberChat,'href="/university.html#nbl-social"',"Students must be routed to protected classroom Chat.");
 need(memberChat,"University enrollment is not required for direct messages.","Regular member DMs must not be gated by academic enrollment.");
 need(memberChatJs,'SOCIAL_API="https://tvypdakofcrlvnwporhh.supabase.co/functions/v1/nbl-social"',"Member Chat must use the existing protected social API.");
-need(memberChatJs,'Authorization:"Bearer "+token',"Member Chat must use a real signed-in session token.");
+need(memberChatJs,'"Authorization":"Bearer "+token',"Member Chat must use a real signed-in session token.");
 for(const action of ["me","find_users","direct","list_threads","list_messages","send","mute","block","unblock","report"]){
   need(memberChatJs,'action:"'+action+'"',"Member Chat action missing: "+action);
 }
