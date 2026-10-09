@@ -22,8 +22,8 @@ async function loadSDK(){
   });
   return sdkPromise;
 }
-function watchThread(threadId,getToken,onRefresh){
-  if(!/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(String(threadId||"")))return ()=>{};
+function watchTopic(topic,getToken,onRefresh){
+  if(!/^nbl-social:(thread:[0-9a-f-]{36}|inbox:[a-zA-Z0-9_-]{3,128})$/.test(String(topic||"")))return ()=>{};
   let active=true,subscribed=false,client=null,channel=null,refreshPending=false;
   let lastFetched=Date.now(),lastReconnect=0,tokenUpdated=0;
   const notify=()=>{
@@ -44,7 +44,7 @@ function watchThread(threadId,getToken,onRefresh){
         realtime:{params:{eventsPerSecond:5}}
       });
       await client.realtime.setAuth(token);if(!active){void client.realtime.disconnect();return;}
-      channel=client.channel("nbl-social:thread:"+threadId,{config:{private:true}});
+      channel=client.channel(topic,{config:{private:true}});
       channel.on("broadcast",{event:"changed"},()=>notify())
         .subscribe(state=>{
           if(!active)return;
@@ -87,5 +87,15 @@ function watchThread(threadId,getToken,onRefresh){
     channel=null;
   };
 }
-window.NBLSocialRealtime={watchThread};
+function watchThread(threadId,getToken,onRefresh){
+  const id=String(threadId||"");
+  if(!/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id))return ()=>{};
+  return watchTopic("nbl-social:thread:"+id,getToken,onRefresh);
+}
+function watchInbox(clerkUserId,getToken,onRefresh){
+  const id=String(clerkUserId||"");
+  if(!/^[a-zA-Z0-9_-]{3,128}$/.test(id))return ()=>{};
+  return watchTopic("nbl-social:inbox:"+id,getToken,onRefresh);
+}
+window.NBLSocialRealtime={watchThread,watchInbox};
 })();
