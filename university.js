@@ -3,12 +3,13 @@
 
 const API="https://tvypdakofcrlvnwporhh.supabase.co/functions/v1/nbl-foundation-runtime";
 const BILLING_API="https://tvypdakofcrlvnwporhh.supabase.co/functions/v1/nbl-billing-link";
+const SOCIAL_API="https://tvypdakofcrlvnwporhh.supabase.co/functions/v1/nbl-social";
 const UNIVERSITY_PUBLIC_CHECKOUT_ENABLED=false;
 const CLERK_KEY="pk_live_Y2xlcmsubmV3YmVhbnNsYW5kLm9yZyQ";
 const ACCOUNT_PORTAL="https://accounts.newbeansland.org";
 const $=(s,r=document)=>r.querySelector(s);
 const $$=(s,r=document)=>[...r.querySelectorAll(s)];
-const state={clerk:null,university:null,course:"APSK 101",greyHistory:[],conversationId:null,assessment:null,reader:null};
+const state={clerk:null,university:null,course:"APSK 101",greyHistory:[],conversationId:null,assessment:null,reader:null,social:{me:null,threadId:null,threadType:null,threadTitle:null,threads:[],helpCases:[]}};
 
 function safeReturnUrl(){const u=new URL(location.href);u.hash="";return u.href;}
 function signInUrl(){return ACCOUNT_PORTAL+"/sign-in?redirect_url="+encodeURIComponent(safeReturnUrl());}
@@ -48,6 +49,15 @@ async function api(body){
   const response=await fetch(API,{method:"POST",headers:{"Content-Type":"application/json",Authorization:"Bearer "+token},body:JSON.stringify(body),cache:"no-store"});
   const payload=await response.json().catch(()=>({}));
   if(!response.ok){const e=new Error(payload?.message||"NBL University is temporarily unavailable.");e.status=response.status;e.code=payload?.code;e.payload=payload;throw e;}
+  return payload;
+}
+
+async function socialApi(body){
+  const token=await authToken();
+  if(!token){const e=new Error("Sign in with your NBL account first.");e.status=401;throw e;}
+  const response=await fetch(SOCIAL_API,{method:"POST",headers:{"Content-Type":"application/json",Authorization:"Bearer "+token},body:JSON.stringify(body),cache:"no-store"});
+  const payload=await response.json().catch(()=>({}));
+  if(!response.ok){const e=new Error(payload?.message||payload?.reason||"NBL Social is temporarily unavailable.");e.status=response.status;e.code=payload?.reason;e.payload=payload;throw e;}
   return payload;
 }
 
@@ -327,7 +337,7 @@ function renderUniversity(u){
   const pct=progressPercent(u);$("[data-progress-label]").textContent=pct+"%";$("[data-progress-fill]").style.width=pct+"%";
   const current=(u.courses||[]).find(x=>x.current)||(u.courses||[]).find(x=>!x.completed)||(u.courses||[])[0];if(current)state.course=current.code;
   renderCourses(u);renderLibrary(u);syncCourse();renderStartingPoint(u);renderStudentRecord(u);renderGradebook(u);
-  void loadSubmissions();void loadCommunity();void loadAfterGrey();
+  void loadSubmissions();void loadCommunity();void loadAfterGrey();void refreshSocial();
   const p=u.progress||{};
   $("[data-last-result]").textContent=p.assessment_result?(`${p.assessment_result}${p.assessment_score!==null&&p.assessment_score!==undefined?" · "+p.assessment_score+"%":""}`):"No completed course assessment yet.";
   $("[data-last-feedback]").textContent=p.safe_feedback||"Course grades and safe feedback will appear here after an official assessment is graded.";
@@ -523,6 +533,190 @@ async function submitAssessment(){
   }catch(error){if(button)button.disabled=false;alert(error.message||"Assessment response could not be submitted.");}
 }
 
+function socialStatus(text){const el=$("[data-social-status]");if(el)el.textContent=text;}
+function socialThreadLabel(row){
+  if(row?.thread_type==="direct")return row?.peer?.handle?"@"+row.peer.handle:"Direct message";
+  return row?.title||row?.course_code||String(row?.thread_type||"Chat").replaceAll("_"," ");
+}
+function setSocialComposer(enabled){
+  const input=$("[data-social-send-input]"),button=$("[data-social-send-form] button[type=submit]");
+  if(input)input.disabled=!enabled;if(button)button.disabled=!enabled;
+  const helpInput=$("[data-help-question]"),helpButton=$("[data-help-form] button[type=submit]");
+  const study=enabled&&state.social.threadType==="study_hall"&&!state.social.me?.assessmentHelpLocked;
+  if(helpInput)helpInput.disabled=!study;if(helpButton)helpButton.disabled=!study;
+}
+function renderSocialIdentity(me){
+  state.social.me=me;
+  const handle=$("[data-social-handle]");if(handle)handle.textContent=me?.handle?"@"+me.handle:"@NBL account";
+  const helper=$("[data-social-helper]");
+  if(helper)helper.textContent=me?.helperMode?("Helper Mode · "+(me.helperLevel||"Unlocked")):"Helper Mode locked · help 5 different classmates to unlock it";
+  const credits=$("[data-social-credits]");if(credits)credits.textContent=(Number(me?.studioCredits)||0)+" NBL creative credits";
+  if(me?.assessmentHelpLocked)socialStatus("Study Hall peer help is locked during your active official assessment.");
+}
+async function loadSocialIdentity(){
+  const payload=await socialApi({action:"me"});renderSocialIdentity(payload.me||{});return payload.me||{};
+}
+function renderSocialThreads(rows){
+  state.social.threads=rows||[];
+  const host=$("[data-social-threads]");if(!host)return;host.replaceChildren();
+  if(!state.social.threads.length){const p=document.createElement("p");p.className="small-note";p.textContent="No human chats yet. Open a DM, Class Chat, or Study Hall.";host.appendChild(p);return;}
+  for(const row of state.social.threads){
+    const b=document.createElement("button");b.type="button";b.className="social-thread-button"+(row.id===state.social.threadId?" is-active":"");
+    const strong=document.createElement("strong");strong.textContent=socialThreadLabel(row);
+    const meta=document.createElement("span");meta.textContent=String(row.thread_type||"chat").replaceAll("_"," ")+(row.muted?" · muted":"");
+    b.append(strong,meta);b.addEventListener("click",()=>openSocialThread(row.id));host.appendChild(b);
+  }
+}
+async function loadSocialThreads(){
+  const payload=await socialApi({action:"list_threads"});renderSocialThreads(payload.threads||[]);return payload.threads||[];
+}
+function ownOpenHelpCase(){
+  return (state.social.helpCases||[]).find(x=>x.isYours&&x.status==="open")||null;
+}
+function renderHelpCases(rows){
+  state.social.helpCases=rows||[];
+  const host=$("[data-help-cases]");if(!host)return;host.replaceChildren();
+  const relevant=state.social.helpCases.filter(x=>x.isYours||x.status==="solved").slice(0,12);
+  if(!relevant.length){const p=document.createElement("p");p.className="small-note";p.textContent=state.social.threadType==="study_hall"?"No Study Hall help cases yet.":"Open a Study Hall to use peer help.";host.appendChild(p);return;}
+  for(const row of relevant){
+    const box=document.createElement("div");box.className="help-case";
+    const title=document.createElement("strong");title.textContent=row.status==="open"?"Waiting for classmates":row.status==="escalated"?"Professor Grey answered":row.status==="solved"?"Solved":"Closed";
+    const meta=document.createElement("span");
+    meta.textContent=(row.courseCode||"Study Hall")+(row.helper?.handle?" · helped by @"+row.helper.handle:"")+(row.pointsAwarded?" · "+row.pointsAwarded+" Helper Points":"");
+    box.append(title,meta);
+    if(row.isYours&&row.status==="open"){
+      const grey=document.createElement("button");grey.type="button";grey.className="btn ghost";grey.textContent="Ask Professor Grey instead";
+      grey.addEventListener("click",()=>askGreyFromHelp(row.id));box.appendChild(grey);
+    }
+    host.appendChild(box);
+  }
+}
+function renderSocialMessages(rows){
+  const host=$("[data-social-messages]");if(!host)return;host.replaceChildren();
+  if(!rows.length){const p=document.createElement("p");p.className="small-note";p.textContent="No messages yet. Say something.";host.appendChild(p);return;}
+  const meHandle=String(state.social.me?.handle||"").toLowerCase(),openCase=ownOpenHelpCase();
+  for(const row of rows){
+    const sender=String(row?.sender?.handle||"member"),isMe=sender.toLowerCase()===meHandle;
+    const box=document.createElement("div");box.className="social-message"+(isMe?" is-me":"")+(row.officialRole?" is-official":"");
+    const head=document.createElement("div");head.className="social-message-head";
+    const who=document.createElement("strong");who.textContent="@"+sender+(row.officialRole?" ✓":"");
+    const when=document.createElement("span");when.textContent=new Date(row.createdAt).toLocaleString();
+    head.append(who,when);
+    const text=document.createElement("p");text.textContent=row.body||"";
+    box.append(head,text);
+    const actions=document.createElement("div");actions.className="social-message-actions";
+    if(openCase&&!isMe&&!row.officialRole&&row.id!==openCase.questionMessageId){
+      const solved=document.createElement("button");solved.type="button";solved.className="btn ghost";solved.textContent="Solved / This helped";
+      solved.addEventListener("click",()=>solveSocialHelp(openCase.id,row.id));actions.appendChild(solved);
+    }
+    if(!isMe&&!row.deleted){
+      const report=document.createElement("button");report.type="button";report.className="btn ghost";report.textContent="Report";
+      report.addEventListener("click",()=>reportSocialMessage(row.id));actions.appendChild(report);
+    }
+    if(actions.childNodes.length)box.appendChild(actions);
+    host.appendChild(box);
+  }
+  host.scrollTop=host.scrollHeight;
+}
+async function openSocialThread(threadId){
+  state.social.threadId=threadId;
+  const row=state.social.threads.find(x=>x.id===threadId)||{};
+  state.social.threadType=row.thread_type||null;state.social.threadTitle=socialThreadLabel(row);
+  const type=$("[data-social-thread-type]"),title=$("[data-social-thread-title]");
+  if(type)type.textContent=String(state.social.threadType||"Chat").replaceAll("_"," ");
+  if(title)title.textContent=state.social.threadTitle||"Chat";
+  const mute=$("[data-social-mute]");if(mute){mute.hidden=false;mute.textContent=row.muted?"Unmute":"Mute";mute.dataset.muted=row.muted?"true":"false";}
+  setSocialComposer(true);
+  const [messages,cases]=await Promise.all([
+    socialApi({action:"list_messages",threadId}),
+    socialApi({action:"list_help_cases",threadId})
+  ]);
+  renderHelpCases(cases.cases||[]);renderSocialMessages(messages.messages||[]);
+  renderSocialThreads(state.social.threads);
+}
+async function refreshSocial(){
+  try{
+    await loadSocialIdentity();await loadSocialThreads();await loadHelperBoard();
+    if(state.social.threadId)await openSocialThread(state.social.threadId);
+  }catch(error){socialStatus(error.message||"NBL Social could not refresh.");}
+}
+async function openStudyHall(){
+  try{
+    const payload=await socialApi({action:"room",type:"study_hall",courseCode:state.course,title:state.course+" Study Hall"});
+    await loadSocialThreads();await openSocialThread(payload.threadId);socialStatus("Study Hall open. Ask classmates first; Grey is still available if you need him.");
+  }catch(error){socialStatus(error.message);}
+}
+async function openClassChat(){
+  try{
+    const payload=await socialApi({action:"room",type:"class",courseCode:"FOUNDATION",title:"Foundation Class Chat"});
+    await loadSocialThreads();await openSocialThread(payload.threadId);socialStatus("Class Chat open.");
+  }catch(error){socialStatus(error.message);}
+}
+async function openDirectMessage(event){
+  event.preventDefault();const input=$("[data-social-dm-handle]"),handle=input?.value.trim();if(!handle)return;
+  try{
+    const payload=await socialApi({action:"direct",handle});if(input)input.value="";
+    await loadSocialThreads();await openSocialThread(payload.threadId);socialStatus("Direct message opened with @"+(payload.target?.handle||handle.replace(/^@/,""))+".");
+  }catch(error){socialStatus(error.message);}
+}
+async function sendSocialMessage(event){
+  event.preventDefault();const input=$("[data-social-send-input]"),message=input?.value.trim();
+  if(!message||!state.social.threadId)return;
+  const button=event.currentTarget.querySelector('button[type="submit"]');if(button)button.disabled=true;
+  try{await socialApi({action:"send",threadId:state.social.threadId,message});input.value="";await openSocialThread(state.social.threadId);}
+  catch(error){socialStatus(error.message);}finally{if(button)button.disabled=false;}
+}
+async function askClassmates(event){
+  event.preventDefault();const input=$("[data-help-question]"),question=input?.value.trim();
+  if(!question||!state.social.threadId||state.social.threadType!=="study_hall")return;
+  const button=event.currentTarget.querySelector('button[type="submit"]');if(button)button.disabled=true;
+  try{await socialApi({action:"ask_help",threadId:state.social.threadId,question});input.value="";socialStatus("Question posted to classmates.");await openSocialThread(state.social.threadId);}
+  catch(error){socialStatus(error.message);}finally{if(button)button.disabled=false;}
+}
+async function solveSocialHelp(caseId,messageId){
+  try{
+    const payload=await socialApi({action:"solve_help",caseId,messageId});
+    const reward=payload?.solution?.rewards?.newRewards||[];
+    socialStatus(reward.length?"Solved. Your classmate earned Helper Points and unlocked an NBL reward.":"Solved. Your classmate earned Helper Points.");
+    await Promise.all([loadSocialIdentity(),loadHelperBoard()]);await openSocialThread(state.social.threadId);
+  }catch(error){socialStatus(error.message);}
+}
+async function askGreyFromHelp(caseId){
+  try{
+    socialStatus("Professor Grey is taking this one…");
+    await socialApi({action:"ask_grey",caseId});socialStatus("Grey answered in the Study Hall.");
+    await openSocialThread(state.social.threadId);
+  }catch(error){socialStatus(error.message);}
+}
+async function reportSocialMessage(messageId){
+  const reason=prompt("Why are you reporting this message?");if(!reason?.trim())return;
+  try{await socialApi({action:"report",messageId,reason:reason.trim()});socialStatus("Report recorded for review.");}
+  catch(error){socialStatus(error.message);}
+}
+async function toggleSocialMute(){
+  if(!state.social.threadId)return;const button=$("[data-social-mute]"),muted=button?.dataset?.muted==="true";
+  try{await socialApi({action:"mute",threadId:state.social.threadId,muted:!muted});await loadSocialThreads();await openSocialThread(state.social.threadId);}
+  catch(error){socialStatus(error.message);}
+}
+function renderHelperBoard(payload){
+  const host=$("[data-helper-board]");if(!host)return;host.replaceChildren();
+  const rows=payload?.board?.helpers||payload?.helpers||[];
+  if(!rows.length){const p=document.createElement("p");p.className="small-note";p.textContent="Nobody has a solved peer-help case this month yet.";host.appendChild(p);return;}
+  const list=document.createElement("div");list.className="helper-board";
+  for(const row of rows){
+    const item=document.createElement("div");item.className="helper-row";
+    const rank=document.createElement("strong");rank.textContent="#"+row.rank;
+    const name=document.createElement("span");name.textContent="@"+row.username+(row.helperMode?" · "+(row.helperLevel||"Helper Mode"):"");
+    const count=document.createElement("b");count.textContent=row.uniqueStudentsHelped+" helped";
+    item.append(rank,name,count);list.appendChild(item);
+  }
+  host.appendChild(list);
+}
+async function loadHelperBoard(){
+  try{const payload=await socialApi({action:"helper_board"});renderHelperBoard(payload.board||payload);}
+  catch(error){const host=$("[data-helper-board]");if(host)host.textContent=error.message||"Helper board unavailable.";}
+}
+
 async function boot(){
   $("[data-signin]").forEach(b=>b.addEventListener("click",openSignIn));
   $("[data-nblu-checkout]").forEach(button=>button.addEventListener("click",()=>openNbluCheckout(button)));
@@ -531,6 +725,13 @@ async function boot(){
   $("[data-coursework-form]").addEventListener("submit",submitCourseWork);
   $("[data-community-form]")?.addEventListener("submit",saveCommunity);
   $("[data-review-form]")?.addEventListener("submit",submitReviewRequest);
+  $("[data-social-dm-form]")?.addEventListener("submit",openDirectMessage);
+  $("[data-social-send-form]")?.addEventListener("submit",sendSocialMessage);
+  $("[data-help-form]")?.addEventListener("submit",askClassmates);
+  $("[data-social-study]")?.addEventListener("click",openStudyHall);
+  $("[data-social-class]")?.addEventListener("click",openClassChat);
+  $("[data-social-refresh]")?.addEventListener("click",refreshSocial);
+  $("[data-social-mute]")?.addEventListener("click",toggleSocialMute);
   $("[data-coursework-refresh]").addEventListener("click",loadSubmissions);
   $("[data-after-grey-refresh]")?.addEventListener("click",loadAfterGrey);
   $("[data-course-select]").forEach(el=>el.addEventListener("change",e=>{state.course=e.target.value;syncCourse();renderAssessment(null);void loadSubmissions();void loadAfterGrey();}));

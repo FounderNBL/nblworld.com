@@ -39,4 +39,8 @@ test("University campus loads with a protected enrollment gate",async({page})=>{
   await expect(page.locator("body")).toContainText("Opt-in scoreboard");
   await expect(page.locator("body")).toContainText("Access / accommodation");
   await expect(page.locator("body")).toContainText("Request academic review");
+  await expect(page.locator("body")).toContainText("Chat means people");
+  await expect(page.locator("body")).toContainText("Ask classmates first");
+  await expect(page.locator("body")).toContainText("Helper leaderboard");
+  await expect(page.locator("#nbl-social")).toBeHidden();
 });

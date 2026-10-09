@@ -234,6 +234,69 @@
       </div>
     </section>
 
+    <section class="card section nbl-social" id="nbl-social">
+      <div class="section-head">
+        <div><p class="eyebrow">NBL Social</p><h2>Chat means people</h2></div>
+        <p>Message another NBL member, talk with your class, or ask the Study Hall before spending AI usage. Beans and Professor Grey stay available when you actually need AI.</p>
+      </div>
+      <div class="social-me">
+        <strong data-social-handle>@NBL account</strong>
+        <span data-social-helper>Helper Mode locked · help classmates to unlock it</span>
+        <span data-social-credits>Creative reward balance loading…</span>
+      </div>
+      <div class="social-actions">
+        <button class="btn" type="button" data-social-study>Enter current Study Hall</button>
+        <button class="btn ghost" type="button" data-social-class>Class Chat</button>
+        <button class="btn ghost" type="button" data-social-refresh>Refresh messages</button>
+      </div>
+      <form class="social-dm-form" data-social-dm-form>
+        <label>Direct message by NBL handle
+          <div><input data-social-dm-handle maxlength="80" placeholder="@usernamenblu"><button class="btn ghost" type="submit">Open DM</button></div>
+        </label>
+        <p class="small-note" data-social-status>Official Founder messages are visibly verified. Private messages are not placed on the public class board.</p>
+      </form>
+
+      <div class="social-shell">
+        <aside class="social-threads">
+          <h3>Your chats</h3>
+          <div data-social-threads><p class="small-note">Loading conversations…</p></div>
+        </aside>
+        <article class="social-conversation">
+          <div class="social-conversation-head">
+            <div><p class="eyebrow" data-social-thread-type>Chat</p><h3 data-social-thread-title>Choose a conversation</h3></div>
+            <button class="btn ghost" type="button" data-social-mute hidden>Mute</button>
+          </div>
+          <div class="social-messages" data-social-messages aria-live="polite">
+            <p class="small-note">Direct messages, class rooms, and Study Hall conversations appear here.</p>
+          </div>
+          <form class="social-send" data-social-send-form>
+            <textarea data-social-send-input maxlength="8000" placeholder="Message this chat…" disabled></textarea>
+            <button class="btn primary" type="submit" disabled>Send</button>
+          </form>
+        </article>
+      </div>
+
+      <div class="social-learning-grid">
+        <article class="academic-panel study-help">
+          <p class="eyebrow">Study Hall</p>
+          <h3>Ask classmates first</h3>
+          <p>In a Study Hall, post a real course question. If another student gets you unstuck, mark their answer <strong>Solved / This helped</strong>. That earns them Helper Points and can unlock real NBL rewards.</p>
+          <form data-help-form>
+            <textarea data-help-question maxlength="8000" placeholder="What are you stuck on?" disabled></textarea>
+            <button class="btn" type="submit" disabled>Ask classmates</button>
+          </form>
+          <div data-help-cases><p class="small-note">Open a Study Hall to use peer help.</p></div>
+          <p class="small-note">During an active official assessment, Study Hall help is locked. No answer marketplace for finals.</p>
+        </article>
+        <article class="academic-panel helper-board-panel">
+          <p class="eyebrow">Helper leaderboard</p>
+          <h3>Students helping students</h3>
+          <p>Rank is driven by distinct classmates helped so one friend cannot farm the board forever. Real milestones unlock Helper Mode and NBL creative-use rewards.</p>
+          <div data-helper-board><p class="small-note">Loading this month's helpers…</p></div>
+        </article>
+      </div>
+    </section>
+
     <section class="card section" id="student-support">
       <div class="section-head"><div><p class="eyebrow">Student support</p><h2>Access and academic review</h2></div><p>Real structure also means telling students what happens when the format gets in the way or when a recorded result needs another look.</p></div>
       <div class="support-grid">
