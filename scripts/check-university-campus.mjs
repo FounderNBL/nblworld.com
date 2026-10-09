@@ -4,6 +4,9 @@ const html=fs.readFileSync(new URL("../university.html",import.meta.url),"utf8")
 const js=fs.readFileSync(new URL("../university.js",import.meta.url),"utf8");
 const css=fs.readFileSync(new URL("../university.css",import.meta.url),"utf8");
 const home=fs.readFileSync(new URL("../index.html",import.meta.url),"utf8");
+const memberChat=fs.readFileSync(new URL("../chat.html",import.meta.url),"utf8");
+const memberChatJs=fs.readFileSync(new URL("../chat.js",import.meta.url),"utf8");
+const memberChatCss=fs.readFileSync(new URL("../chat.css",import.meta.url),"utf8");
 
 const errors=[];
 const need=(source,text,msg)=>{if(!source.includes(text))errors.push(msg);};
@@ -13,7 +16,20 @@ need(home,'src="/NBL_WORLD.png"',"NBL World hero image is missing.");
 need(home,'href="/university.html#enroll"',"NBL World home does not route enrollment into its University.");
 need(home,"Full NBLU Experience","NBL World does not feature Full NBLU.");
 need(home,'$184.99',"NBL World does not show the Full NBLU price.");
-need(home,"regular Beans","NBL World does not preserve the Chat / University surface boundary.");
+need(home,'href="/chat.html"',"NBL World must offer the human NBL Chat member entrance.");
+need(html,'href="/chat.html"',"University campus must link regular members to NBL World Chat.");
+need(memberChat,'data-chat-guest',"Human Chat must have signed-out account entry.");
+need(memberChat,'data-chat-app hidden',"Member messages must be hidden until signed in.");
+need(memberChat,'href="/university.html#nbl-social"',"Students must be routed to protected classroom Chat.");
+need(memberChat,"No University enrollment is required for direct messages.","Regular member DMs must not be gated by academic enrollment.");
+need(memberChatJs,'SOCIAL_API="https://tvypdakofcrlvnwporhh.supabase.co/functions/v1/nbl-social"',"Member Chat must use the existing protected social API.");
+need(memberChatJs,'"Authorization":"Bearer "+token',"Member Chat must use a real signed-in session token.");
+for(const action of ["me","find_users","direct","list_threads","list_messages","send","mute","block","unblock","report"]){
+  need(memberChatJs,'action:"'+action+'"',"Member Chat action missing: "+action);
+}
+need(memberChatCss,".chat-app","Member Chat responsive layout missing.");
+forbid(memberChatJs,"localStorage.setItem","Member Chat must not persist session or backend token to localStorage.");
+forbid(memberChatJs,"RUNWAY_API_KEY","Provider credentials must never be in the browser.");
 need(home,"End-to-end enrollment is not release-proven yet","NBL World release-status hold is missing.");
 need(home,"Visit New Beansland","The quiet public New Beansland handoff is missing.");
 if(!(home.indexOf('src="/NBL_WORLD.png"') < home.indexOf('<h1 id="nblu-title">New Beansland University</h1>') &&
