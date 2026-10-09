@@ -13,8 +13,11 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 22
-      - name: Check campus JavaScript syntax
-        run: node --check university.js
+      - name: Check campus and Social Chat JavaScript syntax
+        run: |
+          node --check university.js
+          node --check chat.js
+          node --check social-realtime.js
       - name: Check campus source boundaries
         run: node scripts/check-university-campus.mjs
       - name: Install Playwright
