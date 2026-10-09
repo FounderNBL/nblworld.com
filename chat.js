@@ -5,7 +5,7 @@ const SOCIAL_API="https://tvypdakofcrlvnwporhh.supabase.co/functions/v1/nbl-soci
 const CLERK_PUBLISHABLE_KEY="pk_live_Y2xlcmsubmV3YmVhbnNsYW5kLm9yZyQ";
 const ACCOUNT_PORTAL="https://accounts.newbeansland.org";
 const $=selector=>document.querySelector(selector);
-const state={clerk:null,me:null,threads:[],selectedId:null,selected:null,busy:false};
+const state={clerk:null,me:null,threads:[],selectedId:null,selected:null,busy:false,realtimeThread:null,realtimeStop:null,inboxStop:null};
 const status=message=>{const el=$("[data-chat-status]");if(el)el.textContent=message;};
 const node=(tag,cls,text)=>{const el=document.createElement(tag);if(cls)el.className=cls;if(text!==undefined)el.textContent=String(text);return el;};
 
@@ -121,10 +121,29 @@ function renderMessages(messages){
   }
   area.scrollTop=area.scrollHeight;
 }
+function watchOpenThread(id){
+  if(state.realtimeThread===id)return;
+  state.realtimeStop?.();state.realtimeStop=null;
+  state.realtimeThread=id;
+  if(!window.NBLSocialRealtime)return;
+  state.realtimeStop=window.NBLSocialRealtime.watchThread(id,authToken,async()=>{
+    if(state.selectedId!==id)return;
+    const payload=await social({action:"list_messages",threadId:id});
+    if(state.selectedId===id)renderMessages(payload.messages||[]);
+  });
+}
+function watchInbox(){
+  if(state.inboxStop||!window.NBLSocialRealtime||!state.clerk?.user?.id)return;
+  state.inboxStop=window.NBLSocialRealtime.watchInbox(state.clerk.user.id,authToken,async()=>{
+    if(document.hidden)return;
+    await loadThreads();
+  });
+}
 async function openThread(id){
   if(!id)return;
   const row=state.threads.find(t=>t.id===id);
   state.selectedId=id;state.selected=row||null;
+  watchOpenThread(id);
   $("[data-chat-thread-title]").textContent=displayThread(row||{});
   $("[data-chat-thread-kind]").textContent=row?.thread_type==="direct"?"Direct message":String(row?.thread_type||"Message").replaceAll("_"," ");
   $("[data-chat-messages]").replaceChildren(node("p","hint","Loading messages…"));
@@ -143,7 +162,9 @@ async function refresh(){
     renderIdentity(identity.me||{});
     state.threads=threads.threads||[];
     if(state.selectedId&&!state.threads.some(t=>t.id===state.selectedId)){
-      state.selectedId=null;state.selected=null;resetComposer();
+      state.selectedId=null;state.selected=null;
+      state.realtimeStop?.();state.realtimeStop=null;state.realtimeThread=null;
+      resetComposer();
       $("[data-chat-thread-title]").textContent="Choose a conversation";
       $("[data-chat-messages]").replaceChildren(node("p","hint","Choose a conversation."));
     }
@@ -240,7 +261,7 @@ async function boot(){
   $("[data-chat-block]").addEventListener("click",()=>{void blockPeer();});
   $("[data-chat-unblock]").addEventListener("click",()=>{void unblockPeer();});
   $("[data-chat-signout]").addEventListener("click",async()=>{
-    try{await(await clerk()).signOut();window.location.reload();}
+    try{state.realtimeStop?.();state.inboxStop?.();await(await clerk()).signOut();window.location.reload();}
     catch{window.location.href=ACCOUNT_PORTAL;}
   });
   try{
@@ -252,6 +273,7 @@ async function boot(){
     $("[data-chat-guest]").hidden=true;
     $("[data-chat-userbar]").hidden=false;
     $("[data-chat-app]").hidden=false;
+    watchInbox();
     await refresh();
   }catch(error){
     $("[data-chat-auth-status]").textContent="NBL account connection is unavailable. Try signing in again.";
