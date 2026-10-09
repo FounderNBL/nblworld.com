@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <title>NBL Chat | NBL World</title>
+  <meta name="description" content="NBL Chat connects New Beansland members by private messages. Enrolled students also have Class Chat and Study Hall in the University.">
+  <link rel="canonical" href="https://nblworld.com/chat.html">
+  <meta name="theme-color" content="#06111d">
+  <link rel="stylesheet" href="/chat.css?v=20261008">
+  <script defer src="/chat.js?v=20261008"></script>
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="/">NBL World</a>
+    <nav aria-label="NBL World navigation">
+      <a href="/university.html">University</a>
+      <a href="https://newbeansland.org/">Explore New Beansland</a>
+    </nav>
+  </header>
+  <main>
+    <section class="intro">
+      <p class="eyebrow">New Beansland · Humans talking to humans</p>
+      <h1>NBL Chat</h1>
+      <p>Direct messages and conversations with other NBL members. This is <strong>human Chat</strong>, not the Beans AI. Sending messages here does not spend NBL Usage credits.</p>
+      <div class="signin-panel" data-chat-guest>
+        <p data-chat-auth-status>Sign in with your NBL account to see your conversations.</p>
+        <a class="btn primary" data-chat-signin href="https://accounts.newbeansland.org/sign-in">Sign in / create account</a>
+      </div>
+      <div class="userbar" data-chat-userbar hidden>
+        <span>Signed in as <strong data-chat-myhandle>@NBL member</strong></span>
+        <button class="btn small" type="button" data-chat-signout>Sign out</button>
+      </div>
+    </section>
+    <section class="chat-app" data-chat-app hidden aria-label="Member NBL Chat">
+      <aside class="sidebar">
+        <h2>Start a conversation</h2>
+        <form data-chat-find-form class="find-form">
+          <label for="chat-find">Find an NBL handle</label>
+          <div class="form-row">
+            <input id="chat-find" data-chat-find-input name="handle" type="text" maxlength="80" autocomplete="off" placeholder="@someone" required>
+            <button class="btn" type="submit">Find</button>
+          </div>
+        </form>
+        <div data-chat-search-results aria-live="polite"></div>
+        <form data-chat-dm-form class="dm-form">
+          <label for="chat-dm">Or open a direct message</label>
+          <div class="form-row">
+            <input id="chat-dm" data-chat-dm-handle name="handle" type="text" maxlength="80" autocomplete="off" placeholder="@username" required>
+            <button class="btn" type="submit">Open</button>
+          </div>
+        </form>
+        <div class="sidebar-heading">
+          <h2>Your chats</h2>
+          <button class="btn small" type="button" data-chat-refresh>Refresh</button>
+        </div>
+        <div data-chat-threads aria-label="Your conversations"></div>
+      </aside>
+      <article class="conversation" aria-label="Current conversation">
+        <div class="conversation-head">
+          <div>
+            <p class="eyebrow" data-chat-thread-kind>Messages</p>
+            <h2 data-chat-thread-title>Choose a conversation</h2>
+          </div>
+          <div class="thread-actions">
+            <button class="btn small" type="button" data-chat-mute hidden>Mute</button>
+            <button class="btn small" type="button" data-chat-block hidden>Block member</button>
+          </div>
+        </div>
+        <div class="messages" data-chat-messages role="log" aria-live="polite" aria-label="Messages">
+          <p class="hint">Choose a conversation or open a DM by handle.</p>
+        </div>
+        <form data-chat-send-form class="composer">
+          <label for="chat-compose">Message</label>
+          <textarea id="chat-compose" data-chat-compose maxlength="8000" rows="3" placeholder="Write a message…" disabled required></textarea>
+          <button class="btn primary" type="submit" disabled>Send message</button>
+        </form>
+      </article>
+    </section>
+    <p class="status" data-chat-status role="status" aria-live="polite">NBL Chat uses your signed-in account. Private messages are visible only to participants.</p>
+    <section class="campus-link">
+      <h2>Class Chat and Study Hall</h2>
+      <p>Enrolled students can also talk with classmates, ask for help, and visit Study Hall inside the protected NBL University campus. Those rooms require University access; regular direct messages do not.</p>
+      <a class="btn" href="/university.html#nbl-social">Open University Social Chat</a>
+    </section>
+  </main>
+  <footer>New Beansland™ · NBL World · <a href="/">NBL World home</a></footer>
+</body>
+</html>
