@@ -69,6 +69,7 @@ function resetComposer(){
   if(button)button.disabled=!ready||state.busy;
   $("[data-chat-mute]").hidden=!ready;
   $("[data-chat-block]").hidden=!ready||state.selected?.thread_type!=="direct"||!state.selected?.peer?.handle;
+  $("[data-chat-unblock]").hidden=!ready||state.selected?.thread_type!=="direct"||!state.selected?.peer?.handle;
 }
 function renderIdentity(me){
   state.me=me||{};
@@ -208,9 +209,18 @@ async function blockPeer(){
   if(!peer||!confirm("Block @"+peer+"? This prevents new direct messages between you."))return;
   try{
     await social({action:"block",handle:peer});
-    status("@"+peer+" blocked. To unblock, contact NBL support or use an account unblock control when available.");
+    status("@"+peer+" blocked. You can unblock this member from the conversation controls.");
     await refresh();
   }catch(error){status(error.message||"Unable to block this member.");}
+}
+async function unblockPeer(){
+  const peer=state.selected?.peer?.handle;
+  if(!peer)return;
+  try{
+    await social({action:"unblock",handle:peer});
+    status("@"+peer+" unblocked.");
+    await refresh();
+  }catch(error){status(error.message||"Unable to unblock this member.");}
 }
 async function reportMessage(messageId){
   const reason=prompt("Why are you reporting this message? Do not include passwords or private information.");
@@ -228,6 +238,7 @@ async function boot(){
   $("[data-chat-refresh]").addEventListener("click",()=>{void refresh();});
   $("[data-chat-mute]").addEventListener("click",()=>{void toggleMute();});
   $("[data-chat-block]").addEventListener("click",()=>{void blockPeer();});
+  $("[data-chat-unblock]").addEventListener("click",()=>{void unblockPeer();});
   $("[data-chat-signout]").addEventListener("click",async()=>{
     try{await(await clerk()).signOut();window.location.reload();}
     catch{window.location.href=ACCOUNT_PORTAL;}
