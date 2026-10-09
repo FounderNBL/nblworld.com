@@ -9,7 +9,7 @@ const CLERK_KEY="pk_live_Y2xlcmsubmV3YmVhbnNsYW5kLm9yZyQ";
 const ACCOUNT_PORTAL="https://accounts.newbeansland.org";
 const $=(s,r=document)=>r.querySelector(s);
 const $$=(s,r=document)=>[...r.querySelectorAll(s)];
-const state={clerk:null,university:null,course:"APSK 101",greyHistory:[],conversationId:null,assessment:null,reader:null,social:{me:null,threadId:null,threadType:null,threadTitle:null,threads:[],helpCases:[]}};
+const state={clerk:null,university:null,course:"APSK 101",greyHistory:[],conversationId:null,assessment:null,reader:null,social:{me:null,threadId:null,threadType:null,threadTitle:null,threads:[],helpCases:[],realtimeThread:null,realtimeStop:null}};
 
 function safeReturnUrl(){const u=new URL(location.href);u.hash="";return u.href;}
 function signInUrl(){return ACCOUNT_PORTAL+"/sign-in?redirect_url="+encodeURIComponent(safeReturnUrl());}
@@ -322,6 +322,7 @@ async function submitReviewRequest(event){
 
 function renderUniversity(u){
   state.university=u;
+  if(!u?.allowed){state.social.realtimeStop?.();state.social.realtimeStop=null;state.social.realtimeThread=null;}
   if(!u?.allowed){$("[data-campus-gate]").hidden=false;$("[data-frontier]").hidden=true;$("[data-campus]").hidden=true;setStatus("This NBL account does not currently have University enrollment.");return;}
   $("[data-campus-gate]").hidden=true;
   if(u.frontier?.required&&!u.frontier?.completed){
@@ -618,8 +619,24 @@ function renderSocialMessages(rows){
   }
   host.scrollTop=host.scrollHeight;
 }
+function watchCampusThread(id){
+  if(state.social.realtimeThread===id)return;
+  state.social.realtimeStop?.();state.social.realtimeStop=null;
+  state.social.realtimeThread=id;
+  if(!window.NBLSocialRealtime)return;
+  state.social.realtimeStop=window.NBLSocialRealtime.watchThread(id,authToken,async()=>{
+    if(state.social.threadId!==id||!state.university?.allowed)return;
+    const [messages,cases]=await Promise.all([
+      socialApi({action:"list_messages",threadId:id}),
+      socialApi({action:"list_help_cases",threadId:id})
+    ]);
+    if(state.social.threadId!==id)return;
+    renderHelpCases(cases.cases||[]);renderSocialMessages(messages.messages||[]);
+  });
+}
 async function openSocialThread(threadId){
   state.social.threadId=threadId;
+  watchCampusThread(threadId);
   const row=state.social.threads.find(x=>x.id===threadId)||{};
   state.social.threadType=row.thread_type||null;state.social.threadTitle=socialThreadLabel(row);
   const type=$("[data-social-thread-type]"),title=$("[data-social-thread-title]");
@@ -720,7 +737,7 @@ async function loadHelperBoard(){
 async function boot(){
   $("[data-signin]").forEach(b=>b.addEventListener("click",openSignIn));
   $("[data-nblu-checkout]").forEach(button=>button.addEventListener("click",()=>openNbluCheckout(button)));
-  $("[data-signout]").addEventListener("click",async()=>{try{const clerk=await getClerk();await clerk.signOut();location.reload();}catch{location.href=ACCOUNT_PORTAL;}});
+  $("[data-signout]").addEventListener("click",async()=>{try{const clerk=await getClerk();state.social.realtimeStop?.();await clerk.signOut();location.reload();}catch{location.href=ACCOUNT_PORTAL;}});
   $("[data-grey-form]").addEventListener("submit",async e=>{e.preventDefault();const input=$("[data-grey-input]"),value=input.value.trim();if(!value)return;input.value="";await askGrey(value);});
   $("[data-coursework-form]").addEventListener("submit",submitCourseWork);
   $("[data-community-form]")?.addEventListener("submit",saveCommunity);
