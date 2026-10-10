@@ -23,7 +23,9 @@ need(memberChat,'data-chat-guest',"Human Chat must have signed-out account entry
 need(memberChat,'data-chat-app hidden',"Member messages must be hidden until signed in.");
 need(memberChat,'href="/university.html#nbl-social"',"Students must be routed to protected classroom Chat.");
 need(memberChat,"No University enrollment is required for direct messages.","Regular member DMs must not be gated by academic enrollment.");
-need(memberChatJs,'SOCIAL_API="https://tvypdakofcrlvnwporhh.supabase.co/functions/v1/nbl-social"',"Member Chat must use the existing protected social API.");
+need(memberChatJs,'const NBL_CORE_API="https://tvypdakofcrlvnwporhh.supabase.co/functions/v1/nbl-core"',"Member Chat must use NBL Core.");
+need(memberChatJs,'const SOCIAL_API=NBL_CORE_API+"/social"',"Member Chat must use guarded Core social route.");
+forbid(memberChatJs,'functions/v1/nbl-social',"Human chat may not bypass the shared Core service ingress.");
 need(memberChatJs,'"Authorization":"Bearer "+token',"Member Chat must use a real signed-in session token.");
 for(const action of ["me","find_users","direct","list_threads","list_messages","send","mute","block","unblock","report"]){
   need(memberChatJs,'action:"'+action+'"',"Member Chat action missing: "+action);
@@ -85,7 +87,11 @@ need(html,"Ask classmates first","Study Hall peer-help surface is missing.");
 need(html,"Helper leaderboard","Helper leaderboard is missing.");
 need(html,'data-social-dm-handle',"NBL handle DM control is missing.");
 need(html,'data-social-messages',"Human message rail is missing.");
-need(js,'SOCIAL_API="https://tvypdakofcrlvnwporhh.supabase.co/functions/v1/nbl-social"',"NBL Social backend endpoint is missing.");
+need(js,'const NBL_CORE_API="https://tvypdakofcrlvnwporhh.supabase.co/functions/v1/nbl-core"',"Campus Core ingress is missing.");
+need(js,'const API=NBL_CORE_API+"/university"',"University must use guarded Core academic route.");
+need(js,'const SOCIAL_API=NBL_CORE_API+"/social"',"Campus must use guarded Core social route.");
+forbid(js,'functions/v1/nbl-foundation-runtime',"University may not bypass Core academic route.");
+forbid(js,'functions/v1/nbl-social',"Campus may not bypass Core social route.");
 for(const action of ["direct","room","list_threads","list_messages","list_help_cases","send","ask_help","solve_help","ask_grey","helper_board","report"]){
   need(js,'action:"'+action+'"',"NBL Social action missing from campus: "+action);
 }
@@ -116,7 +122,9 @@ need(js,'action:"frontier_start"',"Frontier start API call is missing.");
 need(js,'action:"frontier_submit"',"Frontier submit API call is missing.");
 need(js,"renderFrontier","Frontier campus gate rendering is missing.");
 
-need(js,'BILLING_API="https://tvypdakofcrlvnwporhh.supabase.co/functions/v1/nbl-billing-link"',"Authenticated University billing endpoint is missing.");
+need(js,'const BILLING_API=NBL_CORE_API+"/billing"',"Authenticated University Core billing route is missing.");
+forbid(js,'functions/v1/nbl-billing-link',"Campus billing may not bypass Core.");
+need(js,'const UNIVERSITY_PUBLIC_CHECKOUT_ENABLED=false;',"Campus checkout must remain blocked pending proof.");
 need(js,"UNIVERSITY_PUBLIC_CHECKOUT_ENABLED=false","Public University checkout hold is not enforced in JavaScript.");
 need(js,'["foundation","full_foundation","full_nblu","nblu_continuation"]',"Expected University checkout plans are not whitelisted.");
 need(js,"trustedBillingDestination","Stripe destination allowlist is missing.");
