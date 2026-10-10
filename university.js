@@ -1,9 +1,12 @@
 (()=>{
 "use strict";
 
-const API="https://tvypdakofcrlvnwporhh.supabase.co/functions/v1/nbl-foundation-runtime";
-const BILLING_API="https://tvypdakofcrlvnwporhh.supabase.co/functions/v1/nbl-billing-link";
-const SOCIAL_API="https://tvypdakofcrlvnwporhh.supabase.co/functions/v1/nbl-social";
+// All member actions enter through one NBL-owned Core contract. Server-side Clerk and
+// LOCKE guards remain in each protected downstream runtime.
+const NBL_CORE_API="https://tvypdakofcrlvnwporhh.supabase.co/functions/v1/nbl-core";
+const API=NBL_CORE_API+"/university";
+const BILLING_API=NBL_CORE_API+"/billing";
+const SOCIAL_API=NBL_CORE_API+"/social";
 const UNIVERSITY_PUBLIC_CHECKOUT_ENABLED=false;
 const CLERK_KEY="pk_live_Y2xlcmsubmV3YmVhbnNsYW5kLm9yZyQ";
 const ACCOUNT_PORTAL="https://accounts.newbeansland.org";
