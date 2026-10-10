@@ -107,3 +107,18 @@
 .help-case{display:grid;gap:6px;margin-top:8px;padding:10px;border:1px solid rgba(214,161,75,.16);border-radius:10px;background:rgba(214,161,75,.035)}.help-case strong{color:var(--cream);font-size:.78rem}.help-case span{color:var(--soft);font-size:.7rem}.help-case .btn{width:max-content}
 .helper-board{display:grid;gap:7px}.helper-row{display:grid;grid-template-columns:auto 1fr auto;gap:9px;align-items:center;padding:9px;border-bottom:1px solid rgba(255,255,255,.07)}.helper-row strong{color:var(--gold2)}.helper-row span{color:var(--soft);font-size:.72rem}.helper-row b{color:var(--cream);font-size:.75rem}
 @media(max-width:850px){.social-shell,.social-learning-grid{grid-template-columns:1fr}.social-threads{border-right:0;border-bottom:1px solid rgba(255,255,255,.08);max-height:220px}.social-shell{min-height:0}.social-messages{max-height:460px}.social-dm-form label>div,.social-send{grid-template-columns:1fr}.social-send .btn{width:100%}}
+
+/* NBL School Office: original, self-paced classroom planner */
+.school-office-list{display:grid;gap:14px;margin-top:14px}
+.school-office-course{border:1px solid var(--line);border-radius:14px;background:rgba(6,17,29,.65);padding:16px}
+.school-office-course h3{margin:0 0 12px;font-size:1rem;color:var(--gold2)}
+.school-office-steps{display:grid;gap:8px;margin:0 0 16px;padding-left:22px}
+.school-office-steps li{padding-left:4px}
+.school-office-steps li strong{font-size:.86rem}
+.school-office-steps li p,.school-office-task p{margin:5px 0;color:var(--soft);font-size:.8rem;line-height:1.5}
+.school-office-steps li small{color:var(--gold2);font-size:.7rem}
+.school-office-task{padding:12px;border:1px solid rgba(214,161,75,.2);border-radius:10px;background:rgba(214,161,75,.04);display:flex;flex-wrap:wrap;align-items:center;gap:6px 12px}
+.school-office-task strong,.school-office-task p{width:100%}
+.school-task-state{font-size:.76rem;color:var(--gold2);margin-right:auto}
+.school-office-task .btn{min-height:36px}
+@media(max-width:600px){.school-office-course{padding:12px}.school-office-task .btn{width:100%}}

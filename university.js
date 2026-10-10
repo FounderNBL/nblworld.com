@@ -9,7 +9,7 @@ const CLERK_KEY="pk_live_Y2xlcmsubmV3YmVhbnNsYW5kLm9yZyQ";
 const ACCOUNT_PORTAL="https://accounts.newbeansland.org";
 const $=(s,r=document)=>r.querySelector(s);
 const $$=(s,r=document)=>[...r.querySelectorAll(s)];
-const state={clerk:null,university:null,course:"APSK 101",greyHistory:[],conversationId:null,assessment:null,reader:null,social:{me:null,threadId:null,threadType:null,threadTitle:null,threads:[],helpCases:[],realtimeThread:null,realtimeStop:null}};
+const state={clerk:null,university:null,course:"APSK 101",schoolTaskId:null,schoolPlan:null,greyHistory:[],conversationId:null,assessment:null,reader:null,social:{me:null,threadId:null,threadType:null,threadTitle:null,threads:[],helpCases:[],realtimeThread:null,realtimeStop:null}};
 
 function safeReturnUrl(){const u=new URL(location.href);u.hash="";return u.href;}
 function signInUrl(){return ACCOUNT_PORTAL+"/sign-in?redirect_url="+encodeURIComponent(safeReturnUrl());}
@@ -165,6 +165,82 @@ function renderCourses(u){
     host.appendChild(card);
   }
 }
+function renderSchoolOffice(plan){
+  const host=$("[data-school-office]"),status=$("[data-school-status]");
+  if(!host)return;
+  host.replaceChildren();
+  const courses=Array.isArray(plan?.courses)?plan.courses:[];
+  if(status)status.textContent=courses.length
+    ?"Your published course steps are listed below. No due date means self-paced; a submitted assignment is not an official grade."
+    :"No released School Office plans are available yet.";
+  for(const course of courses){
+    const card=document.createElement("article");
+    card.className="school-office-course";
+    const heading=document.createElement("h3");
+    heading.textContent=String(course.code||"")+" · "+String(course.title||"");
+    card.appendChild(heading);
+    const lessons=Array.isArray(course.lessons)?course.lessons:[];
+    if(lessons.length){
+      const steps=document.createElement("ol");steps.className="school-office-steps";
+      for(const lesson of lessons){
+        const item=document.createElement("li");
+        const title=document.createElement("strong");title.textContent=lesson.title||"Lesson";
+        const description=document.createElement("p");description.textContent=lesson.summary||"";
+        item.append(title,description);
+        if(Number(lesson.plannedMinutes)>0){
+          const duration=document.createElement("small");
+          duration.textContent="Suggested time · "+Number(lesson.plannedMinutes)+" minutes";
+          item.appendChild(duration);
+        }
+        steps.appendChild(item);
+      }
+      card.appendChild(steps);
+    }else{
+      const empty=document.createElement("p");empty.className="small-note";
+      empty.textContent="No approved lessons released for this course yet.";
+      card.appendChild(empty);
+    }
+    const tasks=Array.isArray(course.tasks)?course.tasks:[];
+    for(const task of tasks){
+      const row=document.createElement("div");row.className="school-office-task";
+      const label=document.createElement("strong");label.textContent=task.title||"Assignment";
+      const description=document.createElement("p");description.textContent=task.instructions||"";
+      const timing=document.createElement("p");timing.className="small-note";
+      timing.textContent=task.dueAt?"Due "+new Date(task.dueAt).toLocaleDateString():"Self-paced · no deadline";
+      const indicator=document.createElement("span");indicator.className="school-task-state";
+      indicator.textContent=task.submitted?"Submitted to Registrar":"Not submitted";
+      const button=document.createElement("button");button.type="button";button.className="btn ghost";
+      button.textContent=task.submitted?"Submit another response":"Open in coursework";
+      button.addEventListener("click",()=>{
+        state.course=course.code;
+        syncCourse();
+        state.schoolTaskId=task.id;
+        const kind=$("[data-coursework-type]");
+        if(kind)kind.value=task.submissionType;
+        const title=$("[data-coursework-title]");
+        if(title)title.value=task.title||"";
+        const notice=$("[data-coursework-status]");
+        if(notice)notice.textContent="School Office assignment selected. Your response is saved to your existing Registrar record.";
+        $("#coursework")?.scrollIntoView({behavior:"smooth"});
+      });
+      row.append(label,description,timing,indicator,button);card.appendChild(row);
+    }
+    host.appendChild(card);
+  }
+}
+async function loadSchoolOffice(){
+  const status=$("[data-school-status]");
+  if(status)status.textContent="Loading your School Office plan securely…";
+  try{
+    const payload=await api({action:"university_school_plan"});
+    state.schoolPlan=payload.schoolOffice||null;
+    renderSchoolOffice(state.schoolPlan);
+  }catch(error){
+    if(status)status.textContent=error.message||"School Office is not yet available.";
+    const host=$("[data-school-office]");if(host)host.replaceChildren();
+  }
+}
+
 function renderLibrary(u){
   const labels={course_book:"Course Book",student_workbook:"Workbook",student_guide:"Student Guide"};
   const host=$("[data-library]");host.replaceChildren();
@@ -338,7 +414,7 @@ function renderUniversity(u){
   const pct=progressPercent(u);$("[data-progress-label]").textContent=pct+"%";$("[data-progress-fill]").style.width=pct+"%";
   const current=(u.courses||[]).find(x=>x.current)||(u.courses||[]).find(x=>!x.completed)||(u.courses||[])[0];if(current)state.course=current.code;
   renderCourses(u);renderLibrary(u);syncCourse();renderStartingPoint(u);renderStudentRecord(u);renderGradebook(u);
-  void loadSubmissions();void loadCommunity();void loadAfterGrey();void refreshSocial();
+  void loadSubmissions();void loadSchoolOffice();void loadCommunity();void loadAfterGrey();void refreshSocial();
   const p=u.progress||{};
   $("[data-last-result]").textContent=p.assessment_result?(`${p.assessment_result}${p.assessment_score!==null&&p.assessment_score!==undefined?" · "+p.assessment_score+"%":""}`):"No completed course assessment yet.";
   $("[data-last-feedback]").textContent=p.safe_feedback||"Course grades and safe feedback will appear here after an official assessment is graded.";
@@ -410,6 +486,7 @@ async function submitCourseWork(event){
     const common={
       courseCode:state.course,
       submissionType:$("[data-coursework-type]").value,
+      schoolTaskId:state.schoolTaskId||undefined,
       title:$("[data-coursework-title]").value.trim(),
       clientSubmissionKey:globalThis.crypto?.randomUUID?.()||("work-"+Date.now())
     };
@@ -426,8 +503,10 @@ async function submitCourseWork(event){
       :"Submitted. Elara's Registrar rail has it.";
     $("[data-coursework-content]").value="";
     $("[data-coursework-title]").value="";
+    state.schoolTaskId=null;
     if($("[data-coursework-pdf]"))$("[data-coursework-pdf]").value="";
     await loadSubmissions();
+    void loadSchoolOffice();
   }catch(error){status.textContent=error.message||"Course work could not be submitted.";}
   finally{button.disabled=false;}
 }
@@ -750,8 +829,9 @@ async function boot(){
   $("[data-social-refresh]")?.addEventListener("click",refreshSocial);
   $("[data-social-mute]")?.addEventListener("click",toggleSocialMute);
   $("[data-coursework-refresh]").addEventListener("click",loadSubmissions);
+  $("[data-school-refresh]")?.addEventListener("click",loadSchoolOffice);
   $("[data-after-grey-refresh]")?.addEventListener("click",loadAfterGrey);
-  $("[data-course-select]").forEach(el=>el.addEventListener("change",e=>{state.course=e.target.value;syncCourse();renderAssessment(null);void loadSubmissions();void loadAfterGrey();}));
+  $("[data-course-select]").forEach(el=>el.addEventListener("change",e=>{state.course=e.target.value;state.schoolTaskId=null;syncCourse();renderAssessment(null);void loadSubmissions();void loadAfterGrey();}));
   $("[data-start-assessment]").addEventListener("click",startAssessment);
   $("[data-grey-practice]")?.addEventListener("click",startPractice);
   $("[data-grey-readiness]")?.addEventListener("click",checkReadiness);

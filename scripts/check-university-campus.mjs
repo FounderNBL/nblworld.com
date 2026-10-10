@@ -65,6 +65,16 @@ need(html,"Professor Grey","Professor Grey faculty panel is missing.");
 need(html,"Course assessment","Protected assessment panel is missing.");
 need(html,"Your course work","Registrar coursework room is missing.");
 need(html,"Gradebook","Gradebook is missing.");
+need(html,'id="school-office"',"School Office room must be present inside the gated campus.");
+need(html,'data-school-office',"Published lesson plan room missing.");
+need(html,'data-school-refresh',"School Office refresh control missing.");
+need(js,'action:"university_school_plan"',"School Office must load from protected runtime instead of hard-coded public content.");
+need(js,'state.schoolTaskId=task.id',"School Office task must link to Registrar submission.");
+need(js,'schoolTaskId:state.schoolTaskId||undefined',"Selected NBL assignment must be sent through existing Registrar intake.");
+need(js,'state.schoolTaskId=null',"Registrar assignment selection must be cleared after submission.");
+need(js,'renderSchoolOffice',"Student-safe lesson and task renderer missing.");
+need(css,".school-office-course","NBL School Office should keep the existing campus style.");
+
 need(html,"approximately 9 hours of engaged learning total","Foundation learning-time guidance is missing.");
 need(html,"What each course expects","Student-facing course expectations are missing.");
 need(html,"Opt-in scoreboard","Opt-in class community is missing.");
