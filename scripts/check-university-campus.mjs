@@ -52,11 +52,21 @@ if(!(home.indexOf('src="/NBL_WORLD.png"') < home.indexOf('<h1 id="nblu-title">Ne
 need(html,"LOCKE opens the classroom only when that account has University enrollment.","Campus enrollment gate is missing.");
 need(html,'id="enroll"',"NBL World enrollment section is missing.");
 need(html,'data-nblu-checkout="foundation"',"Foundation checkout is missing from NBL World.");
-need(html,'data-nblu-checkout="full_foundation"',"Guided Foundation checkout is missing from NBL World.");
+need(html,"$34.99","Founder-approved Foundation price must be visible.");
+need(html,"$4.99","Beans membership price must be visible.");
+need(html,"100 additional noncash NBL Studios bonus credits","Beans promotional rollover disclosure must be visible.");
+forbid(html,'data-nblu-checkout="full_foundation"',"Retired Guided Foundation must not be a new checkout choice.");
+forbid(html,'data-nblu-checkout="nblu_continuation"',"Owner continuation must not be marketed as a new fourth offer.");
+forbid(html,'<div class="enrollment-price">$29.99',"Retired Foundation price must not be advertised.");
 need(html,'data-nblu-checkout="full_nblu" disabled',"Full NBLU checkout must remain disabled pending proof.");
-need(html,'data-nblu-checkout="nblu_continuation"',"Full NBLU owner continuation control is missing.");
+
 need(html,"$449.99","Full NBLU price is missing from the campus.");
-need(html,"$14.99/month","Owner continuation price is missing from the campus.");
+need(home,'<div class="price">$34.99',"NBL World should list $34.99 Foundation.");
+need(home,'<div class="price">$4.99',"NBL World should list $4.99 Beans.");
+forbid(home,'<div class="price">$54.99',"Retired Guided offer should not be public.");
+forbid(home,'<div class="price">$29.99',"Old Foundation price should not be public.");
+forbid(home,"$14.99/month","Owner continuation is not a new public offer.");
+
 need(html,"data-release-proof-notice","University release-proof notice is missing.");
 need(html,"shipping charged separately","Staged physical-book shipping disclosure is missing.");
 forbid(html,'href="https://newbeansland.org/university.html"',"Campus still sends enrollment back to the public New Beansland site.");
