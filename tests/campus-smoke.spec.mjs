@@ -7,6 +7,9 @@ test("NBL World exposes the University as a real inner-world door",async({page})
   await expect(page.getByRole("heading",{name:"New Beansland University"})).toBeVisible();
   await expect(page.locator("body")).toContainText("Full NBLU Experience");
   await expect(page.locator("body")).toContainText("$449.99");
+  await expect(page.locator(".plans")).toContainText("$34.99");
+  await expect(page.locator(".plans")).toContainText("$4.99");
+  await expect(page.locator(".plans")).not.toContainText("$54.99");
   await expect(page.getByRole("link",{name:/View Full NBLU/i})).toBeVisible();
   await expect(page.locator("body")).toContainText("End-to-end enrollment is not release-proven yet");
   await expect(page.getByRole("link",{name:"Visit New Beansland"})).toBeVisible();
@@ -21,7 +24,11 @@ test("University campus loads with a protected enrollment gate",async({page})=>{
   await expect(page.locator("[data-nblu-checkout=\"full_nblu\"]")).toBeDisabled();
   await expect(page.locator("[data-release-proof-notice]")).toBeVisible();
   await expect(page.locator("body")).toContainText("$449.99");
-  await expect(page.locator("body")).toContainText("$14.99/month");
+  await expect(page.locator("#enroll")).toContainText("$34.99");
+  await expect(page.locator("#enroll")).toContainText("$4.99");
+  await expect(page.locator("#enroll")).toContainText("100 additional noncash NBL Studios bonus credits");
+  await expect(page.locator("#enroll")).not.toContainText("$14.99/month");
+  await expect(page.locator("[data-nblu-checkout='foundation']")).toBeDisabled();
   await expect(page.locator("[data-campus-gate]")).toBeVisible();
   await expect(page.locator("body")).toContainText("LOCKE opens the classroom only when that account has University enrollment");
   await expect(page.locator("[data-campus]")).toBeHidden();
