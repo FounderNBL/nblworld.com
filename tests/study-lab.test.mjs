@@ -91,3 +91,13 @@ test("revisit queue handles no rows and caps output", () => {
   const rows = Array.from({ length: 50 }, (_, i) => entry("Study Lab revisit · Concept " + i, new Date(start - 2 * 86400000).toISOString()));
   assert.equal(reviewQueue(rows, course, start).length, 12);
 });
+
+
+test("Grey's practice prompts remain student-safe across course selections", () => {
+  for (const code of ["APSK 101", "ANSY 110", "EBPR 120"]) {
+    const prompt = guidedStudyPrompt("practice", code, "Distinguish a claim from evidence");
+    assert.ok(prompt.includes(code));
+    assert.match(prompt, /approved student-safe/i);
+    assert.match(prompt, /protected exam/i);
+  }
+});
