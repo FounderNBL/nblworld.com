@@ -8,6 +8,7 @@
   <meta name="theme-color" content="#02060b">
   <link rel="canonical" href="https://nblworld.com/university.html">
   <link rel="stylesheet" href="/university.css?v=20261001-testpdfag1">
+  <link rel="stylesheet" href="/study-lab.css?v=20261011">
   <script defer src="/social-realtime.js?v=20261008"></script>
   <script defer src="/university.js?v=20261010-core-member"></script>
 </head>
@@ -192,6 +193,65 @@
           <div class="submission-list" data-submission-list><p class="small-note">Your submitted course work will appear here.</p></div>
         </div>
       </div>
+    </section>
+
+    <section class="card section study-lab" id="study-lab" data-study-lab aria-labelledby="study-lab-title">
+      <div class="section-head">
+        <div><p class="eyebrow">Virgo • Guided Learning Lab</p><h2 id="study-lab-title">Your Study Lab</h2></div>
+        <p>Interactive reasoning, private notebook submissions, Grey-guided practice, and your own review reminders. No official grades change here.</p>
+      </div>
+      <p class="study-intro">Choose a course concept. Work through a claim and its evidence, or have Professor Grey challenge you one question at a time. Only the <strong>Save reflection</strong> and <strong>Mark for revisit</strong> actions record anything in your student account.</p>
+      <div class="study-actions">
+        <label for="study-topic">Today's concept
+          <select id="study-topic" data-study-topic aria-label="Study Lab concept"></select>
+        </label>
+        <button class="btn" type="button" data-study-practice>Practice with Grey</button>
+        <button class="btn ghost" type="button" data-study-alternate>Explain differently</button>
+        <button class="btn ghost" type="button" data-study-challenge>Challenge my reasoning</button>
+        <button class="btn ghost" type="button" data-study-readiness>Course readiness</button>
+      </div>
+      <div class="study-two">
+        <div class="study-pane">
+          <h3>Interactive evidence map</h3>
+          <div class="study-fields">
+            <label>My claim <textarea rows="2" maxlength="2500" data-study-claim placeholder="What am I claiming?"></textarea></label>
+            <label>My evidence <textarea rows="2" maxlength="2500" data-study-evidence placeholder="What supports the claim?"></textarea></label>
+            <label>Another explanation <textarea rows="2" maxlength="2500" data-study-alternative placeholder="What else could explain it?"></textarea></label>
+            <label>What could change my mind? <textarea rows="2" maxlength="2500" data-study-revision placeholder="What evidence would make me revise the claim?"></textarea></label>
+          </div>
+          <div class="study-actions">
+            <button class="btn primary" type="button" data-study-save>Save reflection to Registrar</button>
+            <button class="btn ghost" type="button" data-study-flag>Mark concept for revisit</button>
+          </div>
+          <p class="study-disclaimer">Practice and self-reported reviews are not verified mastery, official assessment scores, or certificates.</p>
+        </div>
+        <div class="study-pane">
+          <h3>My reasoning, visualized</h3>
+          <div class="study-map" aria-live="polite">
+            <div class="study-node"><strong>Claim</strong><span data-study-preview-claim>Add your claim…</span></div>
+            <div class="study-arrow" aria-hidden="true">↓</div>
+            <div class="study-node"><strong>Evidence</strong><span data-study-preview-evidence>Add your evidence…</span></div>
+            <div class="study-arrow" aria-hidden="true">↓</div>
+            <div class="study-node"><strong>Alternative</strong><span data-study-preview-alternative>Add your alternative…</span></div>
+            <div class="study-arrow" aria-hidden="true">↓</div>
+            <div class="study-node"><strong>Revision test</strong><span data-study-preview-revision>Add your revision…</span></div>
+          </div>
+        </div>
+      </div>
+      <div class="study-two" style="margin-top:18px">
+        <div class="study-pane">
+          <h3>Study Notebook • saved reflections</h3>
+          <p class="study-disclaimer">Titles and dates are shown here from your existing private Registrar record. Reopening full reflection text is not included in this first version.</p>
+          <ul class="study-notebook" data-study-notes></ul>
+        </div>
+        <div class="study-pane">
+          <h3>Topics to revisit</h3>
+          <p class="study-disclaimer">Self-marked topics come back after one day. The reminders do not assess whether you learned the topic.</p>
+          <div data-study-review></div>
+        </div>
+      </div>
+      <div class="study-actions"><button class="btn ghost" type="button" data-study-refresh>Refresh notebook</button></div>
+      <p class="status" data-study-status role="status" aria-live="polite">University enrollment is checked before Study Lab loads.</p>
     </section>
 
     <section class="two-col" id="grey">

@@ -16,6 +16,9 @@ test("University campus loads with a protected enrollment gate",async({page})=>{
   await page.goto("/university.html");
   await expect(page).toHaveTitle(/NBL University Campus/i);
   await expect(page.getByRole("heading",{name:"Student Campus"})).toBeVisible();
+  await expect(page.locator("[data-study-lab] h2")).toHaveText("Your Study Lab");
+  await expect(page.locator("[data-study-lab]")).toBeHidden();
+  await expect(page.locator("[data-study-save]")).toBeHidden();
   await expect(page.locator("#enroll")).toBeVisible();
   await expect(page.locator("[data-nblu-checkout=\"full_nblu\"]")).toBeVisible();
   await expect(page.locator("[data-nblu-checkout=\"full_nblu\"]")).toBeDisabled();

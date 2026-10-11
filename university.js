@@ -12,6 +12,8 @@ const CLERK_KEY="pk_live_Y2xlcmsubmV3YmVhbnNsYW5kLm9yZyQ";
 const ACCOUNT_PORTAL="https://accounts.newbeansland.org";
 const $=(s,r=document)=>r.querySelector(s);
 const $$=(s,r=document)=>[...r.querySelectorAll(s)];
+let studyLab=null;
+let studyLabPromise=null;
 const state={clerk:null,university:null,course:"APSK 101",schoolTaskId:null,schoolPlan:null,greyHistory:[],conversationId:null,assessment:null,reader:null,social:{me:null,threadId:null,threadType:null,threadTitle:null,threads:[],helpCases:[],realtimeThread:null,realtimeStop:null}};
 
 function safeReturnUrl(){const u=new URL(location.href);u.hash="";return u.href;}
@@ -99,7 +101,7 @@ async function openNbluCheckout(button){
   }
   const plan=String(button?.dataset?.nbluCheckout||"").trim();
   if(!["foundation","full_foundation","full_nblu","nblu_continuation"].includes(plan))return;
-  const buttons=$("[data-nblu-checkout]");
+  const buttons=$$("[data-nblu-checkout]");
   buttons.forEach(item=>item.disabled=true);
   if(status)status.textContent="Preparing secure University checkout…";
   try{
@@ -131,6 +133,25 @@ async function openNbluCheckout(button){
   }
 }
 function setStatus(text){$$("[data-campus-status]").forEach(el=>el.textContent=text);}
+async function enableStudyLab(){
+  if(!state.university?.allowed || $("[data-campus]")?.hidden)return;
+  if(!studyLabPromise){
+    studyLabPromise=import("/study-lab.mjs?v=20261011").then(mod=>mod.mountStudyLab({
+      api,
+      askGrey,
+      checkReadiness,
+      topicsFor:code=>COURSE_DETAILS[code]?.objectives||[]
+    }));
+  }
+  try{
+    studyLab=await studyLabPromise;
+    // Use the latest course and authorization; loading the module cannot bypass LOCKE.
+    if(state.university?.allowed && !$("[data-campus]")?.hidden)studyLab.open(state.course);
+  }catch(error){
+    const status=$("[data-study-status]");
+    if(status)status.textContent="Study Lab could not load. Existing Grey, courses, and Registrar are unaffected.";
+  }
+}
 function openSignIn(){location.href=signInUrl();}
 const COURSE_DETAILS={
   "APSK 101":{
@@ -149,7 +170,7 @@ const COURSE_DETAILS={
 function summary(code){return COURSE_DETAILS[code]?.summary||"NBL University course.";}
 
 function syncCourse(){
-  $("[data-course-select]").forEach(el=>el.value=state.course);
+  $$("[data-course-select]").forEach(el=>el.value=state.course);
   if($("[data-review-course]"))$("[data-review-course]").value=state.course;
 }
 function progressPercent(u){
@@ -164,7 +185,7 @@ function renderCourses(u){
     const detail=COURSE_DETAILS[course.code]||{summary:summary(course.code),objectives:[]};
     const hours=Number(course.estimatedLearningHours||3);
     card.innerHTML=`<span class="course-code">${course.code} · Foundation course · self-paced</span><h3>${course.title}</h3><p>${detail.summary}</p><p class="course-time">Estimated engaged learning · ~${hours} hours</p><ul class="course-objectives">${detail.objectives.map(item=>`<li>${item}</li>`).join("")}</ul><div class="course-foot"><span class="course-state">${course.completed?"Completed":course.current?"Current course":"In sequence"}</span><button class="btn ghost" type="button">Enter course</button></div>`;
-    card.querySelector("button").addEventListener("click",()=>{state.course=course.code;syncCourse();$("#grey")?.scrollIntoView({behavior:"smooth"});});
+    card.querySelector("button").addEventListener("click",()=>{state.course=course.code;syncCourse();studyLab?.setCourse(state.course);$("#grey")?.scrollIntoView({behavior:"smooth"});});
     host.appendChild(card);
   }
 }
@@ -401,10 +422,11 @@ async function submitReviewRequest(event){
 
 function renderUniversity(u){
   state.university=u;
-  if(!u?.allowed){state.social.realtimeStop?.();state.social.realtimeStop=null;state.social.realtimeThread=null;}
+  if(!u?.allowed){studyLab?.close();state.social.realtimeStop?.();state.social.realtimeStop=null;state.social.realtimeThread=null;}
   if(!u?.allowed){$("[data-campus-gate]").hidden=false;$("[data-frontier]").hidden=true;$("[data-campus]").hidden=true;setStatus("This NBL account does not currently have University enrollment.");return;}
   $("[data-campus-gate]").hidden=true;
   if(u.frontier?.required&&!u.frontier?.completed){
+    studyLab?.close();
     renderFrontier(u.frontier);
     setStatus("University access confirmed. Finish the Frontier Check before class opens.");
     return;
@@ -417,6 +439,7 @@ function renderUniversity(u){
   const pct=progressPercent(u);$("[data-progress-label]").textContent=pct+"%";$("[data-progress-fill]").style.width=pct+"%";
   const current=(u.courses||[]).find(x=>x.current)||(u.courses||[]).find(x=>!x.completed)||(u.courses||[])[0];if(current)state.course=current.code;
   renderCourses(u);renderLibrary(u);syncCourse();renderStartingPoint(u);renderStudentRecord(u);renderGradebook(u);
+  void enableStudyLab();
   void loadSubmissions();void loadSchoolOffice();void loadCommunity();void loadAfterGrey();void refreshSocial();
   const p=u.progress||{};
   $("[data-last-result]").textContent=p.assessment_result?(`${p.assessment_result}${p.assessment_score!==null&&p.assessment_score!==undefined?" · "+p.assessment_score+"%":""}`):"No completed course assessment yet.";
@@ -817,9 +840,9 @@ async function loadHelperBoard(){
 }
 
 async function boot(){
-  $("[data-signin]").forEach(b=>b.addEventListener("click",openSignIn));
-  $("[data-nblu-checkout]").forEach(button=>button.addEventListener("click",()=>openNbluCheckout(button)));
-  $("[data-signout]").addEventListener("click",async()=>{try{const clerk=await getClerk();state.social.realtimeStop?.();await clerk.signOut();location.reload();}catch{location.href=ACCOUNT_PORTAL;}});
+  $$("[data-signin]").forEach(b=>b.addEventListener("click",openSignIn));
+  $$("[data-nblu-checkout]").forEach(button=>button.addEventListener("click",()=>openNbluCheckout(button)));
+  $("[data-signout]").addEventListener("click",async()=>{try{const clerk=await getClerk();state.social.realtimeStop?.();studyLab?.close();await clerk.signOut();location.reload();}catch{location.href=ACCOUNT_PORTAL;}});
   $("[data-grey-form]").addEventListener("submit",async e=>{e.preventDefault();const input=$("[data-grey-input]"),value=input.value.trim();if(!value)return;input.value="";await askGrey(value);});
   $("[data-coursework-form]").addEventListener("submit",submitCourseWork);
   $("[data-community-form]")?.addEventListener("submit",saveCommunity);
@@ -834,7 +857,7 @@ async function boot(){
   $("[data-coursework-refresh]").addEventListener("click",loadSubmissions);
   $("[data-school-refresh]")?.addEventListener("click",loadSchoolOffice);
   $("[data-after-grey-refresh]")?.addEventListener("click",loadAfterGrey);
-  $("[data-course-select]").forEach(el=>el.addEventListener("change",e=>{state.course=e.target.value;state.schoolTaskId=null;syncCourse();renderAssessment(null);void loadSubmissions();void loadAfterGrey();}));
+  $$("[data-course-select]").forEach(el=>el.addEventListener("change",e=>{state.course=e.target.value;state.schoolTaskId=null;syncCourse();studyLab?.setCourse(state.course);renderAssessment(null);void loadSubmissions();void loadAfterGrey();}));
   $("[data-start-assessment]").addEventListener("click",startAssessment);
   $("[data-grey-practice]")?.addEventListener("click",startPractice);
   $("[data-grey-readiness]")?.addEventListener("click",checkReadiness);

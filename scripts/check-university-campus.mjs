@@ -3,6 +3,7 @@ import fs from "node:fs";
 const html=fs.readFileSync(new URL("../university.html",import.meta.url),"utf8");
 const js=fs.readFileSync(new URL("../university.js",import.meta.url),"utf8");
 const css=fs.readFileSync(new URL("../university.css",import.meta.url),"utf8");
+const studyLab=fs.readFileSync(new URL("../study-lab.mjs",import.meta.url),"utf8");
 const home=fs.readFileSync(new URL("../index.html",import.meta.url),"utf8");
 const memberChat=fs.readFileSync(new URL("../chat.html",import.meta.url),"utf8");
 const memberChatJs=fs.readFileSync(new URL("../chat.js",import.meta.url),"utf8");
@@ -152,6 +153,23 @@ for(const secret of ["SUPABASE_SERVICE_ROLE_KEY","OPENAI_API_KEY","STRIPE_SECRET
 }
 for(const bad of ["answer_key","grading_payload","rubricText","PROTECTED RUBRIC"]){
   forbid(js,bad,`Protected grading material leaked into campus JavaScript: ${bad}`);
+}
+
+need(html,'data-study-lab',"Study Lab must exist inside the protected University campus.");
+need(html,'data-study-preview-claim',"Study Lab visual reasoning chain is missing.");
+need(html,'data-study-notes',"Student notebook history is missing.");
+need(html,'data-study-review',"Student revisit queue is missing.");
+need(html,'data-study-save',"Study reflections must require explicit saving.");
+need(js,'void enableStudyLab()',"Study Lab is not opened after verified University access.");
+need(js,'studyLab?.close()',"Study Lab must close when NBL University access is denied.");
+need(studyLab,'action: "university_submit_work"',"Study Lab must save via the existing authorized Registrar route.");
+need(studyLab,'action: "university_submissions"',"Study Lab must load only the signed-in student's prior records.");
+need(studyLab,'askGrey(guidedStudyPrompt',"Guided practice must reuse protected Professor Grey.");
+for(const secret of ["OPENAI_API_KEY","SUPABASE_SERVICE_ROLE_KEY","STRIPE_SECRET_KEY","sk-proj-"]){
+  forbid(studyLab,secret,"A provider secret marker appeared in public Study Lab code.");
+}
+for(const disallowed of ["localStorage", "sessionStorage", "functions/v1/nbl-foundation-runtime", "service_role"]){
+  forbid(studyLab,disallowed,"Study Lab must not create client storage, bypass Core, or embed privileged credentials: "+disallowed);
 }
 
 if(errors.length){console.error("[nbl-world-campus] FAIL");errors.forEach(e=>console.error("- "+e));process.exit(1);}
