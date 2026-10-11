@@ -21,7 +21,7 @@ test("No customer checkout or existing plan price change", () => {
 });
 
 test("Only an opted-in Founder sample can request paid generation", () => {
-  assert.ok(ui.includes("if (state.busy || !state.owner || !$("));
+  assert.ok(ui.includes("if (state.busy || !state.owner || !state.sampleReady || !$("));
   assert.ok(ui.includes('action: "founder_sample"'));
   assert.ok(ui.includes("confirmPaidUsage: true"));
   assert.ok(ui.includes('$("[data-voice-consent]").checked = false'));
@@ -36,4 +36,13 @@ test("Provider status and text preview are read-only", () => {
   assert.ok(page.includes("Check text only"));
   assert.ok(page.includes("automatic top-ups"));
   assert.ok(page.includes('name="robots" content="noindex,nofollow"'));
+});
+
+
+test("Founder identity verification is not blocked by a missing ElevenLabs key or balance", () => {
+  const init = ui.split("async function initialize() {")[1].split('$("[data-voice-status-check]").addEventListener')[0];
+  assert.ok(init.includes('action: "founder_access"'));
+  assert.ok(!init.includes('action: "provider_status"'));
+  assert.ok(ui.includes('state.sampleReady = result.sampleEnabled === true'));
+  assert.ok(ui.includes('$("[data-voice-consent]").disabled = !state.sampleReady'));
 });

@@ -8,7 +8,7 @@
   const CLERK_PUBLISHABLE_KEY = "pk_live_Y2xlcmsubmV3YmVhbnNsYW5kLm9yZyQ";
   const ACCOUNT_PORTAL = "https://accounts.newbeansland.org";
   const $ = selector => document.querySelector(selector);
-  const state = { clerk: null, owner: false, busy: false, audioUrl: null };
+  const state = { clerk: null, owner: false, sampleReady: false, busy: false, audioUrl: null };
   const text = (selector, value) => { const node = $(selector); if (node) node.textContent = String(value); };
   const signInUrl = () => {
     const here = new URL(location.href);
@@ -73,7 +73,7 @@
     state.busy = yes;
     $("[data-voice-status-check]").disabled = yes;
     $("[data-voice-preview]").disabled = yes;
-    $("[data-voice-generate]").disabled = yes || !state.owner || !$("[data-voice-consent]").checked;
+    $("[data-voice-generate]").disabled = yes || !state.owner || !state.sampleReady || !$("[data-voice-consent]").checked;
   }
   async function status() {
     if (state.busy) return;
@@ -101,7 +101,7 @@
     } finally { busy(false); }
   }
   async function generate() {
-    if (state.busy || !state.owner || !$("[data-voice-consent]").checked) return;
+    if (state.busy || !state.owner || !state.sampleReady || !$("[data-voice-consent]").checked) return;
     // Consent is deliberately reset BEFORE the request, preventing accidental repeats.
     $("[data-voice-consent]").checked = false;
     busy(true);
@@ -130,20 +130,23 @@
         text("[data-voice-auth]", "Sign in to access the private Founder workbench.");
         return;
       }
-      const result = await callVoice({ action: "provider_status" });
-      state.owner = result.ok === true;
+      const result = await callVoice({ action: "founder_access" });
+      state.owner = result.founder === true;
+      state.sampleReady = result.sampleEnabled === true;
       $("[data-voice-owner]").hidden = !state.owner;
       $("[data-voice-signin]").hidden = state.owner;
+      $("[data-voice-consent]").disabled = !state.sampleReady;
       text("[data-voice-auth]", state.owner
-        ? "Founder session verified by NBL Voice."
+        ? "Founder session verified by NBL Voice. Provider status not checked yet."
         : "Founder verification required.");
-      if (state.owner) {
-        text("[data-voice-provider-status]", "Connected. Provider status: " + result.status + ".");
-      }
+      text("[data-voice-sample-status]", state.sampleReady
+        ? "Founder sample ready for individual consent. A request may spend ElevenLabs credits."
+        : "Paid sample is securely disabled in the NBL backend; no provider credits can be used.");
+      busy(false);
     } catch (error) {
       text("[data-voice-auth]", error.status === 403
         ? "This workbench is reserved for the verified Founder."
-        : "Provider verification is unavailable. Your account or connection may need checking.");
+        : "NBL Founder authorization could not be verified. Check your NBL sign-in.");
     }
   }
   $("[data-voice-status-check]").addEventListener("click", () => void status());
