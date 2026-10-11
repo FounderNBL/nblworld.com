@@ -1,0 +1,19 @@
+name: NBL Voice Founder Lab Safety
+on:
+  pull_request:
+    paths:
+      - "voice-lab.*"
+      - "tests/voice-lab-source.test.mjs"
+      - ".github/workflows/nbl-voice-lab.yml"
+permissions:
+  contents: read
+jobs:
+  source-check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - run: node --check voice-lab.js
+      - run: node --test tests/voice-lab-source.test.mjs
