@@ -9,7 +9,7 @@ test("authenticated mock campus opens Study Lab and keeps practice out of offici
     "access-control-allow-headers": "authorization, content-type",
     "content-type": "application/json"
   };
-  await page.route("https://clerk.newbeansland.org/**/clerk.browser.js", async route => {
+  await page.route("**/npm/@clerk/**", async route => {
     await route.fulfill({
       status: 200,
       contentType: "application/javascript",
@@ -58,6 +58,7 @@ test("authenticated mock campus opens Study Lab and keeps practice out of offici
   });
 
   await page.goto("/university.html");
+  console.log("STUDY LAB TEST STATUS", await page.locator("[data-campus-status]").allTextContents(), "ACTIONS", calls.map(c => c.action));
   await expect(page.locator("[data-campus]")).toBeVisible();
   await expect(page.locator("[data-study-lab]")).toBeVisible();
   await expect(page.locator("[data-study-topic] option")).toHaveCount(3);
