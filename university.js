@@ -101,7 +101,7 @@ async function openNbluCheckout(button){
   }
   const plan=String(button?.dataset?.nbluCheckout||"").trim();
   if(!["foundation","full_foundation","full_nblu","nblu_continuation"].includes(plan))return;
-  const buttons=$("[data-nblu-checkout]");
+  const buttons=$$("[data-nblu-checkout]");
   buttons.forEach(item=>item.disabled=true);
   if(status)status.textContent="Preparing secure University checkout…";
   try{
@@ -132,7 +132,7 @@ async function openNbluCheckout(button){
     buttons.forEach(item=>item.disabled=false);
   }
 }
-function setStatus(text){$("[data-campus-status]").forEach(el=>el.textContent=text);}
+function setStatus(text){$$("[data-campus-status]").forEach(el=>el.textContent=text);}
 async function enableStudyLab(){
   if(!state.university?.allowed || $("[data-campus]")?.hidden)return;
   if(!studyLabPromise){
@@ -170,7 +170,7 @@ const COURSE_DETAILS={
 function summary(code){return COURSE_DETAILS[code]?.summary||"NBL University course.";}
 
 function syncCourse(){
-  $("[data-course-select]").forEach(el=>el.value=state.course);
+  $$("[data-course-select]").forEach(el=>el.value=state.course);
   if($("[data-review-course]"))$("[data-review-course]").value=state.course;
 }
 function progressPercent(u){
@@ -840,8 +840,8 @@ async function loadHelperBoard(){
 }
 
 async function boot(){
-  $("[data-signin]").forEach(b=>b.addEventListener("click",openSignIn));
-  $("[data-nblu-checkout]").forEach(button=>button.addEventListener("click",()=>openNbluCheckout(button)));
+  $$("[data-signin]").forEach(b=>b.addEventListener("click",openSignIn));
+  $$("[data-nblu-checkout]").forEach(button=>button.addEventListener("click",()=>openNbluCheckout(button)));
   $("[data-signout]").addEventListener("click",async()=>{try{const clerk=await getClerk();state.social.realtimeStop?.();studyLab?.close();await clerk.signOut();location.reload();}catch{location.href=ACCOUNT_PORTAL;}});
   $("[data-grey-form]").addEventListener("submit",async e=>{e.preventDefault();const input=$("[data-grey-input]"),value=input.value.trim();if(!value)return;input.value="";await askGrey(value);});
   $("[data-coursework-form]").addEventListener("submit",submitCourseWork);
@@ -857,7 +857,7 @@ async function boot(){
   $("[data-coursework-refresh]").addEventListener("click",loadSubmissions);
   $("[data-school-refresh]")?.addEventListener("click",loadSchoolOffice);
   $("[data-after-grey-refresh]")?.addEventListener("click",loadAfterGrey);
-  $("[data-course-select]").forEach(el=>el.addEventListener("change",e=>{state.course=e.target.value;state.schoolTaskId=null;syncCourse();studyLab?.setCourse(state.course);renderAssessment(null);void loadSubmissions();void loadAfterGrey();}));
+  $$("[data-course-select]").forEach(el=>el.addEventListener("change",e=>{state.course=e.target.value;state.schoolTaskId=null;syncCourse();studyLab?.setCourse(state.course);renderAssessment(null);void loadSubmissions();void loadAfterGrey();}));
   $("[data-start-assessment]").addEventListener("click",startAssessment);
   $("[data-grey-practice]")?.addEventListener("click",startPractice);
   $("[data-grey-readiness]")?.addEventListener("click",checkReadiness);
