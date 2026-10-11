@@ -1,0 +1,25 @@
+/* NBL Study Lab. Student-only practice visuals; never a grader. */
+.study-lab{padding:clamp(18px,3vw,30px)}
+.study-lab .study-intro{color:var(--soft);line-height:1.5}
+.study-lab select,.study-lab input,.study-lab textarea{width:100%;padding:12px;border:1px solid var(--line);border-radius:10px;background:#06111d;color:var(--cream)}
+.study-lab label{font-weight:700;font-size:.88rem;display:grid;gap:6px}
+.study-lab button{max-width:100%}
+.study-lab .study-two{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:18px}
+.study-lab .study-pane{padding:18px;border:1px solid var(--line);border-radius:14px;background:rgba(3,12,22,.6)}
+.study-lab h3{margin:0 0 12px;color:var(--gold2)}
+.study-lab .study-fields{display:grid;gap:11px}
+.study-lab .study-actions{display:flex;gap:9px;flex-wrap:wrap;margin:14px 0}
+.study-lab .study-actions .btn{min-height:39px;font-size:.82rem}
+.study-lab .study-map{display:grid;gap:9px;margin-top:12px}
+.study-lab .study-node{padding:12px;border:1px solid rgba(214,161,75,.45);border-radius:12px;background:rgba(214,161,75,.07);overflow-wrap:anywhere}
+.study-lab .study-node strong{display:block;margin-bottom:5px;color:var(--gold2)}
+.study-lab .study-node span{white-space:pre-wrap;font-size:.87rem;line-height:1.45}
+.study-lab .study-arrow{text-align:center;color:var(--gold2)}
+.study-lab .study-notebook{margin:12px 0;padding-left:19px;color:var(--cream)}
+.study-lab .study-notebook li{margin:7px 0;overflow-wrap:anywhere}
+.study-lab .study-review-row{display:flex;align-items:center;gap:9px;flex-wrap:wrap;border-top:1px solid var(--line);padding:13px 0}
+.study-lab .study-review-row strong{margin-right:auto;overflow-wrap:anywhere}
+.study-lab .study-review-row .btn{min-height:35px;font-size:.78rem}
+.study-lab .study-disclaimer{font-size:.79rem;color:var(--soft);line-height:1.5}
+@media(max-width:790px){.study-lab .study-two{grid-template-columns:1fr}.study-lab .study-pane{padding:13px}}
+@media(max-width:480px){.study-lab .study-actions .btn,.study-lab .study-review-row .btn{width:100%}}
