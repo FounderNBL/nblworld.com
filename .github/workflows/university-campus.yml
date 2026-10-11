@@ -18,6 +18,9 @@ jobs:
           node --check university.js
           node --check chat.js
           node --check social-realtime.js
+          node --check study-lab.mjs
+      - name: Test Study Lab pure logic
+        run: node --test tests/study-lab.test.mjs
       - name: Check campus source boundaries
         run: node scripts/check-university-campus.mjs
       - name: Install Playwright
