@@ -9,7 +9,10 @@ test("authenticated mock campus opens Study Lab and keeps practice out of offici
     "access-control-allow-headers": "authorization, content-type",
     "content-type": "application/json"
   };
-  await page.route("**/npm/@clerk/**", async route => {
+  await page.addInitScript(() => {
+    window.Clerk = {load:async()=>{},isSignedIn:true,session:{getToken:async()=> "stub-signed-in-token"},signOut:async()=>{}};
+  });
+  await page.route("**/clerk.browser.js", async route => {
     await route.fulfill({
       status: 200,
       contentType: "application/javascript",
@@ -58,8 +61,12 @@ test("authenticated mock campus opens Study Lab and keeps practice out of offici
   });
 
   await page.goto("/university.html");
-  console.log("STUDY LAB TEST STATUS", await page.locator("[data-campus-status]").allTextContents(), "ACTIONS", calls.map(c => c.action));
-  await expect(page.locator("[data-campus]")).toBeVisible();
+  try {
+    await expect(page.locator("[data-campus]")).toBeVisible();
+  } catch (error) {
+    console.log("STUDY LAB TEST FAILURE", await page.locator("[data-campus-status]").allTextContents(), "ACTIONS", calls.map(c => c.action));
+    throw error;
+  }
   await expect(page.locator("[data-study-lab]")).toBeVisible();
   await expect(page.locator("[data-study-topic] option")).toHaveCount(3);
 
