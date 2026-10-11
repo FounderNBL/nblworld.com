@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<meta name="theme-color" content="#06111d">
+<title>NBL Voice · Founder Test Lab</title>
+<link rel="stylesheet" href="/voice-lab.css?v=20261011">
+<script defer src="/voice-lab.js?v=20261011"></script>
+</head>
+<body>
+<header><a href="/">NBL World</a><span>Founder-only testing · not a public product</span></header>
+<main>
+<p class="eyebrow">NBL Studios / Voice</p>
+<h1>NBL Voice Test Lab</h1>
+<p>This protected workbench tests our own ElevenLabs connection. It does not create a customer checkout, change existing New Beansland prices, or activate automatic top-ups.</p>
+<section class="panel" aria-labelledby="login-heading">
+<h2 id="login-heading">LOCKE account verification</h2>
+<p data-voice-auth>Checking NBL sign-in…</p>
+<a data-voice-signin href="https://accounts.newbeansland.org/sign-in">Sign in to your NBL account</a>
+</section>
+<section class="panel" data-voice-owner hidden aria-label="Founder voice controls">
+<h2>Provider status · no speech generation</h2>
+<button type="button" data-voice-status-check>Check connected provider</button>
+<p data-voice-provider-status role="status">No provider lookup performed.</p>
+<hr>
+<h2>Safe preview</h2>
+<label for="voice-lab-text">Text to test (240 characters max)</label>
+<textarea id="voice-lab-text" data-voice-text rows="4" maxlength="240" placeholder="Welcome to New Beansland."></textarea>
+<p><button type="button" data-voice-preview>Check text only · $0 provider calls</button></p>
+<p data-voice-preview-status role="status"></p>
+<hr>
+<h2>One approved paid Founder sample</h2>
+<p>Paid speech generation uses your existing ElevenLabs provider balance. It remains disabled server-side unless the Founder explicitly enables this test in protected backend settings. This is not a customer service yet.</p>
+<label class="consent"><input type="checkbox" data-voice-consent> I authorize exactly one speech-generation request that may use my ElevenLabs credits.</label>
+<p><button type="button" data-voice-generate disabled>Generate one approved sample</button></p>
+<p data-voice-sample-status role="status"></p>
+<audio data-voice-audio controls hidden aria-label="NBL Voice generated sample"></audio>
+</section>
+<p class="foot">No customer payment, no NBL Usage deduction, no automatic provider refill. Founder authority is verified on the protected server for every provider operation.</p>
+</main>
+</body>
+</html>
