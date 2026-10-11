@@ -2,6 +2,9 @@ import { test, expect } from "@playwright/test";
 
 test("authenticated mock campus opens Study Lab and keeps practice out of official grades", async ({ page }) => {
   const calls = [];
+  const browserErrors = [];
+  page.on("pageerror", error => browserErrors.push(error.message));
+  page.on("requestfailed", request => browserErrors.push(request.url() + ": " + request.failure()?.errorText));
   const submitted = [];
   const headers = {
     "access-control-allow-origin": "*",
@@ -64,7 +67,7 @@ test("authenticated mock campus opens Study Lab and keeps practice out of offici
   try {
     await expect(page.locator("[data-campus]")).toBeVisible();
   } catch (error) {
-    console.log("STUDY LAB TEST FAILURE", await page.locator("[data-campus-status]").allTextContents(), "ACTIONS", calls.map(c => c.action));
+    console.log("STUDY LAB TEST FAILURE", await page.locator("[data-campus-status]").allTextContents(), "ACTIONS", calls.map(c => c.action), "BROWSER ERRORS", browserErrors);
     throw error;
   }
   await expect(page.locator("[data-study-lab]")).toBeVisible();
