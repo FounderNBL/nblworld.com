@@ -13,6 +13,7 @@ test("authenticated mock campus opens Study Lab and keeps practice out of offici
     await route.fulfill({
       status: 200,
       contentType: "application/javascript",
+      headers: { "access-control-allow-origin": "*" },
       body: "window.Clerk={load:async()=>{},isSignedIn:true,session:{getToken:async()=> 'stub-signed-in-token'},signOut:async()=>{}};"
     });
   });
