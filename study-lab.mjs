@@ -106,9 +106,9 @@ export function mountStudyLab({ api, askGrey, checkReadiness, topicsFor }) {
       action.type = "button"; action.className = "btn ghost";
       action.textContent = "Practice again";
       action.addEventListener("click", () => {
-        if (!unlocked || course !== activeCourse) return;
-        field("topic").value = item.topic;
-        void ask("practice");
+        if (!unlocked) return;
+        if ([...field("topic").options].some(option => option.value === item.topic)) field("topic").value = item.topic;
+        void ask("practice", item.topic);
       });
       const clear = document.createElement("button");
       clear.type = "button"; clear.className = "btn ghost";
@@ -117,7 +117,6 @@ export function mountStudyLab({ api, askGrey, checkReadiness, topicsFor }) {
       row.append(action, clear); review.append(row);
     }
   }
-  let activeCourse = "";
   async function refresh() {
     if (!unlocked || !course) return;
     const current = course, seq = ++loadSerial;
@@ -154,11 +153,10 @@ export function mountStudyLab({ api, askGrey, checkReadiness, topicsFor }) {
       alternative: field("alternative")?.value, revision: field("revision")?.value
     }));
   }
-  async function ask(mode) {
-    if (!unlocked || !topic()) return;
-    activeCourse = course;
+  async function ask(mode, requestedTopic = topic()) {
+    if (!unlocked || !requestedTopic) return;
     document.getElementById("grey")?.scrollIntoView({ behavior: "smooth" });
-    await askGrey(guidedStudyPrompt(mode, course, topic()));
+    await askGrey(guidedStudyPrompt(mode, course, requestedTopic));
   }
   for (const name of ["claim", "evidence", "alternative", "revision"]) field(name)?.addEventListener("input", preview);
   field("save")?.addEventListener("click", () => void saveNote());
