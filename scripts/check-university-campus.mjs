@@ -113,6 +113,24 @@ need(html,"After Grey","After Grey campus seat is missing.");
 need(css,".after-grey-card","After Grey styling is missing.");
 need(css,".submission-attachment","TEST PDF submission styling is missing.");
 need(js,"renderSubmissions","Safe submission rendering is missing.");
+need(js,"originalAvailable===true","Original PDF download must require verified storage receipt.");
+need(js,"returnedAvailable===true","Returned PDF download must require Registrar confirmation.");
+need(js,'action:"university_submission_download"',"Learner PDF download action must call protected University API.");
+need(js,"url.origin!==new URL(NBL_CORE_API).origin","Only the trusted Supabase Storage origin may receive signed download navigation.");
+need(js,"state.pendingSubmission.key","Submission retries must preserve the idempotency key.");
+need(js,"Submission receipt confirmed. Your original PDF is stored","Only confirmed PDF storage can be described as retained.");
+need(html,"durably stored","Upload disclosure must describe storage receipt correctly.");
+for(const label of ["Download original PDF","Download reviewed PDF","TEST intake note","Submitted","Course","Type"]){
+ need(js,label,"PDF receipt/download surface missing: "+label);
+}
+for(const field of ["originalAvailable","returnedAvailable","safe_feedback","returnedAt","reviewedAt","warnings","sizeBytes"]){
+ need(js,field,"PDF receipt field absent: "+field);
+}
+for(const wording of ["the original PDF itself is not retained by this rail","Registrar records the extracted student work"]){
+ forbid(html,wording,"Outdated retained-file claim in campus HTML: "+wording);
+ forbid(js,wording,"Outdated retained-file claim in campus JS: "+wording);
+}
+
 need(js,'a.status==="review_pending"',"Pending academic-review UI is missing.");
 need(js,"Pending final academic review","Pending academic-review message is missing.");
 
