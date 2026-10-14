@@ -16,8 +16,8 @@ let studyLab=null;
 let studyLabPromise=null;
 const state={clerk:null,university:null,course:"APSK 101",schoolTaskId:null,schoolPlan:null,greyHistory:[],conversationId:null,assessment:null,reader:null,pendingSubmission:null,social:{me:null,threadId:null,threadType:null,threadTitle:null,threads:[],helpCases:[],realtimeThread:null,realtimeStop:null}};
 
-function safeReturnUrl(){const u=new URL(location.href);u.hash="";return u.href;}
-function signInUrl(){return ACCOUNT_PORTAL+"/sign-in?redirect_url="+encodeURIComponent(safeReturnUrl());}
+// Sign in under the verified .org Clerk origin; do not return to .com after auth.
+function signInUrl(){return ACCOUNT_PORTAL+"/sign-in?redirect_url="+encodeURIComponent("https://newbeansland.org/account.html");}
 function loadScript(src,attrs={}){
   return new Promise((resolve,reject)=>{
     const found=[...document.scripts].find(s=>s.src===src);
