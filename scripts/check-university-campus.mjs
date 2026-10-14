@@ -7,6 +7,8 @@ const studyLab=fs.readFileSync(new URL("../study-lab.mjs",import.meta.url),"utf8
 const home=fs.readFileSync(new URL("../index.html",import.meta.url),"utf8");
 const memberChat=fs.readFileSync(new URL("../chat.html",import.meta.url),"utf8");
 const memberChatJs=fs.readFileSync(new URL("../chat.js",import.meta.url),"utf8");
+const voiceLabJs=fs.readFileSync(new URL("../voice-lab.js",import.meta.url),"utf8");
+const voiceLabHtml=fs.readFileSync(new URL("../voice-lab.html",import.meta.url),"utf8");
 const memberChatCss=fs.readFileSync(new URL("../chat.css",import.meta.url),"utf8");
 const socialRealtime=fs.readFileSync(new URL("../social-realtime.js",import.meta.url),"utf8");
 
@@ -20,6 +22,15 @@ need(home,"Full NBLU Experience","NBL World does not feature Full NBLU.");
 need(home,'$449.99',"NBL World does not show the Full NBLU price.");
 need(home,'href="/chat.html"',"NBL World must offer the human NBL Chat member entrance.");
 need(html,'href="/chat.html"',"University campus must link regular members to NBL World Chat.");
+// Clerk's verified production app is on .org: a .com sign-in return is invalid.
+for(const [label,source] of [["University",js],["human Chat",memberChatJs],["Voice Lab",voiceLabJs]]){
+  need(source,'"/sign-in?redirect_url="+encodeURIComponent("https://newbeansland.org/account.html")',label+" sign-in must return to the verified .org account page.");
+  forbid(source,'encodeURIComponent(dest.href)',label+" still redirects sign-in to an unverified .com origin.");
+  forbid(source,'encodeURIComponent(here.href)',label+" still redirects sign-in to an unverified .com origin.");
+  forbid(source,'encodeURIComponent(safeReturnUrl())',label+" still redirects sign-in to an unverified .com origin.");
+}
+need(memberChat,'data-chat-signin href="https://newbeansland.org/account.html"',"Human Chat fallback sign-in is not on .org.");
+need(voiceLabHtml,'data-voice-signin href="https://newbeansland.org/account.html"',"Voice Lab fallback sign-in is not on .org.");
 need(memberChat,'data-chat-guest',"Human Chat must have signed-out account entry.");
 need(memberChat,'data-chat-app hidden',"Member messages must be hidden until signed in.");
 need(memberChat,'href="/university.html#nbl-social"',"Students must be routed to protected classroom Chat.");
