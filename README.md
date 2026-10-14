@@ -1,3 +1,9 @@
+## CURRENT FOUNDER DECISION — October 14, 2026
+
+**NBL World (`nblworld.com`) is the commercial-facing shop/discovery brand.** The Founder approved moving Clerk-authenticated Beans, human-to-human NBL Chat, University/Grey, academic records, usage/credits and NBL-owned Stripe checkouts permanently to **`newbeansland.org`**, the existing primary Clerk domain. `accounts.newbeansland.org` hosts secure authentication; no Clerk satellite plan is needed. This supersedes all October 8 statements below assigning interactive member features to `.com`. Keep the NBL World official artwork and independent Shopify/books shop links. Former member URLs here redirect to their `.org` counterparts. Existing University, Chat, Study Lab and Founder Voice source/test history is preserved for rollback, but the active UI and academic security tests now belong in website PR #407. No checkout, EAS release, Supabase deployment or merge is authorized by this draft. Do not reintroduce Clerk sessions or customer payment UI on `.com`.
+
+---
+
 # NBL World — live customer experience
 
 **Founder ownership decision (2026-10-08).** This README overrides older descriptions that call NBL World only a University front door. The actual customer-facing **Beans, human NBL Chat, and NBL University experience belongs here**.
