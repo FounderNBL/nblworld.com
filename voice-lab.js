@@ -11,9 +11,8 @@
   const state = { clerk: null, owner: false, sampleReady: false, busy: false, audioUrl: null };
   const text = (selector, value) => { const node = $(selector); if (node) node.textContent = String(value); };
   const signInUrl = () => {
-    const here = new URL(location.href);
-    here.hash = "";
-    return ACCOUNT_PORTAL + "/sign-in?redirect_url=" + encodeURIComponent(here.href);
+    // The NBL account lives under the verified newbeansland.org Clerk origin.
+    return ACCOUNT_PORTAL + "/sign-in?redirect_url=" + encodeURIComponent("https://newbeansland.org/account.html");
   };
   function domainFromKey() {
     const part = (CLERK_PUBLISHABLE_KEY.split("_")[2] || "").replace(/-/g, "+").replace(/_/g, "/");
