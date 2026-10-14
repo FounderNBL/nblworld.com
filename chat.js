@@ -11,10 +11,8 @@ const status=message=>{const el=$("[data-chat-status]");if(el)el.textContent=mes
 const node=(tag,cls,text)=>{const el=document.createElement(tag);if(cls)el.className=cls;if(text!==undefined)el.textContent=String(text);return el;};
 
 function signInUrl(){
-  const dest=new URL(window.location.href);
-  dest.hash="";
-  if(!["https:","http:"].includes(dest.protocol))return ACCOUNT_PORTAL+"/sign-in";
-  return ACCOUNT_PORTAL+"/sign-in?redirect_url="+encodeURIComponent(dest.href);
+  // Clerk is configured for newbeansland.org; never redirect auth back to nblworld.com.
+  return ACCOUNT_PORTAL+"/sign-in?redirect_url="+encodeURIComponent("https://newbeansland.org/account.html");
 }
 function clerkDomain(){
   const encoded=(CLERK_PUBLISHABLE_KEY.split("_")[2]||"").replace(/-/g,"+").replace(/_/g,"/");
