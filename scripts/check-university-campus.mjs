@@ -1,194 +1,39 @@
 import fs from "node:fs";
-
-const html=fs.readFileSync(new URL("../university.html",import.meta.url),"utf8");
-const js=fs.readFileSync(new URL("../university.js",import.meta.url),"utf8");
-const css=fs.readFileSync(new URL("../university.css",import.meta.url),"utf8");
-const studyLab=fs.readFileSync(new URL("../study-lab.mjs",import.meta.url),"utf8");
-const home=fs.readFileSync(new URL("../index.html",import.meta.url),"utf8");
-const memberChat=fs.readFileSync(new URL("../chat.html",import.meta.url),"utf8");
-const memberChatJs=fs.readFileSync(new URL("../chat.js",import.meta.url),"utf8");
-const memberChatCss=fs.readFileSync(new URL("../chat.css",import.meta.url),"utf8");
-const socialRealtime=fs.readFileSync(new URL("../social-realtime.js",import.meta.url),"utf8");
-
+const read=path=>fs.readFileSync(new URL("../"+path,import.meta.url),"utf8");
+const shop=read("index.html"),humanChat=read("chat.html"),campus=read("university.html"),voice=read("voice-lab.html");
 const errors=[];
-const need=(source,text,msg)=>{if(!source.includes(text))errors.push(msg);};
-const forbid=(source,text,msg)=>{if(source.includes(text))errors.push(msg);};
+const need=(source,value,why)=>{if(!source.includes(value))errors.push(why);};
+const forbid=(source,value,why)=>{if(source.includes(value))errors.push(why);};
 
-need(home,'src="/NBL_WORLD.png"',"NBL World hero image is missing.");
-need(home,'href="/university.html#enroll"',"NBL World home does not route enrollment into its University.");
-need(home,"Full NBLU Experience","NBL World does not feature Full NBLU.");
-need(home,'$449.99',"NBL World does not show the Full NBLU price.");
-need(home,'href="/chat.html"',"NBL World must offer the human NBL Chat member entrance.");
-need(html,'href="/chat.html"',"University campus must link regular members to NBL World Chat.");
-need(memberChat,'data-chat-guest',"Human Chat must have signed-out account entry.");
-need(memberChat,'data-chat-app hidden',"Member messages must be hidden until signed in.");
-need(memberChat,'href="/university.html#nbl-social"',"Students must be routed to protected classroom Chat.");
-need(memberChat,"No University enrollment is required for direct messages.","Regular member DMs must not be gated by academic enrollment.");
-need(memberChatJs,'const NBL_CORE_API="https://tvypdakofcrlvnwporhh.supabase.co/functions/v1/nbl-core"',"Member Chat must use NBL Core.");
-need(memberChatJs,'const SOCIAL_API=NBL_CORE_API+"/social"',"Member Chat must use guarded Core social route.");
-forbid(memberChatJs,'functions/v1/nbl-social',"Human chat may not bypass the shared Core service ingress.");
-need(memberChatJs,'"Authorization":"Bearer "+token',"Member Chat must use a real signed-in session token.");
-for(const action of ["me","find_users","direct","list_threads","list_messages","send","mute","block","unblock","report"]){
-  need(memberChatJs,'action:"'+action+'"',"Member Chat action missing: "+action);
-}
-need(memberChatCss,".chat-app","Member Chat responsive layout missing.");
-need(memberChat,'src="/social-realtime.js?v=20261008"',"Member Chat must load private Realtime listener.");
-need(html,'src="/social-realtime.js?v=20261008"',"Campus must load the same private Realtime listener.");
-need(socialRealtime,'config:{private:true}',"Realtime channels must always be private.");
-need(socialRealtime,'watchThread',"Thread notifications must be available.");
-need(socialRealtime,'watchInbox',"Recipient inbox notifications must be available.");
-need(socialRealtime,'eventsPerSecond:5',"Realtime must use a rate-limited connection.");
-need(socialRealtime,'refreshPending',"Realtime refreshes must be coalesced.");
-need(memberChatJs,'watchInbox()',"Regular signed-in members must listen for incoming DMs.");
-need(memberChatJs,'watchOpenThread(id)',"Open member chats must subscribe to their own thread.");
-need(js,'watchCampusThread(threadId)',"Campus Social rooms must subscribe only when open.");
-forbid(socialRealtime,'service_role',"Service keys cannot appear in public Realtime client code.");
-forbid(socialRealtime,'realtime.send',"Clients must only listen, not broadcast unverified messages.");
-forbid(memberChatJs,"localStorage.setItem","Member Chat must not persist session or backend token to localStorage.");
-forbid(memberChatJs,"RUNWAY_API_KEY","Provider credentials must never be in the browser.");
-need(home,"End-to-end enrollment is not release-proven yet","NBL World release-status hold is missing.");
-need(home,"Visit New Beansland","The quiet public New Beansland handoff is missing.");
-if(!(home.indexOf('src="/NBL_WORLD.png"') < home.indexOf('<h1 id="nblu-title">New Beansland University</h1>') &&
-     home.indexOf('<h1 id="nblu-title">New Beansland University</h1>') < home.lastIndexOf("Visit New Beansland"))){
-  errors.push("NBL World hierarchy must be hero image -> University -> quiet New Beansland handoff.");
-}
-need(html,"LOCKE opens the classroom only when that account has University enrollment.","Campus enrollment gate is missing.");
-need(html,'id="enroll"',"NBL World enrollment section is missing.");
-need(html,'data-nblu-checkout="foundation"',"Foundation checkout is missing from NBL World.");
-need(html,'data-nblu-checkout="full_foundation"',"Guided Foundation checkout is missing from NBL World.");
-need(html,'data-nblu-checkout="full_nblu" disabled',"Full NBLU checkout must remain disabled pending proof.");
-need(html,'data-nblu-checkout="nblu_continuation"',"Full NBLU owner continuation control is missing.");
-need(html,"$449.99","Full NBLU price is missing from the campus.");
-need(html,"$14.99/month","Owner continuation price is missing from the campus.");
-need(html,"data-release-proof-notice","University release-proof notice is missing.");
-need(html,"shipping charged separately","Staged physical-book shipping disclosure is missing.");
-forbid(html,'href="https://newbeansland.org/university.html"',"Campus still sends enrollment back to the public New Beansland site.");
-need(html,"Your digital materials","Student library is missing.");
-need(html,"Professor Grey","Professor Grey faculty panel is missing.");
-need(html,"Course assessment","Protected assessment panel is missing.");
-need(html,"Your course work","Registrar coursework room is missing.");
-need(html,"Gradebook","Gradebook is missing.");
-need(html,'id="school-office"',"School Office room must be present inside the gated campus.");
-need(html,'data-school-office',"Published lesson plan room missing.");
-need(html,'data-school-refresh',"School Office refresh control missing.");
-need(js,'action:"university_school_plan"',"School Office must load from protected runtime instead of hard-coded public content.");
-need(js,'state.schoolTaskId=task.id',"School Office task must link to Registrar submission.");
-need(js,'schoolTaskId:state.schoolTaskId||undefined',"Selected NBL assignment must be sent through existing Registrar intake.");
-need(js,'state.schoolTaskId=null',"Registrar assignment selection must be cleared after submission.");
-need(js,'renderSchoolOffice',"Student-safe lesson and task renderer missing.");
-need(css,".school-office-course","NBL School Office should keep the existing campus style.");
+// NBL World .com is now an independent commerce/discovery site, not a Clerk satellite.
+need(shop,'NBL World Shop',"Commercial NBL World title is missing.");
+need(shop,'https://new-beansland.myshopify.com',"NBL independent Shopify storefront is missing.");
+need(shop,'https://books.newbeansland.org/',"Independent books store is missing.");
+need(shop,'href="https://newbeansland.org/"',"Customer services need an .org route.");
+need(shop,'src="/NBL_WORLD.png"',"Approved NBL World image must stay available.");
+forbid(shop,'clerk.browser.js',"Sales home may not run Clerk sign-in.");
+forbid(shop,'data-nblu-checkout',"Sales home may not duplicate NBL University checkout.");
+forbid(shop,'https://buy.stripe.com/',"Sales home may not bypass the NBL account-billing gateway.");
+forbid(shop,'data-chat-find-form',"Sales home may not host NBL people messaging.");
 
-need(html,"approximately 9 hours of engaged learning total","Foundation learning-time guidance is missing.");
-need(html,"What each course expects","Student-facing course expectations are missing.");
-need(html,"Opt-in scoreboard","Opt-in class community is missing.");
-need(html,"Access / accommodation","Student access-support policy is missing.");
-need(html,"Request academic review","Student academic-review surface is missing.");
-need(html,"Chat means people","NBL Social human-chat surface is missing.");
-need(html,"Ask classmates first","Study Hall peer-help surface is missing.");
-need(html,"Helper leaderboard","Helper leaderboard is missing.");
-need(html,'data-social-dm-handle',"NBL handle DM control is missing.");
-need(html,'data-social-messages',"Human message rail is missing.");
-need(js,'const NBL_CORE_API="https://tvypdakofcrlvnwporhh.supabase.co/functions/v1/nbl-core"',"Campus Core ingress is missing.");
-need(js,'const API=NBL_CORE_API+"/university"',"University must use guarded Core academic route.");
-need(js,'const SOCIAL_API=NBL_CORE_API+"/social"',"Campus must use guarded Core social route.");
-forbid(js,'functions/v1/nbl-foundation-runtime',"University may not bypass Core academic route.");
-forbid(js,'functions/v1/nbl-social',"Campus may not bypass Core social route.");
-for(const action of ["direct","room","list_threads","list_messages","list_help_cases","send","ask_help","solve_help","ask_grey","helper_board","report"]){
-  need(js,'action:"'+action+'"',"NBL Social action missing from campus: "+action);
+for(const [name,html,to] of [
+  ["member Chat",humanChat,"https://newbeansland.org/chat.html"],
+  ["University campus",campus,"https://newbeansland.org/campus.html"],
+  ["Founder voice",voice,"https://newbeansland.org/voice-lab.html"]
+]){
+  need(html,'http-equiv="refresh"',"Old "+name+" URL must safely redirect.");
+  need(html,'content="0;url='+to+'"',"Old "+name+" URL must hand off to the correct .org destination.");
+  need(html,'location.replace("'+to+'")',"Old "+name+" URL must not retain .com session state.");
+  need(html,'href="'+to+'"',"Old "+name+" fallback must point to .org.");
+  forbid(html,'clerk.browser.js',"Old "+name+" URL still loads Clerk on .com.");
+  forbid(html,'data-signin',"Old "+name+" URL still advertises local sign-in.");
+  forbid(html,'data-nblu-checkout',"Old "+name+" URL still advertises checkout.");
+  forbid(html,'data-chat-app',"Old "+name+" URL still exposes member chats.");
 }
-need(js,"Solved / This helped","Study Hall solved/helpful reward action is missing.");
-need(js,"Helper Mode locked","Helper Mode milestone explanation is missing.");
-need(css,".social-shell","NBL Social layout styling is missing.");
-need(css,".helper-board","Helper leaderboard styling is missing.");
-need(html,"data-student-number","Student-number display is missing.");
-need(js,'action:"university_submissions"',"Student submission listing is missing.");
-need(js,'action:"university_submit_work"',"Student coursework submission action is missing.");
-need(html,"PDF for TEST","TEST PDF intake surface is missing.");
-need(html,'data-coursework-pdf',"TEST PDF picker is missing.");
-need(js,'action:"university_submit_pdf"',"TEST PDF backend action is missing from campus.");
-need(js,"universityPdfPayload","Secure TEST PDF client validation is missing.");
-need(js,"renderAfterGrey","After Grey rendering is missing.");
-need(js,'action:"after_grey"',"After Grey backend action is missing from campus.");
-need(html,"After Grey","After Grey campus seat is missing.");
-need(css,".after-grey-card","After Grey styling is missing.");
-need(css,".submission-attachment","TEST PDF submission styling is missing.");
-need(js,"renderSubmissions","Safe submission rendering is missing.");
-need(js,"originalAvailable===true","Original PDF download must require verified storage receipt.");
-need(js,"returnedAvailable===true","Returned PDF download must require Registrar confirmation.");
-need(js,'action:"university_submission_download"',"Learner PDF download action must call protected University API.");
-need(js,"url.origin!==new URL(NBL_CORE_API).origin","Only the trusted Supabase Storage origin may receive signed download navigation.");
-need(js,"state.pendingSubmission.key","Submission retries must preserve the idempotency key.");
-need(js,"Submission receipt confirmed. Your original PDF is stored","Only confirmed PDF storage can be described as retained.");
-need(html,"durably stored","Upload disclosure must describe storage receipt correctly.");
-for(const label of ["Download original PDF","Download reviewed PDF","TEST intake note","Submitted","Course","Type"]){
- need(js,label,"PDF receipt/download surface missing: "+label);
+for(const secret of ["STRIPE_SECRET_KEY","SUPABASE_SERVICE_ROLE_KEY","OPENAI_API_KEY","sk-proj-"]){
+  for(const [name,html] of [["shop",shop],["human Chat",humanChat],["campus",campus],["voice",voice]]){
+    forbid(html,secret,"Unexpected credential marker on public .com "+name+".");
+  }
 }
-for(const field of ["originalAvailable","returnedAvailable","safe_feedback","returnedAt","reviewedAt","warnings","sizeBytes"]){
- need(js,field,"PDF receipt field absent: "+field);
-}
-for(const wording of ["the original PDF itself is not retained by this rail","Registrar records the extracted student work"]){
- forbid(html,wording,"Outdated retained-file claim in campus HTML: "+wording);
- forbid(js,wording,"Outdated retained-file claim in campus JS: "+wording);
-}
-
-need(js,'a.status==="review_pending"',"Pending academic-review UI is missing.");
-need(js,"Pending final academic review","Pending academic-review message is missing.");
-
-need(html,"The Frontier Check","Frontier Baseline panel is missing.");
-need(html,"Some are trying to get you to confidently say some bullshit","Frontier Check lost the intended NBL baseline tone.");
-need(html,"Welcome%20to%20the%20Frontier.pdf","Frontier entrance statement link is missing.");
-need(js,'action:"frontier_start"',"Frontier start API call is missing.");
-need(js,'action:"frontier_submit"',"Frontier submit API call is missing.");
-need(js,"renderFrontier","Frontier campus gate rendering is missing.");
-
-need(js,'const BILLING_API=NBL_CORE_API+"/billing"',"Authenticated University Core billing route is missing.");
-forbid(js,'functions/v1/nbl-billing-link',"Campus billing may not bypass Core.");
-need(js,'const UNIVERSITY_PUBLIC_CHECKOUT_ENABLED=false;',"Campus checkout must remain blocked pending proof.");
-need(js,"UNIVERSITY_PUBLIC_CHECKOUT_ENABLED=false","Public University checkout hold is not enforced in JavaScript.");
-need(js,'["foundation","full_foundation","full_nblu","nblu_continuation"]',"Expected University checkout plans are not whitelisted.");
-need(js,"trustedBillingDestination","Stripe destination allowlist is missing.");
-need(js,'location.href=destination',"University checkout does not hand off to validated Stripe.");
-forbid(js,"https://buy.stripe.com/","Raw Stripe links must not be embedded in campus JavaScript.");
-need(js,'action:"university_status"',"Campus status API call is missing.");
-need(js,'action:"university_material"',"Secure material reader API call is missing.");
-need(js,'action:"grey"',"Professor Grey API call is missing.");
-need(js,'action:"assessment_start"',"Assessment start API call is missing.");
-need(js,'action:"assessment_submit"',"Assessment submit API call is missing.");
-need(js,'action:"academic_review_request"',"Academic review request API call is missing.");
-need(js,'action:"university_community"',"University community API call is missing.");
-need(js,'action:"university_community_update"',"University community settings API call is missing.");
-need(js,"renderGradebook","Student-safe gradebook rendering is missing.");
-need(js,"renderCommunity","Class community rendering is missing.");
-need(js,"clerk.session.getToken()","Clerk bearer identity is missing.");
-need(css,".reader{","Secure reader styling is missing.");
-need(css,".frontier{","Frontier Check styling is missing.");
-need(css,".gradebook{","Gradebook styling is missing.");
-need(css,".community-grid","Community styling is missing.");
-
-for(const secret of ["SUPABASE_SERVICE_ROLE_KEY","OPENAI_API_KEY","STRIPE_SECRET_KEY","sk-proj-","sk_live_"]){
-  forbid(html,secret,`Private secret marker in university.html: ${secret}`);
-  forbid(js,secret,`Private secret marker in university.js: ${secret}`);
-}
-for(const bad of ["answer_key","grading_payload","rubricText","PROTECTED RUBRIC"]){
-  forbid(js,bad,`Protected grading material leaked into campus JavaScript: ${bad}`);
-}
-
-need(html,'data-study-lab',"Study Lab must exist inside the protected University campus.");
-need(html,'data-study-preview-claim',"Study Lab visual reasoning chain is missing.");
-need(html,'data-study-notes',"Student notebook history is missing.");
-need(html,'data-study-review',"Student revisit queue is missing.");
-need(html,'data-study-save',"Study reflections must require explicit saving.");
-need(js,'void enableStudyLab()',"Study Lab is not opened after verified University access.");
-need(js,'studyLab?.close()',"Study Lab must close when NBL University access is denied.");
-need(studyLab,'action: "university_submit_work"',"Study Lab must save via the existing authorized Registrar route.");
-need(studyLab,'action: "university_submissions"',"Study Lab must load only the signed-in student's prior records.");
-need(studyLab,'askGrey(guidedStudyPrompt',"Guided practice must reuse protected Professor Grey.");
-for(const secret of ["OPENAI_API_KEY","SUPABASE_SERVICE_ROLE_KEY","STRIPE_SECRET_KEY","sk-proj-"]){
-  forbid(studyLab,secret,"A provider secret marker appeared in public Study Lab code.");
-}
-for(const disallowed of ["localStorage", "sessionStorage", "functions/v1/nbl-foundation-runtime", "service_role"]){
-  forbid(studyLab,disallowed,"Study Lab must not create client storage, bypass Core, or embed privileged credentials: "+disallowed);
-}
-
-if(errors.length){console.error("[nbl-world-campus] FAIL");errors.forEach(e=>console.error("- "+e));process.exit(1);}
-console.log("[nbl-world-campus] PASS: NBL World shows the current University catalog while public checkout remains held pending controlled payment/account-binding and cross-account isolation proof; campus academic/security source rails remain intact.");
+if(errors.length){console.error("[nbl-world-sales-only] FAIL");errors.forEach(e=>console.error("- "+e));process.exitCode=1;}
+else console.log("[nbl-world-sales-only] PASS: sales-only NBL World, independent Shopify/books, no Clerk or NBL-owned checkout, safe member-service redirect to primary .org.");
