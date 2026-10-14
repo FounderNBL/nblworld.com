@@ -24,7 +24,8 @@ need(home,'href="/chat.html"',"NBL World must offer the human NBL Chat member en
 need(html,'href="/chat.html"',"University campus must link regular members to NBL World Chat.");
 // Clerk's verified production app is on .org: a .com sign-in return is invalid.
 for(const [label,source] of [["University",js],["human Chat",memberChatJs],["Voice Lab",voiceLabJs]]){
-  need(source,'"/sign-in?redirect_url="+encodeURIComponent("https://newbeansland.org/account.html")',label+" sign-in must return to the verified .org account page.");
+  need(source,'"/sign-in?redirect_url="',label+" must use the Clerk-hosted .org sign-in page.");
+  need(source,'encodeURIComponent("https://newbeansland.org/account.html")',label+" sign-in must return to the verified .org account page.");
   forbid(source,'encodeURIComponent(dest.href)',label+" still redirects sign-in to an unverified .com origin.");
   forbid(source,'encodeURIComponent(here.href)',label+" still redirects sign-in to an unverified .com origin.");
   forbid(source,'encodeURIComponent(safeReturnUrl())',label+" still redirects sign-in to an unverified .com origin.");
