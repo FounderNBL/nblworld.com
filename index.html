@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
   <meta name="theme-color" content="#02060b">
   <title>NBL World Shop | New Beansland</title>
-  <meta name="description" content="Explore New Beansland clothing, books and independent NBL merchandise stores. Accounts, Beans and University live at NewBeansland.org.">
+  <meta name="description" content="Explore New Beansland clothing, books and NBL Digital Services: flyers, branding, promo graphics, merch mockups and simple websites. Accounts, Beans and University live at NewBeansland.org.">
   <link rel="canonical" href="https://nblworld.com/">
   <meta property="og:title" content="NBL World Shop | New Beansland">
   <meta property="og:image" content="https://nblworld.com/NBL_WORLD.png">
@@ -27,9 +27,12 @@
     .shop{border:1px solid #e7bc6845;border-radius:18px;padding:clamp(22px,3vw,34px);background:linear-gradient(145deg,#102238,#07131f);min-width:0}
     .shop p{color:var(--soft);margin:0 0 18px}
     .btn{display:inline-block;border:1px solid var(--gold);border-radius:9px;padding:12px 16px;color:#130d05;background:linear-gradient(#f7dfa3,#ce9a3c);font-weight:800;text-decoration:none}
+    .work{display:grid;grid-template-columns:minmax(220px,390px) minmax(0,1fr);gap:24px;align-items:center;margin-top:32px;border:1px solid #e7bc6845;border-radius:18px;padding:clamp(18px,3vw,28px);background:linear-gradient(145deg,#102238,#07131f)}
+    .work img{display:block;width:100%;height:auto;border:1px solid #e7bc68ad;border-radius:8px;box-shadow:0 16px 35px #0009}
+    .work p{color:var(--soft);margin:0 0 14px}.work ul{color:var(--soft);padding-left:20px}.work li{margin:6px 0}.work .btn{margin-top:12px}
     .member{padding:23px;margin-top:30px;border:1px solid #e7bc683e;border-radius:14px;background:#071421}
     .member a{color:var(--gold);font-weight:800}footer{text-align:center;padding:26px 12px;color:#c8b99f;border-top:1px solid #ad8c5529}
-    @media(max-width:600px){.shops{grid-template-columns:1fr}.hero img{max-height:36vh}}
+    @media(max-width:600px){.shops{grid-template-columns:1fr}.work{grid-template-columns:1fr}.work img{max-width:420px;margin:auto}.hero img{max-height:36vh}}
   </style>
 </head>
 <body>
@@ -42,6 +45,18 @@
     <section class="shops" aria-label="New Beansland shops">
       <article class="shop"><h2>NBL Clothing Co.</h2><p>Shirts, statements and New Beansland apparel. Checkout takes place through the independent Shopify store.</p><a class="btn" href="https://new-beansland.myshopify.com" rel="noopener">Shop NBL Clothing</a></article>
       <article class="shop"><h2>NBL Books</h2><p>Explore the New Beansland book collection. Books are purchased through the existing publishing and digital book partners.</p><a class="btn" href="https://books.newbeansland.org/" rel="noopener">Shop NBL Books</a></article>
+    </section>
+    <section class="work" aria-label="Work With NBL digital services">
+      <a href="https://newbeansland.org/pricing.html" aria-label="Explore NBL Digital Services">
+        <img src="/assets/work-with-nbl.jpg" width="1229" height="1536" loading="lazy" decoding="async" alt="Work With NBL: digital services flyer featuring flyers, branding, promo graphics, merch mockups, and simple websites, New Beansland founder Jamel Hawkins">
+      </a>
+      <div>
+        <p class="kicker">New Beansland · Digital services</p>
+        <h2>Work With NBL</h2>
+        <p>Flyers, branding, promotional graphics, merchandise mockups and simple websites for businesses, creators and local brands.</p>
+        <p>See the full flyer and explore what New Beansland can create with you.</p>
+        <a class="btn" href="https://newbeansland.org/pricing.html" rel="noopener">Explore NBL Services</a>
+      </div>
     </section>
     <section class="member" aria-label="New Beansland member services"><h2>Looking for Beans, NBL Chat or University?</h2><p>Sign in, message members, learn with Professor Grey or manage your NBL credits at <strong>NewBeansland.org</strong>. There is no separate NBL World member sign-in.</p><a href="https://newbeansland.org/">Enter New Beansland →</a></section>
   </main>
