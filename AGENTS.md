@@ -10,4 +10,4 @@
 
 **Workflow words:** "Don't eat the acorn" = protect scope; "catch up" = read-only; "new message alert" = inspect the latest NBL Desk report, not Gmail. If a task truly requires editing the University, require distinct explicit Founder authorization and preserve rollback/test evidence. Copilot cloud + GitHub Actions are approved for the specific Beans engineering work, not automatic University release.
 
-No signed Android build, Play Store upload, price/customer billing change or unrestricted live deployment without direct Founder authorization. No secrets in source or logs.
+The standing Beans Android goal is **V12 AAB-ready** (source/configuration/CI/handoff), not generating a production Android bundle. Play Store upload, price/customer billing change or unrestricted live deployment require separate Founder authorization. No secrets in source or logs.
