@@ -17,7 +17,7 @@ forbid(shop,'https://buy.stripe.com/',"Sales home may not bypass the NBL account
 forbid(shop,'data-chat-find-form',"Sales home may not host NBL people messaging.");
 
 for(const [name,html,to] of [
-  ["member Chat",humanChat,"https://newbeansland.org/chat.html"],
+  ["member Messenger",humanChat,"https://newbeansland.org/messenger/"],
   ["University campus",campus,"https://newbeansland.org/campus.html"],
   ["Founder voice",voice,"https://newbeansland.org/voice-lab.html"]
 ]){
