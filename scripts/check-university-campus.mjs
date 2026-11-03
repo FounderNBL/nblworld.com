@@ -15,9 +15,12 @@ forbid(shop,'clerk.browser.js',"Sales home may not run Clerk sign-in.");
 forbid(shop,'data-nblu-checkout',"Sales home may not duplicate NBL University checkout.");
 forbid(shop,'https://buy.stripe.com/',"Sales home may not bypass the NBL account-billing gateway.");
 forbid(shop,'data-chat-find-form',"Sales home may not host NBL people messaging.");
+need(shop,"Looking for Beans, NBL Messenger or University?","Sales home must name current products.");
+forbid(shop,"Looking for Beans, NBL Chat","Sales home reintroduced retired branding.");
+need(humanChat,"NBL Messenger · Human Messages","Legacy .com chat route must present NBL Messenger branding.");
 
 for(const [name,html,to] of [
-  ["member Chat",humanChat,"https://newbeansland.org/chat.html"],
+  ["member Messenger",humanChat,"https://newbeansland.org/messenger/"],
   ["University campus",campus,"https://newbeansland.org/campus.html"],
   ["Founder voice",voice,"https://newbeansland.org/voice-lab.html"]
 ]){

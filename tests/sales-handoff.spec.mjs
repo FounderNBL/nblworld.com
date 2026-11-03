@@ -22,7 +22,7 @@ test("sales-only layout stays readable on mobile",async({page})=>{
 });
 
 for(const [oldRoute,to] of [
-  ["/chat.html","https://newbeansland.org/chat.html"],
+  ["/chat.html","https://newbeansland.org/messenger/"],
   ["/university.html","https://newbeansland.org/campus.html"],
   ["/voice-lab.html","https://newbeansland.org/voice-lab.html"]
 ]){
