@@ -30,13 +30,34 @@
     .work{display:grid;grid-template-columns:minmax(220px,390px) minmax(0,1fr);gap:24px;align-items:center;margin-top:32px;border:1px solid #e7bc6845;border-radius:18px;padding:clamp(18px,3vw,28px);background:linear-gradient(145deg,#102238,#07131f)}
     .work img{display:block;width:100%;height:auto;border:1px solid #e7bc68ad;border-radius:8px;box-shadow:0 16px 35px #0009}
     .work p{color:var(--soft);margin:0 0 14px}.work ul{color:var(--soft);padding-left:20px}.work li{margin:6px 0}.work .btn{margin-top:12px}
+    .social-gateway{margin-top:34px}
+    .social-gateway h2{font:700 clamp(1.35rem,3vw,1.8rem)/1.2 Georgia,serif;margin:8px 0}
+    .social-gateway p.intro{margin:0 0 19px}
+    .social-gateway-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px}
+    .social-gateway-card{
+      display:flex;flex-direction:column;gap:10px;min-width:0;min-height:212px;padding:24px;
+      border:1px solid #a77b39;border-radius:19px;
+      text-decoration:none;background:radial-gradient(circle at 76% 12%,rgba(186,135,63,.17),transparent 58%),#0d1a2a;
+      box-shadow:0 16px 37px #0005;transition:transform .16s,border-color .16s,background .16s
+    }
+    .social-gateway-card.pulse{border-color:#944bd1;background:radial-gradient(circle at 76% 12%,rgba(174,67,237,.2),transparent 57%),#110b23}
+    .social-gateway-card:hover,.social-gateway-card:focus-visible{transform:translateY(-3px);border-color:#f0c56f}
+    .social-gateway-card.pulse:hover,.social-gateway-card.pulse:focus-visible{border-color:#dda5ff}
+    .social-gateway-card .product{font:800 clamp(1.35rem,3vw,1.8rem)/1.1 system-ui,sans-serif;letter-spacing:-.04em;color:#fff}
+    .social-gateway-card.pulse .product strong{color:#daabff}
+    .social-gateway-card.messenger .product strong{color:#f4cc84}
+    .social-gateway-card .caption{color:#d8cfbc;font-size:.93rem;line-height:1.55}
+    .social-gateway-card .action{margin-top:auto;color:#f0c56f;font-weight:800;font-size:.92rem}
+    .social-gateway-card.pulse .action{color:#ddb6ff}
+    .social-gateway-card .marker{align-self:flex-start;padding:5px 9px;border:1px solid #8e74448a;border-radius:999px;color:#c7bdad;font-size:.65rem;font-weight:800;letter-spacing:.13em;text-transform:uppercase}
     .member{padding:23px;margin-top:30px;border:1px solid #e7bc683e;border-radius:14px;background:#071421}
     .member a{color:var(--gold);font-weight:800}footer{text-align:center;padding:26px 12px;color:#c8b99f;border-top:1px solid #ad8c5529}
-    @media(max-width:600px){.shops{grid-template-columns:1fr}.work{grid-template-columns:1fr}.work img{max-width:420px;margin:auto}.hero img{max-height:36vh}}
+    @media(max-width:600px){.shops,.social-gateway-grid{grid-template-columns:1fr}.social-gateway-card{min-height:180px}.work{grid-template-columns:1fr}.work img{max-width:420px;margin:auto}.hero img{max-height:36vh}}
+    @media(prefers-reduced-motion:reduce){.social-gateway-card{transition:none}.social-gateway-card:hover,.social-gateway-card:focus-visible{transform:none}}
   </style>
 </head>
 <body>
-  <header><a class="brand" href="/">NBL WORLD · SHOP</a><nav aria-label="Shop navigation"><a href="https://new-beansland.myshopify.com" rel="noopener">Clothing Store</a><a href="https://books.newbeansland.org/" rel="noopener">NBL Books</a><a href="https://newbeansland.org/">New Beansland</a></nav></header>
+  <header><a class="brand" href="/">NBL WORLD · SHOP</a><nav aria-label="Shop navigation"><a href="https://new-beansland.myshopify.com" rel="noopener">Clothing Store</a><a href="https://books.newbeansland.org/" rel="noopener">NBL Books</a><a href="https://newbeansland.org/pulse/" rel="noopener">NBL Pulse</a><a href="https://newbeansland.org/messenger/" rel="noopener">NBL Messenger</a><a href="https://newbeansland.org/">New Beansland</a></nav></header>
   <div class="hero"><img src="/NBL_WORLD.png" alt="NBL World — New Beansland" width="1536" height="1024"></div>
   <main>
     <p class="kicker">New Beansland · Independent shops</p>
@@ -58,7 +79,26 @@
         <a class="btn" href="https://newbeansland.org/pricing.html" rel="noopener">Explore NBL Services</a>
       </div>
     </section>
-    <section class="member" aria-label="New Beansland member services"><h2>Looking for Beans, NBL Messenger or University?</h2><p>Sign in, message members, learn with Professor Grey or manage your NBL credits at <strong>NewBeansland.org</strong>. There is no separate NBL World member sign-in.</p><a href="https://newbeansland.org/">Enter New Beansland →</a></section>
+    <section class="social-gateway" aria-labelledby="social-gateway-title">
+      <p class="kicker">Explore the NBL ecosystem</p>
+      <h2 id="social-gateway-title">Your people. Your world.</h2>
+      <p class="intro">NBL Pulse and NBL Messenger are independent, connected experiences. Both open on NewBeansland.org with your existing NBL account—no second sign-in or checkout on NBL World.</p>
+      <div class="social-gateway-grid">
+        <a class="social-gateway-card pulse" href="https://newbeansland.org/pulse/" rel="noopener" aria-label="Explore NBL Pulse on NewBeansland.org">
+          <span class="marker">Social network</span>
+          <span class="product">NBL <strong>Pulse™</strong></span>
+          <span class="caption">Meet your community, share posts, discover member photos and videos, and connect with people.</span>
+          <span class="action">Explore NBL Pulse →</span>
+        </a>
+        <a class="social-gateway-card messenger" href="https://newbeansland.org/messenger/" rel="noopener" aria-label="Open NBL Messenger on NewBeansland.org">
+          <span class="marker">Private connections</span>
+          <span class="product">NBL <strong>Messenger™</strong></span>
+          <span class="caption">Your conversations, people and private calls in their own full-screen Messenger experience.</span>
+          <span class="action">Open NBL Messenger →</span>
+        </a>
+      </div>
+    </section>
+    <section class="member" aria-label="New Beansland member services"><h2>Looking for Beans, NBL Pulse, NBL Messenger or University?</h2><p>Sign in, message members, learn with Professor Grey or manage your NBL credits at <strong>NewBeansland.org</strong>. There is no separate NBL World member sign-in.</p><a href="https://newbeansland.org/">Enter New Beansland →</a></section>
   </main>
   <footer>© 2026 New Beansland™ · NBL World independent commerce</footer>
 </body>
