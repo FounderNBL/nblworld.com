@@ -1,0 +1,19 @@
+name: NBL World linked product doors — PR source gate
+on:
+  pull_request:
+    paths:
+      - index.html
+      - scripts/check-social-links.mjs
+      - .github/workflows/social-link-gate.yml
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  source:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - run: node scripts/check-social-links.mjs
