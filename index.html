@@ -3,63 +3,186 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-  <meta name="theme-color" content="#02060b">
-  <title>NBL World Shop | New Beansland</title>
-  <meta name="description" content="Explore New Beansland clothing, books and NBL Digital Services: flyers, branding, promo graphics, merch mockups and simple websites. Accounts, Beans and University live at NewBeansland.org.">
+  <meta name="theme-color" content="#080d14">
+  <meta name="description" content="Discover NBL World: original film previews, NBL Music Productions, independent talent and ways to work with New Beansland. More than a platform. A destination.">
   <link rel="canonical" href="https://nblworld.com/">
-  <meta property="og:title" content="NBL World Shop | New Beansland">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="NBL World">
+  <meta property="og:title" content="NBL World | More Than a Platform. A Destination.">
+  <meta property="og:description" content="Original shows, film, music and rising talent. Explore NBL World and discover ways to work with New Beansland.">
   <meta property="og:image" content="https://nblworld.com/NBL_WORLD.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <title>NBL World | Film, Music &amp; Rising Talent</title>
   <style>
-    :root{--night:#02060b;--gold:#e7bc68;--cream:#f4ead8;--soft:#cfc3ad}
-    *{box-sizing:border-box}html{background:var(--night);color-scheme:dark}
-    body{margin:0;min-height:100vh;background:linear-gradient(180deg,#02060b,#071421 60%,#02060b);color:var(--cream);font:16px/1.5 Arial,Helvetica,sans-serif}
-    a{color:inherit}a:focus-visible{outline:3px solid var(--gold);outline-offset:4px}
-    header{padding:16px clamp(16px,4vw,48px);border-bottom:1px solid #ad8c5559;display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap}
-    .brand{font:700 clamp(1rem,2.5vw,1.3rem) Georgia,serif;letter-spacing:.08em;text-decoration:none;color:var(--gold)}
-    nav{display:flex;flex-wrap:wrap;gap:16px}nav a{font-weight:700;font-size:.9rem;text-decoration:none}
-    .hero img{display:block;width:100%;height:auto;max-height:48vh;object-fit:contain;background:#02060b}
-    main{max-width:1100px;margin:auto;padding:clamp(25px,5vw,54px) 16px 64px}
-    .kicker{font-size:.72rem;font-weight:900;letter-spacing:.2em;text-transform:uppercase;color:var(--gold)}
-    h1{font:700 clamp(2.1rem,5vw,3.5rem)/1.08 Georgia,serif;color:var(--gold);margin:10px 0}
-    h2{font:700 1.3rem Georgia,serif;margin:0 0 10px;color:var(--gold)}
-    .intro{max-width:740px;color:var(--soft);line-height:1.7}
-    .shops{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px;margin-top:32px}
-    .shop{border:1px solid #e7bc6845;border-radius:18px;padding:clamp(22px,3vw,34px);background:linear-gradient(145deg,#102238,#07131f);min-width:0}
-    .shop p{color:var(--soft);margin:0 0 18px}
-    .btn{display:inline-block;border:1px solid var(--gold);border-radius:9px;padding:12px 16px;color:#130d05;background:linear-gradient(#f7dfa3,#ce9a3c);font-weight:800;text-decoration:none}
-    .work{display:grid;grid-template-columns:minmax(220px,390px) minmax(0,1fr);gap:24px;align-items:center;margin-top:32px;border:1px solid #e7bc6845;border-radius:18px;padding:clamp(18px,3vw,28px);background:linear-gradient(145deg,#102238,#07131f)}
-    .work img{display:block;width:100%;height:auto;border:1px solid #e7bc68ad;border-radius:8px;box-shadow:0 16px 35px #0009}
-    .work p{color:var(--soft);margin:0 0 14px}.work ul{color:var(--soft);padding-left:20px}.work li{margin:6px 0}.work .btn{margin-top:12px}
-    .member{padding:23px;margin-top:30px;border:1px solid #e7bc683e;border-radius:14px;background:#071421}
-    .member a{color:var(--gold);font-weight:800}footer{text-align:center;padding:26px 12px;color:#c8b99f;border-top:1px solid #ad8c5529}
-    @media(max-width:600px){.shops{grid-template-columns:1fr}.work{grid-template-columns:1fr}.work img{max-width:420px;margin:auto}.hero img{max-height:36vh}}
+    :root{--night:#080d14;--panel:#111d2a;--gold:#f1c875;--red:#db4d49;--white:#f8f2e9;--muted:#d5c9b7;--edge:#c9a76a55;color-scheme:dark}
+    *{box-sizing:border-box}html{scroll-behavior:smooth;background:var(--night)}
+    body{margin:0;color:var(--white);background:radial-gradient(circle at 80% 0%,#7b2b2630,transparent 36%),linear-gradient(180deg,#0d1925,#080d14 50%);font:16px/1.6 system-ui,-apple-system,Segoe UI,Arial,sans-serif}
+    a{color:inherit}a:focus-visible,summary:focus-visible{outline:3px solid var(--gold);outline-offset:4px}
+    .wrap{width:min(1120px,calc(100% - 36px));margin:auto}
+    header{border-bottom:1px solid var(--edge);background:#080d14ee}
+    .top{min-height:74px;display:flex;align-items:center;justify-content:space-between;gap:18px;flex-wrap:wrap;padding:13px 0}
+    .brand{color:var(--gold);font-weight:900;font-size:1.2rem;letter-spacing:.06em;text-decoration:none}
+    nav{display:flex;gap:12px 20px;flex-wrap:wrap}nav a{font-size:.88rem;font-weight:700;text-decoration:none}
+    nav a:hover,.inline:hover{text-decoration:underline}
+    .hero{display:grid;grid-template-columns:1.1fr .9fr;align-items:center;gap:30px;padding:50px 0 42px}
+    .hero-art{border-radius:18px;overflow:hidden;background:#02060b;border:1px solid var(--edge)}
+    .hero-art img{width:100%;height:auto;max-height:390px;object-fit:contain;display:block}
+    .eyebrow{font-size:.76rem;letter-spacing:.17em;text-transform:uppercase;color:var(--gold);font-weight:900;margin:0 0 12px}
+    h1,h2,h3{line-height:1.16;margin-top:0}h1{font:800 clamp(2.5rem,5.6vw,4.9rem)/1.06 Georgia,serif;margin-bottom:16px}
+    h2{font:800 clamp(1.8rem,3.5vw,2.65rem)/1.1 Georgia,serif;margin-bottom:12px}
+    h3{font-size:1.24rem;margin-bottom:9px}
+    .hero strong{color:var(--gold)}.hero p.lead,.intro{font-size:1.08rem;color:var(--muted);max-width:720px}
+    .strap{color:var(--red);font-weight:900;letter-spacing:.04em;text-transform:uppercase}
+    .actions{display:flex;gap:12px;flex-wrap:wrap;margin-top:24px}
+    .button{display:inline-flex;align-items:center;justify-content:center;min-height:48px;border:1px solid var(--gold);border-radius:10px;padding:11px 18px;text-align:center;text-decoration:none;font-weight:800;color:#130d09;background:linear-gradient(#f8dd9e,#d5a44b)}
+    .button.secondary{background:transparent;color:var(--gold)}
+    .button:hover{filter:brightness(1.12)}
+    section{scroll-margin-top:25px}.section{padding:43px 0;border-top:1px solid var(--edge)}
+    .coming{display:inline-block;border:1px solid #db4d4980;border-radius:100px;padding:4px 11px;color:#ffd0c9;font-weight:800;font-size:.73rem;letter-spacing:.07em;text-transform:uppercase}
+    .feature{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,.9fr);gap:25px;align-items:center;margin-top:25px}
+    .feature video{display:block;width:100%;aspect-ratio:16/9;background:#000;border:1px solid var(--edge);border-radius:14px}
+    .feature p,.tile p,.service p,.steps p,.shop p{color:var(--muted)}
+    .inline{color:var(--gold);font-weight:800}
+    .tiles,.services,.shops{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;margin-top:22px}
+    .tile,.service,.shop{background:linear-gradient(145deg,#142536,#0b1520);border:1px solid var(--edge);border-radius:16px;padding:24px;min-width:0}
+    .tile{display:flex;flex-direction:column}.tile p{flex:1}
+    .tile a,.shop a{color:var(--gold);font-weight:800}
+    .services{grid-template-columns:repeat(2,minmax(0,1fr))}
+    .service .button{margin-top:9px}.note{padding:14px 18px;border-left:3px solid var(--gold);background:#c8a66b15;border-radius:0 10px 10px 0;color:var(--muted)}
+    .steps{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;margin:21px 0}
+    .steps article{padding:17px;border-top:2px solid var(--gold);background:#ffffff07}
+    .steps b{color:var(--gold)}.steps p{margin:5px 0}
+    details{margin-top:20px;border:1px solid var(--edge);border-radius:12px;padding:15px 19px;background:#0c1824}
+    summary{cursor:pointer;font-weight:800;color:var(--gold);padding:4px 0}
+    details p,details li{color:var(--muted)}
+    .shops{grid-template-columns:repeat(2,minmax(0,1fr))}
+    .shop{display:flex;flex-direction:column}.shop p{flex:1}
+    .shop img{max-width:100%;border-radius:9px}
+    .closing{padding:22px 24px;border:1px solid var(--edge);border-radius:14px;background:#101c29}
+    .closing p{color:var(--muted)}.closing a{color:var(--gold);font-weight:800}
+    footer{border-top:1px solid var(--edge);margin-top:45px;padding:26px 0 38px;color:var(--muted);font-size:.86rem}
+    footer a{color:var(--gold)}
+    @media(max-width:780px){.hero,.feature{grid-template-columns:1fr}.hero{padding:28px 0 36px}.hero-art{max-width:520px}.tiles{grid-template-columns:1fr 1fr}.steps{grid-template-columns:1fr}}
+    @media(max-width:560px){.wrap{width:min(100% - 28px,1120px)}.top{align-items:flex-start}nav{gap:10px 14px}.section{padding:32px 0}.tiles,.services,.shops{grid-template-columns:1fr}.hero-art img{max-height:270px}.tile,.service,.shop{padding:20px}.actions .button{flex:1}}
+    @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
   </style>
 </head>
 <body>
-  <header><a class="brand" href="/">NBL WORLD · SHOP</a><nav aria-label="Shop navigation"><a href="https://new-beansland.myshopify.com" rel="noopener">Clothing Store</a><a href="https://books.newbeansland.org/" rel="noopener">NBL Books</a><a href="https://newbeansland.org/">New Beansland</a></nav></header>
-  <div class="hero"><img src="/NBL_WORLD.png" alt="NBL World — New Beansland" width="1536" height="1024"></div>
-  <main>
-    <p class="kicker">New Beansland · Independent shops</p>
-    <h1>Welcome to the NBL World Shop.</h1>
-    <p class="intro">Browse New Beansland merchandise and publications through their independent stores. Shopping here is separate from New Beansland membership, University enrollment and NBL-owned account billing.</p>
-    <section class="shops" aria-label="New Beansland shops">
-      <article class="shop"><h2>NBL Clothing Co.</h2><p>Shirts, statements and New Beansland apparel. Checkout takes place through the independent Shopify store.</p><a class="btn" href="https://new-beansland.myshopify.com" rel="noopener">Shop NBL Clothing</a></article>
-      <article class="shop"><h2>NBL Books</h2><p>Explore the New Beansland book collection. Books are purchased through the existing publishing and digital book partners.</p><a class="btn" href="https://books.newbeansland.org/" rel="noopener">Shop NBL Books</a></article>
-    </section>
-    <section class="work" aria-label="Work With NBL digital services">
-      <a href="https://newbeansland.org/pricing.html" aria-label="Explore NBL Digital Services">
-        <img src="/assets/work-with-nbl.jpg" width="1229" height="1536" loading="lazy" decoding="async" alt="Work With NBL: digital services flyer featuring flyers, branding, promo graphics, merch mockups, and simple websites, New Beansland founder Jamel Hawkins">
-      </a>
+  <header>
+    <div class="wrap top">
+      <a class="brand" href="/" aria-label="NBL World homepage">NBL WORLD ♾️</a>
+      <nav aria-label="Main navigation">
+        <a href="#discover">Discover</a>
+        <a href="#opportunities">Work with NBL</a>
+        <a href="#shops">Shops</a>
+        <a href="https://newbeansland.org/">Enter New Beansland</a>
+      </nav>
+    </div>
+  </header>
+  <main class="wrap">
+    <section class="hero" aria-labelledby="hero-title">
       <div>
-        <p class="kicker">New Beansland · Digital services</p>
-        <h2>Work With NBL</h2>
-        <p>Flyers, branding, promotional graphics, merchandise mockups and simple websites for businesses, creators and local brands.</p>
-        <p>See the full flyer and explore what New Beansland can create with you.</p>
-        <a class="btn" href="https://newbeansland.org/pricing.html" rel="noopener">Explore NBL Services</a>
+        <p class="eyebrow">Original shows · Film · Music · Local talent</p>
+        <h1 id="hero-title">NBL <strong>WORLD</strong></h1>
+        <p class="strap">More than a platform. A destination.</p>
+        <p class="lead">You found us. Welcome to the entertainment side of New Beansland. Discover what we're making, hear NBL music, and learn how your talent or project could become part of the world.</p>
+        <span class="coming">The network is coming soon</span>
+        <div class="actions">
+          <a class="button" href="#discover">Explore NBL World</a>
+          <a class="button secondary" href="#opportunities">Work with NBL</a>
+        </div>
+      </div>
+      <div class="hero-art"><img src="/NBL_WORLD.png" width="1536" height="1024" alt="Official NBL World artwork by New Beansland"></div>
+    </section>
+
+    <section id="discover" class="section" aria-labelledby="discover-title">
+      <p class="eyebrow">Something to experience now</p>
+      <h2 id="discover-title">Take a look around.</h2>
+      <p class="intro">The full entertainment network is still being developed, but you can explore existing productions and visit the departments behind them today.</p>
+      <div class="feature">
+        <div>
+          <video controls playsinline preload="none" poster="https://newbeansland.org/assets/brand/NBL-Films.png" aria-label="The City official NBL Studios capability preview">
+            <source src="https://newbeansland.org/NBL_Studio_Presents_The_City_Trailer.mp4" type="video/mp4">
+            Your browser cannot play this preview. <a href="https://newbeansland.org/studios.html#screen-title">Watch on the NBL Studios page</a>.
+          </video>
+        </div>
+        <div>
+          <p class="eyebrow">NBL Studios · Original preview</p>
+          <h3>The City — Official Preview</h3>
+          <p>A glimpse of what NBL Studios can produce. <strong>The City is still coming soon</strong>—this trailer is a capability preview, not an announcement that a series is available.</p>
+          <a class="inline" href="https://newbeansland.org/studios.html#screen-title">Discover NBL Studios →</a>
+        </div>
+      </div>
+      <div class="tiles">
+        <article class="tile">
+          <p class="eyebrow">Watch</p><h3>NBL Studios</h3>
+          <p>Explore film previews, visual productions and the work behind NBL's on-screen stories.</p>
+          <a href="https://newbeansland.org/studios.html">See film &amp; video →</a>
+        </article>
+        <article class="tile">
+          <p class="eyebrow">Listen</p><h3>NBL Music Productions</h3>
+          <p>Hear the official NBL music catalog and discover the production sound.</p>
+          <a href="https://newbeansland.org/studio/">Explore NBL music →</a>
+        </article>
+        <article class="tile">
+          <p class="eyebrow">Connect</p><h3>NBL Pulse 🪘</h3>
+          <p>Discover the social heartbeat of New Beansland. Live stage performances and scheduled open-mic slots are ideas for later, not live bookings today.</p>
+          <a href="https://newbeansland.org/pulse/">Explore NBL Pulse →</a>
+        </article>
       </div>
     </section>
-    <section class="member" aria-label="New Beansland member services"><h2>Looking for Beans, NBL Messenger or University?</h2><p>Sign in, message members, learn with Professor Grey or manage your NBL credits at <strong>NewBeansland.org</strong>. There is no separate NBL World member sign-in.</p><a href="https://newbeansland.org/">Enter New Beansland →</a></section>
+
+    <section id="opportunities" class="section" aria-labelledby="opportunities-title">
+      <p class="eyebrow">For artists, creators and businesses</p>
+      <h2 id="opportunities-title">Want to make something with NBL?</h2>
+      <p class="intro">You can explore as a fan, or contact the team about your own music, video or creative project. No application fee, automatic purchase or new account is created by viewing this page.</p>
+      <div class="services">
+        <article class="service">
+          <p class="eyebrow">Bring your project</p>
+          <h3>Work With NBL</h3>
+          <p>Tell us about a song, a music video, a visual concept, or a custom digital service. We'll discuss whether NBL can help and what a project would require.</p>
+          <a class="button" href="mailto:founder@newbeansland.org?subject=NBL%20World%20Project%20Inquiry&amp;body=Hello%20NBL%2C%0A%0AI%27m%20interested%20in%20working%20with%20NBL.%0AMy%20project%3A%20%0AWhat%20I%20need%3A%20">Ask about a project</a>
+        </article>
+        <article class="service">
+          <p class="eyebrow">Introduce your talent</p>
+          <h3>Artists &amp; Rising Talent</h3>
+          <p>Musician, filmmaker, comedian, performer or creative? Introduce yourself and share a link to work you have the right to share. This is an inquiry, not an open audition or a promise of placement.</p>
+          <a class="button secondary" href="mailto:founder@newbeansland.org?subject=NBL%20World%20Talent%20Introduction&amp;body=Hello%20NBL%2C%0A%0AMy%20name%3A%20%0AMy%20talent%2Fgenre%3A%20%0AA%20link%20to%20my%20work%3A%20">Introduce your talent</a>
+        </article>
+      </div>
+      <div class="steps" aria-label="How NBL project agreements work">
+        <article><b>01 · Tell us the idea</b><p>Send an inquiry about the work, intended use and any existing recordings or artwork.</p></article>
+        <article><b>02 · Discuss the scope</b><p>Clarify deliverables, rights, timing and any quoted cost before agreeing to a project.</p></article>
+        <article><b>03 · Review the agreement</b><p>Receive a project-specific agreement to read before anyone signs or work begins.</p></article>
+      </div>
+      <details>
+        <summary>What about contracts, music rights and ownership?</summary>
+        <p>We make the process visible without posting unsigned blank master contracts as if they were a finished deal. A project-specific agreement should describe the services, deliverables, price, payment schedule, credits, permissions and any agreed licensing or rights transfers.</p>
+        <p>Creators keep the pre-existing work they legally own. NBL keeps its own pre-existing work. Rights in a newly commissioned beat, soundtrack or finished production—including any royalties or buyout—depend on the written agreement for that project.</p>
+        <p>If a song uses someone else's unlicensed beat or samples, we may discuss a genuinely original or properly licensed alternative. Simply modifying a protected recording does not automatically clear its underlying rights.</p>
+        <p><strong>This is a general overview, not a contract or an offer of a specific rate.</strong> No rights are transferred, no project is accepted and no fee is charged just by opening this page.</p>
+      </details>
+      <p class="note">Looking for other published NBL digital services? <a class="inline" href="https://newbeansland.org/pricing.html#category-services">See the existing services and pricing page.</a> Custom creative production is subject to availability and written terms; do not assume a specific project or price is currently on sale.</p>
+    </section>
+
+    <section id="shops" class="section" aria-labelledby="shop-title">
+      <p class="eyebrow">More of the world</p>
+      <h2 id="shop-title">Explore the NBL World Shop.</h2>
+      <p class="intro">The existing clothing and books shops are still here. Each uses its established storefront and checkout; this page does not create another payment system.</p>
+      <div class="shops">
+        <article class="shop"><h3>NBL Clothing Co.</h3><p>Discover original New Beansland apparel and designs.</p><a href="https://new-beansland.myshopify.com" rel="noopener">Shop clothing →</a></article>
+        <article class="shop"><h3>NBL Books</h3><p>Browse the existing NBL book collection and published editions.</p><a href="https://books.newbeansland.org/" rel="noopener">Explore books →</a></article>
+      </div>
+    </section>
+
+    <section class="section" aria-labelledby="visit-title">
+      <div class="closing">
+        <h2 id="visit-title">Looking for Beans, NBL Messenger or University?</h2>
+        <p>For Beans, NBL Messenger, your account and the rest of the world, visit the main New Beansland site. NBL World does not require a separate login.</p>
+        <a href="https://newbeansland.org/">Enter New Beansland →</a>
+      </div>
+    </section>
   </main>
-  <footer>© 2026 New Beansland™ · NBL World independent commerce</footer>
+  <footer><div class="wrap">© 2026 New Beansland™ · NBL World <span aria-hidden="true">♾️</span> · Original entertainment and independent creative opportunities. <a href="https://newbeansland.org/terms.html">Terms</a> · <a href="https://newbeansland.org/privacy.html">Privacy</a></div></footer>
 </body>
 </html>
